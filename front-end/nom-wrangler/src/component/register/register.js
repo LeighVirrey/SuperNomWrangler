@@ -20,7 +20,7 @@ const Register = () => {
 
     return (
         <div style={{ maxWidth: '400px', margin: '0 auto', padding: '20px' }}>
-            <h2>Sign Up</h2>
+            <h1>Sign Up</h1>
             <form onSubmit={handleSubmit}>
                 <div className="username" style={{ marginBottom: '10px' }}>
                     <label htmlFor="username">Username:</label>
@@ -37,6 +37,7 @@ const Register = () => {
                 <div className="first-name" style={{ marginBottom: '10px' }}>
                     <label htmlFor="username">First Name:</label>
                     <input
+                        placeholder=''
                         type="text"
                         id='firstName'
                         name="firstName"
@@ -95,7 +96,7 @@ const Register = () => {
                     />
                 </div>
                 <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer' }}>
-                    Sign Up
+                    Register
                 </button>
             </form>
         </div>
