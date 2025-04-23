@@ -8,7 +8,24 @@
 
 .nav{
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  border-bottom: #F2542D solid 5px;
+  margin-left: 50px;
+  margin-right: 50px;
+
+}
+
+.logo{
+  width: 600px;
+  margin-right: 90px;
+}
+
+.buttons{
+  display: flex;
   flex-direction: column;
   justify-items:right;
   text-align: center;
+  margin-right: 90px;
 }
