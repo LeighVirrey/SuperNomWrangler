@@ -7,6 +7,8 @@ import Login from './component/login/login'
 import Nav from './component/nav/nav'
 import About from './component/about/about'
 import Review from './component/userReview/UserReview'
+import Register from './component/register/register'
+
 
 
 
@@ -25,6 +27,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/map" element={<Map />} />
           <Route path="/review" element={<Review />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </div>
     </Router>
