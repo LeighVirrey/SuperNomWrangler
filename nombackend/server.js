@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const axios = require("axios"); // For Google Places API
 const mysql = require("mysql2/promise");
 const sendEmail = require("./smtp"); // Your custom SMTP module
 // const User = require("./models/user"); // Not used if using direct SQL queries
@@ -126,29 +127,8 @@ app.post("/logout", (req, res) => {
 
 //#region - Restaurant Reviews 
 // Mock information for testing
-let reviewIdCounter = 1;
-
-const reviews = [
-  {
-    id: reviewIdCounter++,
-    restaurantName: "Pho Real",
-    imageUrl: "https://lh3.googleusercontent.com/gps-cs-s/AB5caB_FEWKdmdQVET9381JO8q23Cy2FwZw_Mu6HKdzEXdYwecoyMx-N0O9_EERPG0mIYQqT43eCRCX0rq6Re5s84gbovjlt4fGWyHGWNRkbNtCIFUP-edyelizr2A3_H_VBv9aqRLfc=s1360-w1360-h1020",
-    streetName: "Main St",
-    streetNumber: "123",
-    city: "Austin",
-    state: "TX",
-    zipCode: "78701",
-    country: "USA",
-    description: "Great atmosphere and authentic Vietnamese flavors!",
-    cuisineTypes: ["Vietnamese", "Asian"],
-    diningStyle: "Sit down",
-    priceRange: "$$",
-    otherNotes: "Wheelchair accessible",
-    operatingHours: [{ day: "Monday", open: "10:00", close: "21:00" }],
-    userReview: "The pho broth is next level. 10/10!",
-    isFlagged: false
-  }
-];
+let reviewIdCounter = 0;
+let reviews = [];
 
 // Allows users to add reviews
 /*
@@ -258,6 +238,18 @@ app.post("/restaurant/review", (req, res) => {
     operatingHours,
     userReview
   } = req.body;
+
+  // Check if the restaurant name already exists in the reviews array
+  const existingRestaurant = reviews.find(
+    (review) => review.restaurantName.toLowerCase() === restaurantName.toLowerCase()
+  );
+
+  // If the restaurant is new and no imageUrl is provided, return an error
+  if (!existingRestaurant && !imageUrl) {
+    return res.status(400).json({
+      error: "First review for a restaurant must include an image URL."
+    });
+  }
 
   const newReview = {
     id: reviewIdCounter++,
@@ -485,6 +477,78 @@ app.patch("/restaurant/review/:id/unflag", (req, res) => {
 });
 //#endregion
 
+/* Under construction - Google Places API integration
+   - This code is commented out to avoid using an expired API key. 
+    - Uncomment and replace the API key with a valid one when ready to use.
+app.get('/api/restaurants', async (req, res) => {
+  const { zip, radius } = req.query;
+
+  //KEY IS EXPIRED DO NOT USE
+  //const apiKey = process.env.GOOGLE_API_KEY || 'AIzaSyDYNBpj2XKkjwEkTmfyVf1mW-MAIfrFWVI'; 
+
+  console.log(`Received request to find restaurants near zip: ${zip}, radius: ${radius}`);
+
+  try {
+      // Convert zip code to lat/lng
+      const geoResponse = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${apiKey}`);
+      console.log('Geocoding response:', geoResponse.data);
+
+      if (geoResponse.data.results.length === 0) {
+          return res.status(404).send('Invalid zip code');
+      }
+
+      const location = geoResponse.data.results[0].geometry.location;
+      const { lat, lng } = location;
+
+      console.log(`Geocoded location: lat=${lat}, lng=${lng}`);
+
+      let restaurants = [];
+      let nextPageToken = '';
+      let keepFetching = true;
+
+      // Fetch all restaurant locations within the specified radius
+      while (keepFetching) {
+          const restaurantResponse = await axios.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius * 1609.34}&type=restaurant&key=${apiKey}&pagetoken=${nextPageToken}`);
+          console.log('Restaurants response:', restaurantResponse.data);
+
+          restaurants = restaurants.concat(restaurantResponse.data.results);
+
+          nextPageToken = restaurantResponse.data.next_page_token;
+
+          if (!nextPageToken) {
+              keepFetching = false;
+          } else {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+      }
+
+      // Fetch details for each restaurant to get hours of operation
+      const detailedRestaurants = await Promise.all(restaurants.map(async (restaurant) => {
+          const detailsResponse = await axios.get(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${restaurant.place_id}&fields=name,formatted_address,opening_hours&key=${apiKey}`);
+          const details = detailsResponse.data.result;
+
+          if (details.opening_hours && details.opening_hours.weekday_text) {
+              return {
+                  name: details.name,
+                  address: details.formatted_address,
+                  hours: details.opening_hours.weekday_text,
+              };
+          }
+
+          return null; // Filter out restaurants with no operational hours
+      }));
+
+      console.log(`Total restaurants inside ${radius} miles for your zip code: ${restaurants.length}`);
+
+      const operationalRestaurants = detailedRestaurants.filter(restaurant => restaurant !== null);
+
+      res.json(operationalRestaurants);
+  } catch (error) {
+      console.error('Error fetching restaurants:', error);
+      res.status(500).send('Error fetching restaurants');
+  }
+});
+*/
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
