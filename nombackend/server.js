@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
@@ -115,6 +115,34 @@ app.get("/dashboard", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Error accessing dashboard:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get('/api/restaurants', async (req, res) => {
+  const { lat, lng, radius = 25 } = req.query;
+
+  if (!lat || !lng) {
+    return res.status(400).json({ error: "Missing latitude or longitude" });
+  }
+
+  const userLocation = {
+    type: "Point",
+    coordinates: [parseFloat(lng), parseFloat(lat)],
+  };
+
+  try {
+    const restaurants = await Restaurant.find({
+      location: {
+        $near: {
+          $geometry: userLocation,
+          $maxDistance: radius * 1609.34, // miles to meters
+        },
+      },
+    });
+
+    res.json(restaurants);
+  } catch (err) {
+    res.status(500).json({ error: "Server error fetching restaurants" });
   }
 });
 
