@@ -124,6 +124,367 @@ app.post("/logout", (req, res) => {
   res.json({ message: "Logged out successfully" });
 });
 
+//#region - Restaurant Reviews 
+// Mock information for testing
+let reviewIdCounter = 1;
+
+const reviews = [
+  {
+    id: reviewIdCounter++,
+    restaurantName: "Pho Real",
+    imageUrl: "https://lh3.googleusercontent.com/gps-cs-s/AB5caB_FEWKdmdQVET9381JO8q23Cy2FwZw_Mu6HKdzEXdYwecoyMx-N0O9_EERPG0mIYQqT43eCRCX0rq6Re5s84gbovjlt4fGWyHGWNRkbNtCIFUP-edyelizr2A3_H_VBv9aqRLfc=s1360-w1360-h1020",
+    streetName: "Main St",
+    streetNumber: "123",
+    city: "Austin",
+    state: "TX",
+    zipCode: "78701",
+    country: "USA",
+    description: "Great atmosphere and authentic Vietnamese flavors!",
+    cuisineTypes: ["Vietnamese", "Asian"],
+    diningStyle: "Sit down",
+    priceRange: "$$",
+    otherNotes: "Wheelchair accessible",
+    operatingHours: [{ day: "Monday", open: "10:00", close: "21:00" }],
+    userReview: "The pho broth is next level. 10/10!",
+    isFlagged: false
+  }
+];
+
+// Allows users to add reviews
+/*
+app.post("/restaurant/review", async (req, res) => {
+  const {
+    imageUrl,
+    restaurantName,
+    streetName,
+    streetNumber,
+    city,
+    state,
+    zipCode,
+    country,
+    description,
+    cuisineTypes,
+    diningStyle,
+    priceRange,
+    otherNotes,
+    operatingHours,
+    userReview,
+    userId,       // optional user id
+    isFlagged     // new field (optional)
+  } = req.body;
+
+  if (!restaurantName || !streetName || !streetNumber || !city || !state || !zipCode || !country || !cuisineTypes || !diningStyle || !priceRange) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  try {
+    const [existingReviews] = await pool.query(
+      "SELECT COUNT(*) as count FROM reviews WHERE restaurantName = ? AND streetName = ? AND streetNumber = ? AND city = ? AND zipCode = ?",
+      [restaurantName, streetName, streetNumber, city, zipCode]
+    );
+
+    const isFirstReview = existingReviews[0].count === 0;
+
+    if (isFirstReview && !imageUrl) {
+      return res.status(400).json({ error: "First review for a restaurant must include an image URL." });
+    }
+
+    await pool.query(
+      `INSERT INTO reviews (
+        userId, restaurantName, imageUrl,
+        streetName, streetNumber, city, state, zipCode, country,
+        description, cuisineTypes, diningStyle, priceRange,
+        otherNotes, operatingHours, userReview, isFlagged
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId || null,
+        restaurantName,
+        imageUrl || null,
+        streetName, streetNumber, city, state, zipCode, country,
+        description || null,
+        JSON.stringify(cuisineTypes),
+        diningStyle,
+        priceRange,
+        otherNotes || null,
+        operatingHours ? JSON.stringify(JSON.parse(operatingHours)) : null,
+        userReview || null,
+        isFlagged ? 1 : 0
+      ]
+    );
+
+    res.status(201).json({
+      message: "Review submitted successfully.",
+      submitted: {
+        userId: userId || null,
+        restaurantName,
+        imageUrl: imageUrl || null,
+        streetName,
+        streetNumber,
+        city,
+        state,
+        zipCode,
+        country,
+        description: description || null,
+        cuisineTypes,
+        diningStyle,
+        priceRange,
+        otherNotes: otherNotes || null,
+        operatingHours: operatingHours ? JSON.parse(operatingHours) : null,
+        userReview: userReview || null,
+        isFlagged: isFlagged ? true : false
+      }
+    });
+  } catch (error) {
+    console.error("Error submitting review:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+}); This has the try catch that can be used once we are further into the project*/
+
+app.post("/restaurant/review", (req, res) => {
+  const {
+    imageUrl,
+    restaurantName,
+    streetName,
+    streetNumber,
+    city,
+    state,
+    zipCode,
+    country,
+    description,
+    cuisineTypes,
+    diningStyle,
+    priceRange,
+    otherNotes,
+    operatingHours,
+    userReview
+  } = req.body;
+
+  const newReview = {
+    id: reviewIdCounter++,
+    imageUrl,
+    restaurantName,
+    streetName,
+    streetNumber,
+    city,
+    state,
+    zipCode,
+    country,
+    description,
+    cuisineTypes,
+    diningStyle,
+    priceRange,
+    otherNotes,
+    operatingHours: JSON.parse(operatingHours || "[]"),
+    userReview,
+    isFlagged: false
+  };
+
+  reviews.push(newReview);
+  res.status(201).json(newReview);
+});
+
+// Get all reviews for the restaurant
+/* app.get("/restaurant/reviews", async (req, res) => {
+  try {
+    const [reviews] = await pool.query("SELECT * FROM reviews");
+    res.json(reviews);
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});  This has the try catch that can be used once we are further into the project*/
+
+// Mock data for testing
+app.get("/restaurant/reviews", (req, res) => {
+  res.json(reviews);
+});
+
+// Get a single review for the restaurant
+/*app.get("/restaurant/review/:id", async (req, res) => {
+  try {
+    const [reviews] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
+    if (reviews.length === 0) return res.status(404).json({ error: "Review not found" });
+    res.json(reviews[0]);
+  } catch (err) {
+    console.error("Error fetching review:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}); This has the try catch that can be used later*/
+
+// Mock data for testing
+app.get("/restaurant/review/:id", (req, res) => {
+  const review = reviews.find(r => r.id === parseInt(req.params.id));
+  if (!review) return res.status(404).json({ error: "Review not found" });
+  res.json(review);
+});
+
+// Allows user to update any review (only if they are the author of the review)
+/*
+app.put("/restaurant/review/:id", async (req, res) => {
+  try {
+    const [reviewRows] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
+    if (reviewRows.length === 0) return res.status(404).json({ error: "Review not found" });
+
+    const {
+      imageUrl,
+      location,
+      description,
+      cuisineTypes,
+      diningStyle,
+      priceRange,
+      otherNotes,
+      operatingHours,
+      userReview,
+      isFlagged 
+    } = req.body;
+
+    await pool.query(
+      `UPDATE reviews SET 
+        imageUrl = ?, streetName = ?, streetNumber = ?, city = ?, state = ?, zipCode = ?, country = ?, 
+        description = ?, cuisineTypes = ?, diningStyle = ?, priceRange = ?, 
+        otherNotes = ?, operatingHours = ?, userReview = ?, isFlagged = ?
+      WHERE id = ?`,
+      [
+        imageUrl || null,
+        location.streetName, location.streetNumber, location.city, location.state, location.zipCode, location.country,
+        description || null,
+        JSON.stringify(cuisineTypes), diningStyle, priceRange,
+        otherNotes || null, JSON.stringify(operatingHours || []),
+        userReview || null,
+        isFlagged ? 1 : 0,
+        req.params.id
+      ]
+    );
+
+    res.json({ message: "Review updated successfully" });
+  } catch (err) {
+    console.error("Error updating review:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}); This has the try catch that can be used later*/
+
+// Mock data for testing
+app.put("/restaurant/review/:id", (req, res) => {
+  // Find the review by ID
+  const review = reviews.find(r => r.id === parseInt(req.params.id));
+  
+  // If review doesn't exist, return 404
+  if (!review) return res.status(404).json({ error: "Review not found" });
+
+  // Destructure request body
+  const {
+    imageUrl,
+    restaurantName,
+    streetName,
+    streetNumber,
+    city,
+    state,
+    zipCode,
+    country,
+    description,
+    cuisineTypes,
+    diningStyle,
+    priceRange,
+    otherNotes,
+    operatingHours,
+    userReview,
+    isFlagged 
+  } = req.body;
+
+  // Update the review object with the new values
+  review.imageUrl = imageUrl || review.imageUrl;
+  review.restaurantName = restaurantName || review.restaurantName;
+  review.streetName = streetName || review.streetName;
+  review.streetNumber = streetNumber || review.streetNumber;
+  review.city = city || review.city;
+  review.state = state || review.state;
+  review.zipCode = zipCode || review.zipCode;
+  review.country = country || review.country;
+  review.description = description || review.description;
+  review.cuisineTypes = cuisineTypes || review.cuisineTypes;
+  review.diningStyle = diningStyle || review.diningStyle;
+  review.priceRange = priceRange || review.priceRange;
+  review.otherNotes = otherNotes || review.otherNotes;
+  review.operatingHours = operatingHours || review.operatingHours;
+  review.userReview = userReview || review.userReview;
+  
+  // Update isFlagged only if it's passed and is a boolean
+  if (typeof isFlagged === "boolean") {
+    review.isFlagged = isFlagged;
+  }
+
+  // Return the updated review as response
+  res.json({ message: "Review updated successfully", data: review });
+});
+
+// Remove any review (Admin only)
+/*app.delete("/restaurant/review/:id", async (req, res) => {
+  try {
+    const [reviewRows] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
+    if (reviewRows.length === 0) return res.status(404).json({ error: "Review not found" });
+
+    await pool.query("DELETE FROM reviews WHERE id = ?", [req.params.id]);
+    res.json({ message: "Review deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting review:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}); This has the try catch that can be used later*/
+
+// Mock data for testing
+app.delete("/restaurant/review/:id", (req, res) => {
+  const index = reviews.findIndex(r => r.id === parseInt(req.params.id));
+  if (index === -1) return res.status(404).json({ error: "Review not found" });
+
+  reviews.splice(index, 1);
+  res.json({ message: "Review deleted successfully" });
+});
+
+// Flag a review for investigation (Admin and certain ranks only)
+/*app.patch("/restaurant/review/:id/flag", async (req, res) => {
+  try {
+    const [reviewRows] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
+    if (reviewRows.length === 0) return res.status(404).json({ error: "Review not found" });
+
+    await pool.query("UPDATE reviews SET isFlagged = 1 WHERE id = ?", [req.params.id]);
+    res.json({ message: "Review has been flagged for investigation" });
+  } catch (err) {
+    console.error("Error flagging review:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}); This has the try catch that can be used later*/
+
+// Mock data for testing
+app.patch("/restaurant/review/:id/flag", (req, res) => {
+  const review = reviews.find(r => r.id === parseInt(req.params.id));
+  if (!review) return res.status(404).json({ error: "Review not found" });
+
+  review.isFlagged = true;
+  res.json({ message: "Review has been flagged for investigation" });
+});
+
+//To Unflag a review (Admin only)
+/*app.put("/restaurant/review/:id/unflag", async (req, res) => {
+  try {
+    const [reviewRows] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
+    if (reviewRows.length === 0) return res.status(404).json({ error: "Review not found" });
+
+    await pool.query("UPDATE reviews SET isFlagged = 0 WHERE id = ?", [req.params.id]);
+    res.json({ message: "Review has been unflagged successfully" });
+  } catch (err) {
+    console.error("Error unflagging review:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}); Has try catch but could be used later*/
+app.patch("/restaurant/review/:id/unflag", (req, res) => {
+  const review = reviews.find(r => r.id === parseInt(req.params.id));
+  if (!review) return res.status(404).json({ error: "Review not found" });
+
+  review.isFlagged = false;
+  res.json({ message: "Review passed investigation" });
+});
+//#endregion
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
