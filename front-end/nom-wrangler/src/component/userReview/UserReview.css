@@ -1,0 +1,167 @@
+body {
+    background-color: #2f1a0f; /* deep brown background */
+    color: white;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.reviewContainerForm {
+    background-color: #004d4d; /* teal card background */
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 10px;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.reviewTitle {
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 1rem;
+    color: white;
+}
+
+.restaurantName,
+.yourRating,
+.description,
+.cuisineType,
+.hours,
+.priceRange,
+.review,
+.anythingElse,
+.restaurantImages {
+    margin-bottom: 20px;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    background-color: #fff;
+    color: #000;
+}
+
+textarea {
+    resize: vertical;
+}
+
+h3 {
+    margin-bottom: 8px;
+}
+
+.reviewContainerForm p {
+    font-size: 0.9rem;
+    margin-top: 5px;
+    color: #ddd;
+}
+
+label {
+    margin-right: 10px;
+}
+
+.restaurantImages img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.restaurantImages input[type="file"] {
+    margin-top: 10px;
+}
+
+.reviewContainerForm input[type="checkbox"] {
+    margin-right: 5px;
+    transform: scale(1.2);
+}
+
+.reviewContainerForm .cuisineType {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.reviewContainerForm .cuisineType input[type="checkbox"]+p {
+    margin: 0;
+    display: inline-block;
+    font-size: 0.9rem;
+    color: white;
+}
+
+.reviewContainerForm .cuisineType>* {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.reviewContainerForm .yourRating img {
+    width: 30px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.reviewContainerForm .points-display {
+    text-align: right;
+    font-weight: bold;
+}
+
+.reviewContainerForm input[type="submit"],
+.reviewContainerForm button {
+    background-color: #e65328;
+    color: white;
+    padding: 12px 30px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+}
+
+.reviewContainerForm input[type="submit"]:hover,
+.reviewContainerForm button:hover {
+    background-color: #cc4520;
+}
+
+.image-preview {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.image-preview img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 2px solid white;
+}
+
+.submit-review-button {
+    background-color: #e65328; /* Bright orange */
+    color: white;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.submit-review-button:hover {
+    background-color: #cc4520;
+}
