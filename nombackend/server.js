@@ -1,17 +1,19 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const axios = require("axios"); // For Google Places API
-const mysql = require("mysql2/promise");
+const mysql = require("mysql2/promise"); //need to replace with mssql
 const sendEmail = require("./smtp"); // Your custom SMTP module
+require("dotenv").config(); 
 // const User = require("./models/user"); // Not used if using direct SQL queries
 
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
 
+//#region - Should be moveed to a env file
 // Create a MySQL connection pool
 const pool = mysql.createPool({
   host: "localhost",                // update to your host
@@ -22,6 +24,7 @@ const pool = mysql.createPool({
 
 // JWT secret key (In production, store this in environment variables)
 const JWT_SECRET = "YOUR_SECRET_KEY";
+//#endregion
 
 // Middleware to authenticate JWT token from cookies
 const authenticateToken = (req, res, next) => {
@@ -477,14 +480,9 @@ app.patch("/restaurant/review/:id/unflag", (req, res) => {
 });
 //#endregion
 
-/* Under construction - Google Places API integration
-   - This code is commented out to avoid using an expired API key. 
-    - Uncomment and replace the API key with a valid one when ready to use.
 app.get('/api/restaurants', async (req, res) => {
   const { zip, radius } = req.query;
-
-  //KEY IS EXPIRED DO NOT USE
-  //const apiKey = process.env.GOOGLE_API_KEY || 'AIzaSyDYNBpj2XKkjwEkTmfyVf1mW-MAIfrFWVI'; 
+  const apiKey = process.env.GOOGLE_API_KEY; 
 
   console.log(`Received request to find restaurants near zip: ${zip}, radius: ${radius}`);
 
@@ -548,7 +546,7 @@ app.get('/api/restaurants', async (req, res) => {
       res.status(500).send('Error fetching restaurants');
   }
 });
-*/
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
