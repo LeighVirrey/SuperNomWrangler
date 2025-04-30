@@ -3,6 +3,7 @@
 - orange (color used in the nav) - #CF401D
 - light teal (secondary color for restaurants/reviews/seldom buttons) - #0E9594
 - dark teal (main color for buttons/general backgrounds) - #127475
+- white (for text) - #FAF8EC
 */
 
 body {
@@ -12,6 +13,7 @@ body {
   background-color: #291414;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   text-align: center;
+  color: #FAF8EC;
 }
 
 code {
