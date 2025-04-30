@@ -65,8 +65,10 @@ body {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  width: 100%;         
+  box-sizing: border-box;
 }
-
+ 
 .form-button button {
   background-color: #b7410e;
   color: white;
