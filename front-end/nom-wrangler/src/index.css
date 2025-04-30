@@ -1,11 +1,17 @@
+/* COLOR PALETTE
+- background color - #291414
+- orange (color used in the nav) - #CF401D
+- light teal (secondary color for restaurants/reviews/seldom buttons) - #0E9594
+- dark teal (main color for buttons/general backgrounds) - #127475
+*/
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #291414;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  text-align: center;
 }
 
 code {
@@ -13,4 +19,30 @@ code {
     monospace;
 }
 
+.OrangeButton{
+ background-color: #CF401D;
+ font-weight: bolder;
+ font-size: 20px;
+ color: #FAF8EC;
+ border-radius: 15px;
+ margin-top: 25px;
+ height: 65px;
+ width: 550px;
+}
+
+.BlueButton{
+  background-color: #127475;
+  font-weight: bolder;
+ font-size: 35px;
+ color: #FAF8EC;
+ border-radius: 15px;
+ margin-top: 25px;
+ height: 65px;
+ width: 550px;
+}
+
+.mainheader{
+  color: #FAF8EC;
+    font-size: 60px;
+}
 
