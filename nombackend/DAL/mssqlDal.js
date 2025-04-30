@@ -71,3 +71,4 @@ const createLocalDB = async () => {
                 .query('DELETE FROM Users WHERE id = @id');
             return result.rowsAffected[0];
         }
+    }
