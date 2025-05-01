@@ -3,14 +3,17 @@ const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const mysql = require("mysql2/promise");
+const axios = require("axios"); // For Google Places API
+const mysql = require("mysql2/promise"); //need to replace with mssql
 const sendEmail = require("./smtp"); // Your custom SMTP module
+require("dotenv").config(); 
 // const User = require("./models/user"); // Not used if using direct SQL queries
 
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
 
+//#region - Should be moveed to a env file
 // Create a MySQL connection pool
 const pool = mysql.createPool({
   host: "localhost",                // update to your host
@@ -21,6 +24,7 @@ const pool = mysql.createPool({
 
 // JWT secret key (In production, store this in environment variables)
 const JWT_SECRET = "YOUR_SECRET_KEY";
+//#endregion
 
 // Middleware to authenticate JWT token from cookies
 const authenticateToken = (req, res, next) => {
@@ -34,6 +38,9 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+app.get("/", (req, res) => {
+  res.send("nom nom nom");
+});
 // Registration endpoint
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
@@ -154,6 +161,7 @@ app.post("/logout", (req, res) => {
 
 //#region - Restaurant Reviews 
 // Mock information for testing
+
 let reviewIdCounter = 1;
 
 const reviews = [
@@ -177,6 +185,10 @@ const reviews = [
     isFlagged: false
   }
 ];
+
+let reviewIdCounter = 0;
+let reviews = [];
+
 
 // Allows users to add reviews
 /*
@@ -286,6 +298,18 @@ app.post("/restaurant/review", (req, res) => {
     operatingHours,
     userReview
   } = req.body;
+
+// Check if the restaurant name already exists in the reviews array
+const existingRestaurant = reviews.find(
+  (review) => review.restaurantName.toLowerCase() === restaurantName.toLowerCase()
+);
+
+// If the restaurant is new and no imageUrl is provided, return an error
+if (!existingRestaurant && !imageUrl) {
+  return res.status(400).json({
+    error: "First review for a restaurant must include an image URL."
+  });
+}
 
   const newReview = {
     id: reviewIdCounter++,
@@ -512,6 +536,74 @@ app.patch("/restaurant/review/:id/unflag", (req, res) => {
   res.json({ message: "Review passed investigation" });
 });
 //#endregion
+
+
+app.get('/api/restaurants', async (req, res) => {
+  const { zip, radius } = req.query;
+  const apiKey = process.env.GOOGLE_API_KEY; 
+
+  console.log(`Received request to find restaurants near zip: ${zip}, radius: ${radius}`);
+
+  try {
+      // Convert zip code to lat/lng
+      const geoResponse = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${apiKey}`);
+      console.log('Geocoding response:', geoResponse.data);
+
+      if (geoResponse.data.results.length === 0) {
+          return res.status(404).send('Invalid zip code');
+      }
+
+      const location = geoResponse.data.results[0].geometry.location;
+      const { lat, lng } = location;
+
+      console.log(`Geocoded location: lat=${lat}, lng=${lng}`);
+
+      let restaurants = [];
+      let nextPageToken = '';
+      let keepFetching = true;
+
+      // Fetch all restaurant locations within the specified radius
+      while (keepFetching) {
+          const restaurantResponse = await axios.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius * 1609.34}&type=restaurant&key=${apiKey}&pagetoken=${nextPageToken}`);
+          console.log('Restaurants response:', restaurantResponse.data);
+
+          restaurants = restaurants.concat(restaurantResponse.data.results);
+
+          nextPageToken = restaurantResponse.data.next_page_token;
+
+          if (!nextPageToken) {
+              keepFetching = false;
+          } else {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+      }
+
+      // Fetch details for each restaurant to get hours of operation
+      const detailedRestaurants = await Promise.all(restaurants.map(async (restaurant) => {
+          const detailsResponse = await axios.get(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${restaurant.place_id}&fields=name,formatted_address,opening_hours&key=${apiKey}`);
+          const details = detailsResponse.data.result;
+
+          if (details.opening_hours && details.opening_hours.weekday_text) {
+              return {
+                  name: details.name,
+                  address: details.formatted_address,
+                  hours: details.opening_hours.weekday_text,
+              };
+          }
+
+          return null; // Filter out restaurants with no operational hours
+      }));
+
+      console.log(`Total restaurants inside ${radius} miles for your zip code: ${restaurants.length}`);
+
+      const operationalRestaurants = detailedRestaurants.filter(restaurant => restaurant !== null);
+
+      res.json(operationalRestaurants);
+  } catch (error) {
+      console.error('Error fetching restaurants:', error);
+      res.status(500).send('Error fetching restaurants');
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
