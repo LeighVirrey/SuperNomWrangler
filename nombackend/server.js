@@ -38,6 +38,9 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+app.get("/", (req, res) => {
+  res.send("nom nom nom");
+});
 // Registration endpoint
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
