@@ -125,6 +125,34 @@ app.get("/dashboard", authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/restaurants', async (req, res) => {
+  const { lat, lng, radius = 25 } = req.query;
+
+  if (!lat || !lng) {
+    return res.status(400).json({ error: "Missing latitude or longitude" });
+  }
+
+  const userLocation = {
+    type: "Point",
+    coordinates: [parseFloat(lng), parseFloat(lat)],
+  };
+
+  try {
+    const restaurants = await Restaurant.find({
+      location: {
+        $near: {
+          $geometry: userLocation,
+          $maxDistance: radius * 1609.34, // miles to meters
+        },
+      },
+    });
+
+    res.json(restaurants);
+  } catch (err) {
+    res.status(500).json({ error: "Server error fetching restaurants" });
+  }
+});
+
 // Logout endpoint - clear the auth cookie
 app.post("/logout", (req, res) => {
   res.clearCookie("token");
@@ -133,8 +161,34 @@ app.post("/logout", (req, res) => {
 
 //#region - Restaurant Reviews 
 // Mock information for testing
+
+let reviewIdCounter = 1;
+
+const reviews = [
+  {
+    id: reviewIdCounter++,
+    restaurantName: "Pho Real",
+    imageUrl: "https://lh3.googleusercontent.com/gps-cs-s/AB5caB_FEWKdmdQVET9381JO8q23Cy2FwZw_Mu6HKdzEXdYwecoyMx-N0O9_EERPG0mIYQqT43eCRCX0rq6Re5s84gbovjlt4fGWyHGWNRkbNtCIFUP-edyelizr2A3_H_VBv9aqRLfc=s1360-w1360-h1020",
+    streetName: "Main St",
+    streetNumber: "123",
+    city: "Austin",
+    state: "TX",
+    zipCode: "78701",
+    country: "USA",
+    description: "Great atmosphere and authentic Vietnamese flavors!",
+    cuisineTypes: ["Vietnamese", "Asian"],
+    diningStyle: "Sit down",
+    priceRange: "$$",
+    otherNotes: "Wheelchair accessible",
+    operatingHours: [{ day: "Monday", open: "10:00", close: "21:00" }],
+    userReview: "The pho broth is next level. 10/10!",
+    isFlagged: false
+  }
+];
+
 let reviewIdCounter = 0;
 let reviews = [];
+
 
 // Allows users to add reviews
 /*
@@ -245,17 +299,17 @@ app.post("/restaurant/review", (req, res) => {
     userReview
   } = req.body;
 
-  // Check if the restaurant name already exists in the reviews array
-  const existingRestaurant = reviews.find(
-    (review) => review.restaurantName.toLowerCase() === restaurantName.toLowerCase()
-  );
+// Check if the restaurant name already exists in the reviews array
+const existingRestaurant = reviews.find(
+  (review) => review.restaurantName.toLowerCase() === restaurantName.toLowerCase()
+);
 
-  // If the restaurant is new and no imageUrl is provided, return an error
-  if (!existingRestaurant && !imageUrl) {
-    return res.status(400).json({
-      error: "First review for a restaurant must include an image URL."
-    });
-  }
+// If the restaurant is new and no imageUrl is provided, return an error
+if (!existingRestaurant && !imageUrl) {
+  return res.status(400).json({
+    error: "First review for a restaurant must include an image URL."
+  });
+}
 
   const newReview = {
     id: reviewIdCounter++,
@@ -482,6 +536,7 @@ app.patch("/restaurant/review/:id/unflag", (req, res) => {
   res.json({ message: "Review passed investigation" });
 });
 //#endregion
+
 
 app.get('/api/restaurants', async (req, res) => {
   const { zip, radius } = req.query;
