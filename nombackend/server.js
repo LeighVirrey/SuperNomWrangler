@@ -186,8 +186,8 @@ const reviews = [
   }
 ];
 
-let reviewIdCounter = 0;
-let reviews = [];
+// let reviewIdCounter = 0;
+// let reviews = [];
 
 
 // Allows users to add reviews
