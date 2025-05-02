@@ -165,3 +165,53 @@ label {
 .submit-review-button:hover {
     background-color: #cc4520;
 }
+
+.hotdog-rating {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.hotdog-img {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+.hotdog-img.inactive {
+    filter: grayscale(100%) brightness(70%);
+}
+
+.hotdog-img.active {
+    filter: none;
+}
+
+.reviewContainerForm .cuisineType {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.reviewContainerForm .cuisineHeading {
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+}
+
+.reviewContainerForm .cuisineLabel {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.error-message {
+    color: red;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.success-message {
+    color: green;
+    font-size: 1rem;
+    text-align: center;
+}
