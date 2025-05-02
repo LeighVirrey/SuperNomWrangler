@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
 
 const LoginPage = () => {
@@ -7,6 +7,8 @@ const LoginPage = () => {
     username: '',
     password: '',
   });
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,15 +17,26 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Logging in with:', loginData);
-    // Add login logic here (e.g., call to API)
+
+    
+    const isValidLogin =
+      loginData.username === 'admin' && loginData.password === 'password123';
+
+    if (isValidLogin) {
+      console.log('Login successful');
+      setError('');
+      navigate('/login'); 
+    } else {
+      console.log('Invalid credentials');
+      setError('Invalid username or password.');
+      
+    }
   };
 
   return (
     <div className="container">
-      
       <div className="login-box">
-      <h1 className="title">Login</h1>
+        <h1 className="title">Login</h1>
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username</label>
           <input
@@ -48,6 +61,8 @@ const LoginPage = () => {
             required
             autoComplete="current-password"
           />
+
+          {error && <p className="error-message">{error}</p>}
 
           <button type="submit" className="login-button">
             Login
