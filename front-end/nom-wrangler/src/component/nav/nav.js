@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export const nav = () => {
+export const Nav = () => {
   return (
     <nav>
           <div className='nav'>
