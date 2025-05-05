@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const nav = () => {
+export const Nav = () => {
   return (
     <nav>
       <div>
