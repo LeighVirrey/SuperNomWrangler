@@ -6,14 +6,54 @@
 - white (for text) - #FAF8EC
 */
 
+:root {
+  /* Colors */
+  --color-background: #291414;
+  --color-primary: #F2542D;
+  --color-secondary: #0E9594;
+  --color-accent: #127475;
+  --color-text: #FAF8EC;
+  --color-gold: #F5BF03;
+  --color-silver: #C0C0C0;
+  --color-bronze: #CD7F32;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 3rem;
+  --spacing-xl: 5rem;
+  
+  /* Border Radius */
+  --border-radius-sm: 8px;
+  --border-radius-md: 15px;
+  --border-radius-lg: 25px;
+  
+  /* Box Shadow */
+  --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --box-shadow-lg: -15px 14px 8px rgba(0, 0, 0, 0.548);
+  
+  /* Font Sizes */
+  --font-size-sm: 1rem;
+  --font-size-md: 1.5rem;
+  --font-size-lg: 2rem;
+  --font-size-xl: 3rem;
+
+  /* Widths */
+  --width-sm: 15rem;
+  --width-md: 30rem;
+  --width-lg: 42rem;
+  --width-xl: 1000px;
+}
+
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #291414;
+  background-color: var(--color-background);
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
   text-align: center;
-  color: #FAF8EC;
+  color: var(--color-text);
 }
 
 code {
@@ -21,30 +61,148 @@ code {
     monospace;
 }
 
-.OrangeButton{
- background-color: #CF401D;
- font-weight: bolder;
- font-size: 20px;
- color: #FAF8EC;
- border-radius: 15px;
- margin-top: 25px;
- height: 65px;
- width: 550px;
+/* Common Layout Classes */
+.flex {
+  display: flex;
 }
 
-.BlueButton{
-  background-color: #127475;
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+/* Common Image Classes */
+.img-cover {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.img-rounded {
+  border-radius: var(--border-radius-md);
+}
+
+/* Common Text Classes */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Common Spacing Classes */
+.mb-md {
+  margin-bottom: var(--spacing-md);
+}
+
+.ml-lg {
+  margin-left: var(--spacing-lg);
+}
+
+.px-xl {
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-xl);
+}
+
+.pb-md {
+  padding-bottom: var(--spacing-md);
+}
+
+/* Common Button Classes */
+.btn {
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: x-large;
+  padding: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
+}
+
+/* Common Card Classes */
+.card {
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+}
+
+.card-primary {
+  background-color: var(--color-primary);
+}
+
+.card-secondary {
+  background-color: var(--color-secondary);
+}
+
+/* Common Width Classes */
+.w-sm {
+  width: var(--width-sm);
+}
+
+.w-md {
+  width: var(--width-md);
+}
+
+.w-lg {
+  width: var(--width-lg);
+}
+
+.w-xl {
+  width: var(--width-xl);
+}
+
+/* Existing Classes */
+.box-shadow {
+  box-shadow: -15px 14px 8px rgba(0, 0, 0, 0.548);
+}
+
+.OrangeButton {
+  background-color: var(--color-primary);
   font-weight: bolder;
- font-size: 35px;
- color: #FAF8EC;
- border-radius: 15px;
- margin-top: 25px;
- height: 65px;
- width: 550px;
+  font-size: 20px;
+  color: var(--color-text);
+  border-radius: var(--border-radius-md);
+  margin-top: 25px;
+  height: 65px;
+  width: 550px;
 }
 
-.mainheader{
-  color: #FAF8EC;
-    font-size: 60px;
+.BlueButton {
+  background-color: var(--color-accent);
+  font-weight: bolder;
+  font-size: 35px;
+  color: var(--color-text);
+  border-radius: var(--border-radius-md);
+  margin-top: 25px;
+  height: 65px;
+  width: 550px;
+}
+
+.mainheader {
+  color: var(--color-text);
+  font-size: 60px;
 }
 
