@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const express = require("express");
+const session = require("express-session");
 const app = express();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
@@ -19,6 +20,13 @@ app.use(cors({
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
+app.use(session({
+   secret: "killer roomba", 
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS 
+  }));
+
 
 //#region - Should be moveed to a env file
 // Create a MySQL connection pool
@@ -80,9 +88,9 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  const MAX_LOGIN_ATTEMPTS = 3;
 
   // Basic validation
   if (!email || !password) {
@@ -90,10 +98,24 @@ app.post("/login", async (req, res) => {
   }
 
   try {
+    // Check if there's a login attempts counter in session
+    if (req.session.loginAttempts === undefined) {
+      req.session.loginAttempts = 0;
+    }
+
+    // If user has exceeded max attempts, redirect to home
+    if (req.session.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+      return res.redirect("/");
+    }
+
     // Retrieve the user from the database
     const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
     if (rows.length === 0) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      req.session.loginAttempts += 1;
+      return res.status(401).json({ 
+        error: "Invalid credentials",
+        attemptsLeft: MAX_LOGIN_ATTEMPTS - req.session.loginAttempts
+      });
     }
     
     const user = rows[0];
@@ -101,8 +123,21 @@ app.post("/login", async (req, res) => {
     // Compare provided password with the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      req.session.loginAttempts += 1;
+      
+      // If this was the 3rd attempt, redirect to home
+      if (req.session.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        return res.redirect("/");
+      }
+      
+      return res.status(401).json({ 
+        error: "Invalid credentials",
+        attemptsLeft: MAX_LOGIN_ATTEMPTS - req.session.loginAttempts
+      });
     }
+
+    // Reset login attempts on successful login
+    req.session.loginAttempts = 0;
 
     // Generate a JWT token for the user (expires in 1 hour)
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
@@ -110,9 +145,68 @@ app.post("/login", async (req, res) => {
     // Set the token in an HTTP-only cookie
     res.cookie("token", token, { httpOnly: true });
 
-    res.json({ message: "Logged in successfully" });
+    // Redirect to profile page on successful login
+    return res.redirect("/profile");
   } catch (error) {
     console.error("Error during login:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//old login
+// // Login endpoint
+// app.post("/login", async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Basic validation
+//   if (!email || !password) {
+//     return res.status(400).json({ error: "Email and password are required" });
+//   }
+
+//   try {
+//     // Retrieve the user from the database
+//     const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+//     if (rows.length === 0) {
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+    
+//     const user = rows[0];
+
+//     // Compare provided password with the stored hashed password
+//     const isPasswordValid = await bcrypt.compare(password, user.password);
+//     if (!isPasswordValid) {
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     // Generate a JWT token for the user (expires in 1 hour)
+//     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+
+//     // Set the token in an HTTP-only cookie
+//     res.cookie("token", token, { httpOnly: true });
+
+//     res.json({ message: "Logged in successfully" });
+//   } catch (error) {
+//     console.error("Error during login:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
+
+
+// Protected route
+
+
+app.get("/dashboard", authenticateToken, async (req, res) => {
+  try {
+    // Optionally, fetch more details from the database using req.user.id
+    const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [req.user.id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json({ message: `Welcome to your dashboard, ${rows[0].email}` });
+  } catch (error) {
+    console.error("Error accessing dashboard:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
