@@ -1,3 +1,5 @@
+@import '../../index.css';
+
 .home {
     justify-items: center;
 }
@@ -6,8 +8,8 @@
     display: flex;
     flex-direction: column;
     width: 1000px;
-    background-color: #F2542D;
-    border-radius: 15px;
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius-md);
 
 
 }
@@ -16,8 +18,8 @@
     display: flex;
     flex-direction: column;
     width: 1000px;
-    background-color: #0E9594;
-    border-radius: 15px;
+    background-color: var(--color-secondary);
+    border-radius: var(--border-radius-md);
 
 }
 
@@ -40,4 +42,103 @@
     padding-left: 20px;
     text-align: left;
     /* box-shadow: 0px 0px 20px #291414; */
+}
+
+.reviewers{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.topReviewer{
+    background-color: var(--color-gold);
+    margin-bottom: 25px;
+    border-radius: var(--border-radius-md);
+
+}
+
+.secReviewer{
+    background-color: var(--color-silver);
+    margin-bottom: 25px;
+    border-radius: var(--border-radius-md);
+}
+
+.thirdReviewer{
+    background-color: var(--color-bronze);
+    margin-bottom: 25px;
+    border-radius: var(--border-radius-md);
+}
+
+.reviewerImg{
+    border-top-right-radius: var(--border-radius-md);
+    border-top-left-radius: var(--border-radius-md);
+    height: 25rem;
+    width: auto;
+}
+
+.bottomReviewers{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 40rem;
+}
+
+.about{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.steak{
+    width: 42rem;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+    background-size: cover;
+}
+
+.map{
+    width: 42rem;
+    height: 20rem;
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+}
+
+.aboutHeader{
+    margin-bottom: 3rem;
+    font-weight: bold;
+    font-size: 60px;
+}
+.aboutText{
+    color: black;
+    border-radius: var(--border-radius-md);
+    margin-left: 3rem;
+    background-color: var(--color-primary);
+    width: 30rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    padding-bottom: 2rem;
+}
+
+.aboutButton{
+    background-color: var(--color-background);
+    border: none;
+    border-radius: var(--border-radius-md);
+    color: var(--color-text);
+    font-size: x-large;
+    padding: 1rem;
+    width: 15rem;
+}
+
+.mapText{
+    color: black;
+    border-radius: var(--border-radius-md);
+    margin-left: 3rem;
+    background-color: #AE3233;
+    width: 30rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    padding-bottom: 2rem;
 }
