@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const express = require("express");
+const session = require("express-session");
 const app = express();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
@@ -71,8 +72,21 @@ app.post("/login", async (req, res) => {
     const user = await usersClass.getUserById(checkUser);
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      req.session.loginAttempts += 1;
+      
+      // If this was the 3rd attempt, redirect to home
+      if (req.session.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+        return res.redirect("/");
+      }
+      
+      return res.status(401).json({ 
+        error: "Invalid credentials",
+        attemptsLeft: MAX_LOGIN_ATTEMPTS - req.session.loginAttempts
+      });
     }
+
+    // Reset login attempts on successful login
+    req.session.loginAttempts = 0;
 
     res.status(200).json({ message: "Logged in successfully" });
   } catch (error) {
