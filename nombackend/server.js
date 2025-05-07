@@ -113,32 +113,45 @@ app.get("/dashboard", authenticateToken, async (req, res) => {
 
 <<<<<<< Updated upstream
 app.get('/api/restaurants', async (req, res) => {
-  const { lat, lng, radius = 25 } = req.query;
+  const { search } = req.query;
 
-  if (!lat || !lng) {
-    return res.status(400).json({ error: "Missing latitude or longitude" });
+  const dummyRestaurants = [
+    {
+      id: 1,
+      name: "Mock Bistro",
+      address: "28 S State St #10, Salt Lake City, UT",
+      description: "Casual dining with mocktails and chill vibes.",
+      color: "cyan",
+    },
+    {
+      id: 2,
+      name: "Nom Express",
+      address: "42 W Fast Ln, Salt Lake City, UT",
+      description: "Quick eats for hungry techies.",
+      color: "orange",
+    },
+    {
+      id: 3,
+      name: "Ogden Grill",
+      address: "123 Center St, Ogden, UT",
+      description: "BBQ and more.",
+      color: "cyan",
+    },
+  ];
+
+  if (search) {
+    const lowerSearch = search.toLowerCase();
+    const filtered = dummyRestaurants.filter(r =>
+      r.name.toLowerCase().includes(lowerSearch) ||
+      r.address.toLowerCase().includes(lowerSearch)
+    );
+    return res.json(filtered);
   }
 
-  const userLocation = {
-    type: "Point",
-    coordinates: [parseFloat(lng), parseFloat(lat)],
-  };
-
-  try {
-    const restaurants = await Restaurant.find({
-      location: {
-        $near: {
-          $geometry: userLocation,
-          $maxDistance: radius * 1609.34, // miles to meters
-        },
-      },
-    });
-
-    res.json(restaurants);
-  } catch (err) {
-    res.status(500).json({ error: "Server error fetching restaurants" });
-  }
+  res.json(dummyRestaurants);
 });
+
+
 
 // Logout endpoint - clear the auth cookie
 =======
@@ -597,6 +610,7 @@ app.get('/api/restaurants', async (req, res) => {
 });
 
 // Start the server
+const PORT = process.env.PORT || 3001;
 const PORT = process.env.PORT || 6000;
 =======
 // --- Start Server on port 3000 ---
