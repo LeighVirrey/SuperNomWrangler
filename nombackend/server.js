@@ -92,23 +92,21 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const MAX_LOGIN_ATTEMPTS = 3;
 
-  // Basic validation
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
   try {
-    // Check if there's a login attempts counter in session
     if (req.session.loginAttempts === undefined) {
       req.session.loginAttempts = 0;
     }
 
-    // If user has exceeded max attempts, redirect to home
     if (req.session.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-      return res.redirect("/");
+      return res.status(403).json({ error: "Too many login attempts. Try again later." });
     }
 
-    // Retrieve the user from the database
+    // Commented out MySQL 
+    /*
     const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
     if (rows.length === 0) {
       req.session.loginAttempts += 1;
@@ -117,41 +115,41 @@ app.post("/login", async (req, res) => {
         attemptsLeft: MAX_LOGIN_ATTEMPTS - req.session.loginAttempts
       });
     }
-    
-    const user = rows[0];
 
-    // Compare provided password with the stored hashed password
+    const user = rows[0];
+    */
+
+    const user = { id: 1, email: "test@example.com", password: await bcrypt.hash("password123", 10) };
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       req.session.loginAttempts += 1;
-      
-      // If this was the 3rd attempt, redirect to home
+
       if (req.session.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-        return res.redirect("/");
+        return res.status(403).json({ error: "Too many login attempts. Try again later." });
       }
-      
+
       return res.status(401).json({ 
         error: "Invalid credentials",
         attemptsLeft: MAX_LOGIN_ATTEMPTS - req.session.loginAttempts
       });
     }
 
-    // Reset login attempts on successful login
     req.session.loginAttempts = 0;
 
-    // Generate a JWT token for the user (expires in 1 hour)
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
 
-    // Set the token in an HTTP-only cookie
     res.cookie("token", token, { httpOnly: true });
 
-    // Redirect to profile page on successful login
-    return res.redirect("/profile");
+    
+    return res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+
 
 //old login
 // // Login endpoint

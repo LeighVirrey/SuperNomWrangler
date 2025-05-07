@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+// import {useAuth} from './authContext';
 import './login.css';
 
 const LoginPage = () => {
@@ -9,6 +10,7 @@ const LoginPage = () => {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  // const { login } = useAuth(); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,7 +19,18 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    // const success = login(loginData.username, loginData.password);
+    // if (success) {
+    //   console.log('Login successful');
+    //   setError('');
+    //   navigate('/'); 
+    // }
+    // else {
+    //   console.log('Invalid credentials');
+    //   setError('Invalid username or password.');
+    // };
+  
+    
     
     const isValidLogin =
       loginData.username === 'admin' && loginData.password === 'password123';
@@ -76,5 +89,6 @@ const LoginPage = () => {
     </div>
   );
 };
+
 
 export default LoginPage;
