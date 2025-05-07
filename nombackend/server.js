@@ -1,33 +1,19 @@
-<<<<<<< Updated upstream
 const bcrypt = require("bcrypt");
-=======
-// server.js
-const bcrypt = require("bcryptjs");
->>>>>>> Stashed changes
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-<<<<<<< Updated upstream
 const axios = require("axios"); // For Google Places API
 const mysql = require("mysql2/promise"); //need to replace with mssql
 const sendEmail = require("./smtp"); // Your custom SMTP module
 require("dotenv").config(); 
 // const User = require("./models/user"); // Not used if using direct SQL queries
-=======
-const mysql = require("mysql2/promise");
-const sendEmail = require("./smtp"); // Your SMTP module
->>>>>>> Stashed changes
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-<<<<<<< Updated upstream
 //#region - Should be moveed to a env file
 // Create a MySQL connection pool
-=======
-// --- MySQL Pool ---
->>>>>>> Stashed changes
 const pool = mysql.createPool({
   host: "localhost",
   user: "your_mysql_username",
@@ -50,14 +36,10 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-<<<<<<< Updated upstream
 app.get("/", (req, res) => {
   res.send("nom nom nom");
 });
 // Registration endpoint
-=======
-// --- Registration ---
->>>>>>> Stashed changes
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: "Email and password are required" });
@@ -111,7 +93,6 @@ app.get("/dashboard", authenticateToken, async (req, res) => {
   }
 });
 
-<<<<<<< Updated upstream
 app.get('/api/restaurants', async (req, res) => {
   const { search } = req.query;
 
@@ -154,15 +135,11 @@ app.get('/api/restaurants', async (req, res) => {
 
 
 // Logout endpoint - clear the auth cookie
-=======
-// --- Logout ---
->>>>>>> Stashed changes
 app.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out successfully" });
 });
 
-<<<<<<< Updated upstream
 //#region - Restaurant Reviews 
 // Mock information for testing
 
@@ -611,11 +588,6 @@ app.get('/api/restaurants', async (req, res) => {
 
 // Start the server
 const PORT = process.env.PORT || 3001;
-const PORT = process.env.PORT || 6000;
-=======
-// --- Start Server on port 3000 ---
-const PORT = process.env.PORT || 3000;
->>>>>>> Stashed changes
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

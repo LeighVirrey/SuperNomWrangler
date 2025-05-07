@@ -15,6 +15,9 @@ export const Nav = () => {
               <Link to="/map">
                 <button className="navbutton">MAP</button>
               </Link>
+              <Link to="/restaurantList">
+                <button className="navbutton">RESTAURANT LIST</button>
+              </Link>
               <Link to="/profile">
                 <button className="navbutton">PROFILE</button>
               </Link>
@@ -26,4 +29,4 @@ export const Nav = () => {
         </nav>
   )
 }
- export default nav;
+ export default Nav;
