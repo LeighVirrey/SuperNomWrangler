@@ -6,21 +6,12 @@ import reportWebVitals from './reportWebVitals';
 import RestaurantList from '../src/component/restaurantList/restaurantList'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-const BrowserRouter = createBrowserRouter([
-  {
-    path : '/restaurantList',
-    element : <RestaurantList />
-  },
-]);
-
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <App />
-    <RouterProvider router={BrowserRouter} />
-    
   </React.StrictMode>
   
 );

@@ -6,6 +6,7 @@ import Profile from './component/profile/profile'
 import Login from './component/login/login'
 import Nav from './component/nav/nav'
 import About from './component/about/about'
+import RestaurantList from './component/restaurantList/restaurantList';
 
 
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/about" element={<About />} />
           <Route path="/map" element={<Map />} />
+          <Route path="/restaurantList" element={<RestaurantList />} />
         </Routes>
       </div>
     </Router>
