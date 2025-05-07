@@ -69,19 +69,17 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       req.session.loginAttempts += 1;
-      
-      // If this was the 3rd attempt, redirect to home
+
       if (req.session.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-        return res.redirect("/");
+        return res.status(403).json({ error: "Too many login attempts. Try again later." });
       }
-      
+
       return res.status(401).json({ 
         error: "Invalid credentials",
         attemptsLeft: MAX_LOGIN_ATTEMPTS - req.session.loginAttempts
       });
     }
 
-    // Reset login attempts on successful login
     req.session.loginAttempts = 0;
 
     res.status(200).json({ message: "Logged in successfully" });
