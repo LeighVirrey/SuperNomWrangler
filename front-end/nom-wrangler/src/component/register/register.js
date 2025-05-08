@@ -93,7 +93,7 @@ const Register = () => {
     
     if (validateForm()) {
       console.log('Form submitted:', formData);
-      //send the data to your backend
+      //send the data to the backend
       alert('Registration successful!');
     } else {
       console.log('Form has errors', errors);
