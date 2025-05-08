@@ -4,11 +4,11 @@ import App from "../../App";
 import "./restaurantList.css"; // Import the stylesheet
 
 const dummyRestaurants = [
-    { id: 1, name: "Restaurant Name", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "cyan" },
-    { id: 2, name: "Restaurant Name", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "orange" },
-    { id: 3, name: "Restaurant Name", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "cyan" },
-    { id: 4, name: "Restaurant Name", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "orange" },
-    { id: 5, name: "Restaurant Name", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "cyan" },
+    { id: 1, name: "Johns", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "cyan" },
+    { id: 2, name: "Bobs", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "orange" },
+    { id: 3, name: "Robs", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "cyan" },
+    { id: 4, name: "Pho Queue", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "orange" },
+    { id: 5, name: "jobs", address: "28 S State St #10, Salt Lake City, UT 84111", description: "Description Description Description Description Description Description Description Description", color: "cyan" },
 ];
 
 const RestaurantList = () => {
