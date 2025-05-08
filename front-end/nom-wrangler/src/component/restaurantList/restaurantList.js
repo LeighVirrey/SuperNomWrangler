@@ -89,7 +89,6 @@ const RestaurantList = () => {
                     ↑
                 </div>
             )}
-            )}
         </div>
     );
 };
