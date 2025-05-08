@@ -11,14 +11,93 @@ const Register = () => {
     confirmPassword: '',
   });
 
+  const [errors, setErrors] = useState({
+    username: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  // Regex patterns
+  const patterns = {
+    username: /^[a-zA-Z0-9_]{4,20}$/,
+    firstName: /^[a-zA-Z]{2,30}$/, 
+    lastName: /^[a-zA-Z]{2,30}$/, 
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, 
+    password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/ // min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    
+    // Validate on change
+    validateField(name, value);
+  };
+
+  const validateField = (name, value) => {
+    let errorMsg = '';
+    
+    if (name === 'confirmPassword') {
+      if (value !== formData.password) {
+        errorMsg = 'Passwords do not match';
+      }
+    } else if (patterns[name] && !patterns[name].test(value)) {
+      switch(name) {
+        case 'username':
+          errorMsg = 'Username must be 4-20 chars (letters, numbers, underscores)';
+          break;
+        case 'firstName':
+        case 'lastName':
+          errorMsg = 'Must be 2-30 letters only';
+          break;
+        case 'email':
+          errorMsg = 'Please enter a valid email';
+          break;
+        case 'password':
+          errorMsg = 'Password must be at least 8 chars with uppercase, lowercase, number, and special char';
+          break;
+        default:
+          errorMsg = 'Invalid input';
+      }
+    }
+
+    setErrors({ ...errors, [name]: errorMsg });
+    return errorMsg === '';
+  };
+
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = { ...errors };
+
+    // Validate all fields
+    for (const field in formData) {
+      if (field === 'confirmPassword') {
+        if (formData[field] !== formData.password) {
+          newErrors[field] = 'Passwords do not match';
+          valid = false;
+        }
+      } else if (patterns[field] && !patterns[field].test(formData[field])) {
+        valid = false;
+      }
+    }
+
+    setErrors(newErrors);
+    return valid;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    
+    if (validateForm()) {
+      console.log('Form submitted:', formData);
+      //send the data to your backend
+      alert('Registration successful!');
+    } else {
+      console.log('Form has errors', errors);
+    }
   };
 
   return (
@@ -32,11 +111,12 @@ const Register = () => {
               <input
                 type="text"
                 name="username"
-                placeholder="Enter username"
+                placeholder="Enter username (4-20 chars)"
                 value={formData.username}
                 onChange={handleChange}
                 required
               />
+              {errors.username && <span className="error">{errors.username}</span>}
             </div>
 
             <div className="form-group">
@@ -49,6 +129,7 @@ const Register = () => {
                 onChange={handleChange}
                 required
               />
+              {errors.email && <span className="error">{errors.email}</span>}
             </div>
 
             <div className="form-group">
@@ -56,10 +137,11 @@ const Register = () => {
               <input
                 type="text"
                 name="firstName"
-                placeholder="Enter first name"
+                placeholder="Enter first name (letters only)"
                 value={formData.firstName}
                 onChange={handleChange}
               />
+              {errors.firstName && <span className="error">{errors.firstName}</span>}
             </div>
 
             <div className="form-group">
@@ -67,23 +149,24 @@ const Register = () => {
               <input
                 type="text"
                 name="lastName"
-                placeholder="Enter last name"
+                placeholder="Enter last name (letters only)"
                 value={formData.lastName}
                 onChange={handleChange}
               />
+              {errors.lastName && <span className="error">{errors.lastName}</span>}
             </div>
-
 
             <div className="form-group">
               <label>*Password:</label>
               <input
                 type="password"
                 name="password"
-                placeholder="Enter password"
+                placeholder="Enter password (min 8 chars with complexity)"
                 value={formData.password}
                 onChange={handleChange}
                 required
               />
+              {errors.password && <span className="error">{errors.password}</span>}
             </div>
 
             <div className="form-group">
@@ -96,6 +179,7 @@ const Register = () => {
                 onChange={handleChange}
                 required
               />
+              {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
             </div>
             
             <br />
