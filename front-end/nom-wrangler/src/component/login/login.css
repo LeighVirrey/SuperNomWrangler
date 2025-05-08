@@ -91,3 +91,18 @@ body {
 .login-button:hover {
   background-color: #9e360c;
 }
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #333;
+  border-radius: 50%;
+  border-top-color: #b7410e;;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
