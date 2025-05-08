@@ -10,3 +10,5 @@ test("TEST NAME AND DESCRIPTOR", () => {
 If a new file has been made such as smtp.js, simply add a new file in tests with the name of the file and test in its name: smtp.test.js
 
 Once your tests are made, to run them call: "npm test" to run the tests.
+
+**Side note: Professor Krebs LOVES that we're testing now.
