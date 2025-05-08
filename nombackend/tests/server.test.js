@@ -1,14 +1,14 @@
 
 
 test("server is running", () => {
-    return fetch("http://localhost:6000").then((response) => {
+    return fetch("http://localhost:4000").then((response) => {
         expect(response.status).toBe(200);
     });
 })
 
 test("register user POST all params Returns 201", () => {
     
-    return fetch("http://localhost:6000/register", {
+    return fetch("http://localhost:4000/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -24,7 +24,7 @@ test("register user POST all params Returns 201", () => {
 })
 
 test("register user POST missing params Returns 400", () => {
-    return fetch("http://localhost:6000/register", {
+    return fetch("http://localhost:4000/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -35,7 +35,7 @@ test("register user POST missing params Returns 400", () => {
 })
 
 test("register user POST same user params Returns 409", () => {
-    return fetch("http://localhost:6000/register", {
+    return fetch("http://localhost:4000/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -51,7 +51,7 @@ test("register user POST same user params Returns 409", () => {
 })
 
 test("login user POST all params Returns 200", () => {
-    return fetch("http://localhost:6000/login", {
+    return fetch("http://localhost:4000/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -67,7 +67,7 @@ test("login user POST all params Returns 200", () => {
 })
 
 test("login user POST missing params Returns 400", () => {
-    return fetch("http://localhost:6000/login", {
+    return fetch("http://localhost:4000/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -78,7 +78,7 @@ test("login user POST missing params Returns 400", () => {
 })
 
 test("login user POST wrong params Returns 401", () => {
-    return fetch("http://localhost:6000/login", {
+    return fetch("http://localhost:4000/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -94,7 +94,7 @@ test("login user POST wrong params Returns 401", () => {
 })
 
 test("login user POST wrong password Returns 401", () => {
-    return fetch("http://localhost:6000/login", {
+    return fetch("http://localhost:4000/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -110,7 +110,7 @@ test("login user POST wrong password Returns 401", () => {
 })
 
 test("api/restaurants GET Returns 200", () => {
-    return fetch("http://localhost:6000/api/restaurants", {
+    return fetch("http://localhost:4000/api/restaurants", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -125,7 +125,7 @@ test("api/restaurants GET Returns 200", () => {
 })
 
 test("api/restaurants GET missing params Returns 400", () => {
-    return fetch("http://localhost:6000/api/restaurants", {
+    return fetch("http://localhost:4000/api/restaurants", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -136,7 +136,7 @@ test("api/restaurants GET missing params Returns 400", () => {
 })
 
 test("restaurant/review POST Returns 201", () => {
-    return fetch("http://localhost:6000/restaurant/review", {
+    return fetch("http://localhost:4000/restaurant/review", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -165,7 +165,7 @@ test("restaurant/review POST Returns 201", () => {
 })
 
 test("restaurant/review POST missing params Returns 400", () => {
-    return fetch("http://localhost:6000/restaurant/review", {
+    return fetch("http://localhost:4000/restaurant/review", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -176,7 +176,7 @@ test("restaurant/review POST missing params Returns 400", () => {
 })
 
 test("restaurant/review POST same params Returns 400", () => {
-    return fetch("http://localhost:6000/restaurant/review", {
+    return fetch("http://localhost:4000/restaurant/review", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -205,7 +205,7 @@ test("restaurant/review POST same params Returns 400", () => {
 })
 
 test("restaurant/review GET all Returns 200", () => {
-    return fetch("http://localhost:6000/restaurant/review", {
+    return fetch("http://localhost:4000/restaurant/review", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -216,7 +216,7 @@ test("restaurant/review GET all Returns 200", () => {
 })
 
 test("restaurant/review/:id GET by id Returns 200", () => {
-    return fetch("http://localhost:6000/restaurant/review/1", {
+    return fetch("http://localhost:4000/restaurant/review/1", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -227,7 +227,7 @@ test("restaurant/review/:id GET by id Returns 200", () => {
 })
 
 test("restaurant/review/:id GET by id no review Returns 404", () => {
-    return fetch("http://localhost:6000/restaurant/review/999999999", {
+    return fetch("http://localhost:4000/restaurant/review/999999999", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -238,7 +238,7 @@ test("restaurant/review/:id GET by id no review Returns 404", () => {
 })
 
 test("restaurant/review/:id PUT returns 200", () => {
-    return fetch("http://localhost:6000/restaurant/review/1", {
+    return fetch("http://localhost:4000/restaurant/review/1", {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -267,7 +267,7 @@ test("restaurant/review/:id PUT returns 200", () => {
 })
 
 test("restaurant/review/:id PUT missing params Returns 404", () => {
-    return fetch("http://localhost:6000/restaurant/review/999999999", {
+    return fetch("http://localhost:4000/restaurant/review/999999999", {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -278,7 +278,7 @@ test("restaurant/review/:id PUT missing params Returns 404", () => {
 })
 
 test("restaurant/review/:id DELETE Returns 200", () => {
-    return fetch("http://localhost:6000/restaurant/review/1", {
+    return fetch("http://localhost:4000/restaurant/review/1", {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
@@ -289,7 +289,7 @@ test("restaurant/review/:id DELETE Returns 200", () => {
 })
 
 test("restaurant/review/:id DELETE no review Returns 404", () => {
-    return fetch("http://localhost:6000/restaurant/review/999999999", {
+    return fetch("http://localhost:4000/restaurant/review/999999999", {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
@@ -300,7 +300,7 @@ test("restaurant/review/:id DELETE no review Returns 404", () => {
 })
 
 test("restaurant/review/:id/flag PATCH Returns 200", () => {
-    return fetch("http://localhost:6000/restaurant/review/1/flag", {
+    return fetch("http://localhost:4000/restaurant/review/1/flag", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
@@ -311,7 +311,7 @@ test("restaurant/review/:id/flag PATCH Returns 200", () => {
 })
 
 test("restaurant/review/:id/flag PATCH no review Returns 404", () => {
-    return fetch("http://localhost:6000/restaurant/review/999999999/flag", {
+    return fetch("http://localhost:4000/restaurant/review/999999999/flag", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
@@ -322,7 +322,7 @@ test("restaurant/review/:id/flag PATCH no review Returns 404", () => {
 })
 
 test("restaurant/review/:id/unflag PATCH Returns 200", () => {
-    return fetch("http://localhost:6000/restaurant/review/1/unflag", {
+    return fetch("http://localhost:4000/restaurant/review/1/unflag", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
@@ -333,7 +333,7 @@ test("restaurant/review/:id/unflag PATCH Returns 200", () => {
 })
 
 test("restaurant/review/:id/unflag PATCH no review Returns 404", () => {
-    return fetch("http://localhost:6000/restaurant/review/999999999/unflag", {
+    return fetch("http://localhost:4000/restaurant/review/999999999/unflag", {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
@@ -344,7 +344,7 @@ test("restaurant/review/:id/unflag PATCH no review Returns 404", () => {
 })
 
 test("api/restaurant GET googleApi Returns 200", () => {
-    return fetch("http://localhost:6000/api/restaurant?zip=78701&radius=10", {
+    return fetch("http://localhost:4000/api/restaurant?zip=78701&radius=10", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -355,7 +355,7 @@ test("api/restaurant GET googleApi Returns 200", () => {
 })
 
 test("api/restaurant GET googleApi missing params Returns 404", () => {
-    return fetch("http://localhost:6000/api/restaurant", {
+    return fetch("http://localhost:4000/api/restaurant", {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
