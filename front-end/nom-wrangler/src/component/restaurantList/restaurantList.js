@@ -75,7 +75,7 @@ const RestaurantList = () => {
                             <div className="image-placeholder" />
                         </div>
                         <div className="restaurant-info">
-                            <h3>{restaurant.name}</h3>
+                            <h2>{restaurant.name}</h2>
                             <p className="address">{restaurant.address}</p>
                             <p className="description">{restaurant.description}</p>
                         </div>
