@@ -6,9 +6,16 @@ const cookieParser = require("cookie-parser");
 const axios = require("axios"); // For Google Places API
 const mysql = require("mysql2/promise"); //need to replace with mssql
 const sendEmail = require("./smtp"); // Your custom SMTP module
+const cors = require("cors"); // For CORS handling
 require("dotenv").config(); 
 // const User = require("./models/user"); // Not used if using direct SQL queries
 
+
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
@@ -106,21 +113,6 @@ app.post("/login", async (req, res) => {
     res.json({ message: "Logged in successfully" });
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-// Protected route
-app.get("/dashboard", authenticateToken, async (req, res) => {
-  try {
-    // Optionally, fetch more details from the database using req.user.id
-    const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [req.user.id]);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    res.json({ message: `Welcome to your dashboard, ${rows[0].email}` });
-  } catch (error) {
-    console.error("Error accessing dashboard:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -606,7 +598,7 @@ app.get('/api/restaurants', async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
