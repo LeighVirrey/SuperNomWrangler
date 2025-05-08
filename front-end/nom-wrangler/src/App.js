@@ -10,9 +10,6 @@ import Review from './component/userReview/UserReview'
 import Register from './component/register/register'
 
 
-import Details from './component/restaurantDetails/RestaurantDetails'
-
-
 function App() {
   return (
     <Router>
