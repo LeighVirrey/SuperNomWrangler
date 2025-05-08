@@ -19,7 +19,7 @@ const getPool = async () => {
         });
     }
     return global.pool;
-    }
+}
 
 const createLocalDB = async () => {
     const pool = await getPool();
@@ -35,39 +35,40 @@ const createLocalDB = async () => {
 
 
     //THIS IS AN EXAMPLE, future task is to make this general so that we can use it for all tables for when the object calls the DAL
-        getUsers: async () => {
-            const pool = await getPool();
-            const result = await pool.request().query('SELECT * FROM Users');
-            return result.recordset;
-        }
-        getUserById: async (id) => {
-            const pool = await getPool();
-            const result = await pool.request()
-                .input('id', sql.Int, id)
-                .query('SELECT * FROM Users WHERE id = @id');
-            return result.recordset[0];
-        }
-        createUser: async (user) => {
-            const pool = await getPool();
-            const result = await pool.request()
-                .input('name', sql.NVarChar, user.name)
-                .input('email', sql.NVarChar, user.email)
-                .query('INSERT INTO Users (name, email) VALUES (@name, @email)');
-            return result.rowsAffected[0];
-        }
-        updateUser: async (id, user) => {
-            const pool = await getPool();
-            const result = await pool.request()
-                .input('id', sql.Int, id)
-                .input('name', sql.NVarChar, user.name)
-                .input('email', sql.NVarChar, user.email)
-                .query('UPDATE Users SET name = @name, email = @email WHERE id = @id');
-            return result.rowsAffected[0];
-        }
-        deleteUser: async (id) => {
-            const pool = await getPool();
-            const result = await pool.request()
-                .input('id', sql.Int, id)
-                .query('DELETE FROM Users WHERE id = @id');
-            return result.rowsAffected[0];
-        }
+    getUsers: async () => {
+        const pool = await getPool();
+        const result = await pool.request().query('SELECT * FROM Users');
+        return result.recordset;
+    }
+    getUserById: async (id) => {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('id', sql.Int, id)
+            .query('SELECT * FROM Users WHERE id = @id');
+        return result.recordset[0];
+    }
+    createUser: async (user) => {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('name', sql.NVarChar, user.name)
+            .input('email', sql.NVarChar, user.email)
+            .query('INSERT INTO Users (name, email) VALUES (@name, @email)');
+        return result.rowsAffected[0];
+    }
+    updateUser: async (id, user) => {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('id', sql.Int, id)
+            .input('name', sql.NVarChar, user.name)
+            .input('email', sql.NVarChar, user.email)
+            .query('UPDATE Users SET name = @name, email = @email WHERE id = @id');
+        return result.rowsAffected[0];
+    }
+    deleteUser: async (id) => {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('id', sql.Int, id)
+            .query('DELETE FROM Users WHERE id = @id');
+        return result.rowsAffected[0];
+    }
+}
