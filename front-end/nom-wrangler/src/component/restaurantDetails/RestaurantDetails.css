@@ -1,0 +1,98 @@
+.restaurantDetail-container {
+    max-width: var(--width-xl);
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    color: var(--color-text);
+}
+
+.restaurantImage img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.detailHeader {
+    margin-top: var(--spacing-md);
+    text-align: center;
+}
+
+.restaurantName {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-sm);
+}
+
+.ratingPrice {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.detailsAverageRating,
+.detailsPriceRange {
+    font-size: var(--font-size-md);
+}
+
+.detailInfo {
+    margin-top: var(--spacing-md);
+    text-align: center;
+}
+
+.restaurantStyle,
+.restaurantCuisine,
+.restaurantAddress {
+    margin: var(--spacing-xs) 0;
+    font-size: var(--font-size-md);
+}
+
+.restaurantDescription {
+    margin-top: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+.leaveReview {
+    margin: var(--spacing-lg) auto;
+    display: block;
+}
+
+.restaurantReviews-container {
+    margin-top: var(--spacing-xl);
+}
+
+.reviewTitle {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+}
+
+.reviewContainer {
+    background-color: var(--color-secondary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--box-shadow);
+}
+
+.profileImage {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: var(--spacing-sm);
+}
+
+.username {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-xs);
+}
+
+.userRating {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-xs);
+}
+
+.userDescription {
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+}
