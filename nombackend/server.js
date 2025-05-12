@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
@@ -7,6 +7,7 @@ const axios = require("axios"); // For Google Places API
 const mysql = require("mysql2/promise"); //need to replace with mssql
 const sendEmail = require("./smtp"); // Your custom SMTP module
 const cors = require("cors"); // For CORS handling
+const dal = require("./DAL/mssqlDal"); // REMOVE THIS LATER, TESTING ONLY
 require("dotenv").config(); 
 // const User = require("./models/user"); // Not used if using direct SQL queries
 
@@ -20,33 +21,19 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-//#region - Should be moveed to a env file
-// Create a MySQL connection pool
-const pool = mysql.createPool({
-  host: "localhost",                // update to your host
-  user: "your_mysql_username",      // update with your username
-  password: "your_mysql_password",  // update with your password
-  database: "your_database_name",   // update with your database name
-});
+app.get("/", async (req, res) => {
+  try {
+    const createUser = await dal.executeQuery(
+      "INSERT INTO Users (email, password, is_Admin, rank) VALUES ('asdasd@asd', 'asdasd', 0, 1)"
+    );
+    console.log(createUser);
 
-// JWT secret key (In production, store this in environment variables)
-const JWT_SECRET = "YOUR_SECRET_KEY";
-//#endregion
-
-// Middleware to authenticate JWT token from cookies
-const authenticateToken = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ error: "Access denied" });
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: "Invalid token" });
-    req.user = user;
-    next();
-  });
-};
-
-app.get("/", (req, res) => {
-  res.send("nom nom nom");
+    const users = await dal.executeQuery("SELECT * FROM Users");
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {
