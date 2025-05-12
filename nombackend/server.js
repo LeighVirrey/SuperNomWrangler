@@ -22,18 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", async (req, res) => {
-  try {
-    const createUser = await dal.executeQuery(
-      "INSERT INTO Users (email, password, is_Admin, rank) VALUES ('asdasd@asd', 'asdasd', 0, 1)"
-    );
-    console.log(createUser);
-
-    const users = await dal.executeQuery("SELECT * FROM Users");
-    res.json(users);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
+  res.send("nomnomshark")
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {
