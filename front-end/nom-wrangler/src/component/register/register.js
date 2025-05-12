@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './register.css';
 
+const apiUrl = 'http://localhost:6000/register';
+
 const Register = () => {
   const [formData, setFormData] = useState({
     username: '',
@@ -20,32 +22,35 @@ const Register = () => {
     confirmPassword: '',
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+
   // Regex patterns
   const patterns = {
     username: /^[a-zA-Z0-9_]{4,20}$/,
-    firstName: /^[a-zA-Z]{2,30}$/, 
-    lastName: /^[a-zA-Z]{2,30}$/, 
-    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, 
+    firstName: /^[a-zA-Z]{2,30}$/,
+    lastName: /^[a-zA-Z]{2,30}$/,
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/ // min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
+
     // Validate on change
     validateField(name, value);
   };
 
   const validateField = (name, value) => {
     let errorMsg = '';
-    
+
     if (name === 'confirmPassword') {
       if (value !== formData.password) {
         errorMsg = 'Passwords do not match';
       }
     } else if (patterns[name] && !patterns[name].test(value)) {
-      switch(name) {
+      switch (name) {
         case 'username':
           errorMsg = 'Username must be 4-20 chars (letters, numbers, underscores)';
           break;
@@ -88,17 +93,61 @@ const Register = () => {
     return valid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (validateForm()) {
-      console.log('Form submitted:', formData);
-      //send the data to the backend
-      alert('Registration successful!');
-    } else {
-      console.log('Form has errors', errors);
+
+    if (!validateForm() || isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post(`${apiURL}/auth/register`, {
+        username: formData.username,
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        password: formData.password
+      });
+
+      // Handle successful registration
+      setRegistrationSuccess(true);
+      console.log('Registration successful:', response.data);
+
+      // Reset form
+      setFormData({
+        username: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+
+    } catch (error) {
+      console.error('Registration error:', error.response?.data || error.message);
+
+      // Handle backend validation errors
+      if (error.response?.data?.errors) {
+        setErrors(prev => ({ ...prev, ...error.response.data.errors }));
+      } else {
+        alert(error.response?.data?.message || 'Registration failed. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  if (registrationSuccess) {
+    return (
+      <div className="signup-container">
+        <div className="signup-box success-message">
+          <h2>Registration Successful!</h2>
+          <p>Please check your email to verify your account.</p>
+          <button onClick={() => setRegistrationSuccess(false)}>Back to Registration</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="signup-container">
@@ -181,11 +230,11 @@ const Register = () => {
               />
               {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
             </div>
-            
-            <br />
 
             <div className="form-button">
-              <button type="submit">Register</button>
+              <button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Registering...' : 'Register'}
+              </button>
             </div>
           </form>
         </div>
@@ -193,5 +242,6 @@ const Register = () => {
     </div>
   );
 };
+
 
 export default Register;
