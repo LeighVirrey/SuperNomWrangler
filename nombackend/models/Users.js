@@ -1,43 +1,67 @@
-import { createResource, getResource, getResourceById, updateResource, deleteResource } from '../services/dal';
+import bcrypt from 'bcryptjs';
+import * as DAL from '../dal';
 
 export default class User {
-  constructor({ id, email, created_at }) {
+  constructor({ id, email, username, isAdmin, rank, passwordHash, createdAt }) {
     this.id = id;
     this.email = email;
-    this.createdAt = new Date(created_at);
+    this.username = username;
+    this.isAdmin = isAdmin;
+    this.rank = rank;
+    this.passwordHash = passwordHash;
+    this.createdAt = createdAt ? new Date(createdAt) : new Date();
   }
 
-  // Create a new user (register)
-  static async create({ email, password }) {
-    return createResource('/register', { email, password });
+  // Getters & Setters
+  getID() { return this.id; }
+  setID(id) { this.id = id; }
+
+  getEmail() { return this.email; }
+  setEmail(email) { this.email = email; }
+
+  getUsername() { return this.username; }
+  setUsername(username) { this.username = username; }
+
+  getIsAdmin() { return this.isAdmin; }
+  setIsAdmin(flag) { this.isAdmin = flag; }
+
+  getRank() { return this.rank; }
+  setRank(rank) { this.rank = rank; }
+
+  compareUsername(other) { return this.username === other; }
+
+  static saltHash(password, rounds = 10) {
+    return bcrypt.hashSync(password, rounds);
   }
 
-  // Log in an existing user
+  // CRUD Methods
+  static async getAll() {
+    const rows = await DAL.getAllUsers();
+    return rows.map(u => new User(u));
+  }
+
+  static async get(id) {
+    const row = await DAL.getUserByID(id);
+    return new User(row);
+  }
+
+  static async create({ email, username, password, isAdmin = false, rank = 0 }) {
+    const passwordHash = User.saltHash(password);
+    const row = await DAL.createUser({ email, username, passwordHash, isAdmin, rank });
+    return new User(row);
+  }
+
   static async login({ email, password }) {
-    return createResource('/login', { email, password });
+    return DAL.loginUser({ email, password });
   }
 
-  // Fetch all users
-  static async fetchAll() {
-    const users = await getResource('/users');
-    return users.map(u => new User(u));
-  }
-
-  // Fetch one user by ID
-  static async fetchById(id) {
-    const u = await getResourceById('/users', id);
-    return new User(u);
-  }
-
-  // Update this user's data
-  async update(updates) {
-    const updated = await updateResource('/users', this.id, updates);
-    Object.assign(this, { email: updated.email, createdAt: new Date(updated.created_at) });
+  async update({ email, username, isAdmin, rank }) {
+    const row = await DAL.updateUser(this.id, { email, username, isAdmin, rank });
+    Object.assign(this, row);
     return this;
   }
 
-  // Delete this user
   async delete() {
-    await deleteResource('/users', this.id);
+    await DAL.deleteUser(this.id);
   }
 }
