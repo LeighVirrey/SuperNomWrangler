@@ -14,6 +14,17 @@ body {
   padding: 20px;
 }
 
+.error-input {
+  border-color: #ff3333 !important;
+}
+
+.error-message {
+  color: #ff3333;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
 .login-box {
   background-color: #264443;
   padding: 40px;
@@ -92,6 +103,30 @@ body {
   background-color: #9e360c;
 }
 
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #646cff;
+}
+
+
 .spinner {
   display: inline-block;
   width: 1rem;
@@ -105,4 +140,22 @@ body {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+.auth-links {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.auth-links a {
+  color: #646cff;
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+.auth-links p {
+  margin: 0.5rem 0;
 }

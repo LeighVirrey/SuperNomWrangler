@@ -101,7 +101,11 @@ const Register = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${apiURL}/auth/register`, {
+      const response = await fetch(`${apiUrl}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         username: formData.username,
         email: formData.email,
         firstName: formData.firstName,
