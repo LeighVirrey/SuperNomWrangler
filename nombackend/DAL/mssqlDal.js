@@ -21,6 +21,56 @@ const getPool = async () => {
     return global.pool;
 }
 
+exports.DAL = {
+    getRestaurants: async () => {
+        const dummyRestaurants = [
+            {
+                id: 1,
+                name: "Cyan Bistro",
+                address: "28 S State St #10, Salt Lake City, UT 84111",
+                description: "A vibrant spot known for fresh flavors and a bright atmosphere.",
+                distance: 1.2,
+                image: '../images/11steakhouse.jpg'
+            },
+            {
+                id: 2,
+                name: "Orange Grove",
+                address: "150 W 200 S, Salt Lake City, UT 84101",
+                description: "Farm-to-table meals with a citrus twist in a cozy setting.",
+                distance: 2.7,
+                image: '../images/11steakhouse.jpg'
+            },
+            {
+                id: 3,
+                name: "Cyan Corner",
+                address: "75 N Main St, Salt Lake City, UT 84103",
+                description: "A favorite for locals, featuring casual dining and bold dishes.",
+                distance: 3.4,
+                image: '../images/11steakhouse.jpg'
+            },
+            {
+                id: 4,
+                name: "Orange Flame Grill",
+                address: "201 E 400 S, Salt Lake City, UT 84111",
+                description: "Spicy grilled specialties and warm vibes await you here.",
+                distance: 4.1,
+                image: '../images/11steakhouse.jpg'
+            },
+            {
+                id: 5,
+                name: "Cyan Noodle House",
+                address: "390 S State St, Salt Lake City, UT 84111",
+                description: "Serving hearty noodle bowls and quick bites at great prices.",
+                distance: 5.8,
+                image: '../images/11steakhouse.jpg'
+            },
+        ];
+
+        return dummyRestaurants
+    }
+
+}
+
 const createLocalDB = async () => {
     const pool = await getPool();
     await pool.request().query(`CREATE DATABASE TestNomDB`);
