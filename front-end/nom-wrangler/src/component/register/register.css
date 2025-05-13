@@ -91,6 +91,7 @@ body {
 }
 
 .error {
+  padding-top: 20px;
   color: #ff3333;
   font-size: 0.875rem;
 }
