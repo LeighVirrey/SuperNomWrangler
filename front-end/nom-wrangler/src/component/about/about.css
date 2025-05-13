@@ -30,4 +30,77 @@
     margin-bottom: 2rem;
 }
 
+.aboutTeam{
+    margin-top: 6rem;
+    margin-left: 6rem;
+    margin-bottom: 5rem;
 
+}
+
+.pfpleft{
+    width: 20rem;
+    height: 20rem;
+    object-fit: cover;
+    margin-right: 2rem;
+}
+
+.detailsleft{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin-top: 2rem;
+    
+}
+
+.pfpright{
+    width: 20rem;
+    height: 20rem;
+    object-fit: cover;
+    margin-left: 2rem;
+}
+
+.detailsright{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 27rem;
+    
+}
+
+.detailslauren{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 37rem;
+    
+}
+
+.detailsstokes{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 27rem;
+    
+}
+
+.detailszk{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 47rem;
+    
+}
+.name{
+    font-size: 5rem;
+    font-weight: bold;
+    margin-bottom: -1rem;
+}
