@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './home.css';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
+  useEffect(() => {
+    const button = document.getElementById('backToTop');
+
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        button.style.display = 'block';
+      } else {
+        button.style.display = 'none';
+      }
+    };
+
+    const handleClick = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    if (button) {
+      button.addEventListener('click', handleClick);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (button) {
+        button.removeEventListener('click', handleClick);
+      }
+    };
+  }, []);
+  // the script for the back to top button ^
 
   return (
     <div className='home'>
@@ -67,7 +95,6 @@ const Home = () => {
           </div>
         </div>
 
-        {/* ✅ Wrapped button in Link */}
         <Link to="/restaurantList">
           <button className='BlueButton'>FIND MORE RESTAURANTS</button>
         </Link>
@@ -135,6 +162,14 @@ const Home = () => {
           </Link>
         </div>
       </div>
+
+      {/* sticky back to top button */}
+      <button
+        id="backToTop"
+        className="backToTopButton"
+      >
+        &#x25B2;
+      </button>
     </div>
   );
 };
