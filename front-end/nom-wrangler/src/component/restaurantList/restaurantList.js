@@ -1,71 +1,137 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import "./restaurantList.css";
+
+const dummyRestaurants = [
+  {
+    id: 1,
+    name: "Cyan Bistro",
+    address: "28 S State St #10, Salt Lake City, UT 84111",
+    description: "A vibrant spot known for fresh flavors and a bright atmosphere.",
+    color: "cyan",
+    distance: 1.2,
+  },
+  {
+    id: 2,
+    name: "Orange Grove",
+    address: "150 W 200 S, Salt Lake City, UT 84101",
+    description: "Farm-to-table meals with a citrus twist in a cozy setting.",
+    color: "orange",
+    distance: 2.7,
+  },
+  {
+    id: 3,
+    name: "Cyan Corner",
+    address: "75 N Main St, Salt Lake City, UT 84103",
+    description: "A favorite for locals, featuring casual dining and bold dishes.",
+    color: "cyan",
+    distance: 3.4,
+  },
+  {
+    id: 4,
+    name: "Orange Flame Grill",
+    address: "201 E 400 S, Salt Lake City, UT 84111",
+    description: "Spicy grilled specialties and warm vibes await you here.",
+    color: "orange",
+    distance: 4.1,
+  },
+  {
+    id: 5,
+    name: "Cyan Noodle House",
+    address: "390 S State St, Salt Lake City, UT 84111",
+    description: "Serving hearty noodle bowls and quick bites at great prices.",
+    color: "cyan",
+    distance: 5.8,
+  },
+];
 
 const RestaurantList = () => {
-    const [restaurants, setRestaurants] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-    const [location, setLocation] = useState(null);
+  const [search, setSearch] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
-    useEffect(() => {
-        // Get current location
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                setLocation({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                });
-            },
-            (err) => {
-                setError("Unable to retrieve location.");
-                setLoading(false);
-            }
-        );
-    }, []);
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollButton(window.scrollY > 300);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    useEffect(() => {
-        if (!location) return;
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    if (value.trim() !== "") {
+      setSuggestions([
+        `${value}ville`,
+        `${value} City`,
+        `New ${value}`,
+      ]);
+    } else {
+      setSuggestions([]);
+    }
+  };
 
-        const fetchRestaurants = async () => {
-            try {
-                const response = await axios.get(`/api/restaurants`, {
-                    params: {
-                        lat: location.lat,
-                        lng: location.lng,
-                        radius: 25, // in miles
-                    },
-                });
-                setRestaurants(response.data);
-            } catch (err) {
-                setError("Failed to load restaurants.");
-            } finally {
-                setLoading(false);
-            }
-        };
+  const filteredRestaurants = dummyRestaurants.filter((restaurant) =>
+    restaurant.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-        fetchRestaurants();
-    }, [location]);
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-    if (loading) return <div className="text-center p-4">Loading...</div>;
-    if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
+  return (
+    <div className="restaurant-list">
+      
 
-    return (
-        <div className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {restaurants.map((restaurant) => (
-                <div
-                    key={restaurant._id}
-                    className="border rounded-2xl p-4 shadow hover:shadow-lg transition"
-                >
-                    <h2 className="text-xl font-semibold">{restaurant.name}</h2>
-                    <p className="text-gray-600">{restaurant.address}</p>
-                    <p className="text-sm text-green-600">
-                        {restaurant.distance?.toFixed(1)} miles away
-                    </p>
-                    {/* Optional: Add tags, ratings, etc. */}
-                </div>
+      {/* Search Section */}
+      <div className="search-section">
+        <input
+          type="text"
+          placeholder="Search restaurants..."
+          value={search}
+          onChange={handleSearchChange}
+          className="search-bar"
+        />
+        {suggestions.length > 0 && (
+          <div className="search-options">
+            {suggestions.map((s, i) => (
+              <div key={i} className="search-option">
+                {s}
+              </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Restaurant List */}
+      <div className="restaurants">
+        <h2 className="restaurants-title">RESTAURANTS</h2>
+        <div className="restaurant-grid">
+          {filteredRestaurants.map((restaurant) => (
+            <div
+              key={restaurant.id}
+              className={`restaurant-card ${restaurant.color}`}
+            >
+              <div className="image-placeholder" />
+              <div>
+                <h3>{restaurant.name}</h3>
+                <p>{restaurant.address}</p>
+                <p>{restaurant.description}</p>
+                <p>{restaurant.distance.toFixed(1)} miles away</p>
+              </div>
+            </div>
+          ))}
         </div>
-    );
+      </div>
+
+      {/* Scroll To Top Button */}
+      {showScrollButton && (
+        <div className="scroll-to-top" onClick={scrollToTop}>
+          ↑
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default RestaurantList;
