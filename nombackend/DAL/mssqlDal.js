@@ -22,33 +22,104 @@ const getPool = async () => {
     return global.pool;
 }
 
-// async function testDb(){
-//     const pool = await getPool();
-//     const result = await pool.request().query('SELECT * FROM Users');
-//     console.log(result.recordset);
-// }
-// testDb();
+exports.DAL = {
+    getRestaurants: async () => {
+        const dummyRestaurants = [
+            {
+                id: 1,
+                name: "Cyan Bistro",
+                address: "28 S State St #10, Salt Lake City, UT 84111",
+                description: "A vibrant spot known for fresh flavors and a bright atmosphere.",
+                distance: 1.2,
+                image: '../images/11steakhouse.jpg'
+            },
+            {
+                id: 2,
+                name: "Orange Grove",
+                address: "150 W 200 S, Salt Lake City, UT 84101",
+                description: "Farm-to-table meals with a citrus twist in a cozy setting.",
+                distance: 2.7,
+                image: '../images/11steakhouse.jpg'
+            },
+            {
+                id: 3,
+                name: "Cyan Corner",
+                address: "75 N Main St, Salt Lake City, UT 84103",
+                description: "A favorite for locals, featuring casual dining and bold dishes.",
+                distance: 3.4,
+                image: '../images/11steakhouse.jpg'
+            },
+            {
+                id: 4,
+                name: "Orange Flame Grill",
+                address: "201 E 400 S, Salt Lake City, UT 84111",
+                description: "Spicy grilled specialties and warm vibes await you here.",
+                distance: 4.1,
+                image: '../images/11steakhouse.jpg'
+            },
+            {
+                id: 5,
+                name: "Cyan Noodle House",
+                address: "390 S State St, Salt Lake City, UT 84111",
+                description: "Serving hearty noodle bowls and quick bites at great prices.",
+                distance: 5.8,
+                image: '../images/11steakhouse.jpg'
+            },
+        ];
+
+        return dummyRestaurants
+    }
+
+}
+
+const createLocalDB = async () => {
+    const pool = await getPool();
+    await pool.request().query(`CREATE DATABASE TestNomDB`);
+    await pool.request().query(`USE TestNomDB`);
+    await pool.request().query(`
+        CREATE TABLE Users (
+            id INT PRIMARY KEY IDENTITY(1,1),
+            name NVARCHAR(100),
+            email NVARCHAR(100)
+        )
+    `);
 
 
-
-/**
- * executeQuery takes in the query string and params and just executes the query, that's it
- * this ensures generalization for the classes that call this function
- * @params query - the query string to be executed
- * @params params - the parameters for the query, defaults to an empty object
- * @returns - the results of the query back to the class
- */
-module.exports = {
-    executeQuery: async (query, params = {}) => {
+    //THIS IS AN EXAMPLE, future task is to make this general so that we can use it for all tables for when the object calls the DAL
+    getUsers: async () => {
         const pool = await getPool();
-        const request = pool.request();
-
-        // Add parameters to the request
-        for (const key in params) {
-            request.input(key, params[key]);
-        }
-
-        const result = await request.query(query);
+        const result = await pool.request().query('SELECT * FROM Users');
         return result.recordset;
+    }
+    getUserById: async (id) => {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('id', sql.Int, id)
+            .query('SELECT * FROM Users WHERE id = @id');
+        return result.recordset[0];
+    }
+    createUser: async (user) => {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('name', sql.NVarChar, user.name)
+            .input('email', sql.NVarChar, user.email)
+            .query('INSERT INTO Users (name, email) VALUES (@name, @email)');
+        return result.rowsAffected[0];
+    }
+    updateUser: async (id, user) => {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('id', sql.Int, id)
+            .input('name', sql.NVarChar, user.name)
+            .input('email', sql.NVarChar, user.email)
+            .query('UPDATE Users SET name = @name, email = @email WHERE id = @id');
+        return result.rowsAffected[0];
+    }
+    deleteUser: async (id) => {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('id', sql.Int, id)
+            .query('DELETE FROM Users WHERE id = @id');
+        return result.rowsAffected[0];
     }
 }
