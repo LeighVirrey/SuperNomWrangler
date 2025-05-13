@@ -4,13 +4,10 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const axios = require("axios"); // For Google Places API
-const mysql = require("mysql2/promise"); //need to replace with mssql
 const sendEmail = require("./smtp"); // Your custom SMTP module
 const cors = require("cors"); // For CORS handling
-const dal = require("./DAL/mssqlDal"); // REMOVE THIS LATER, TESTING ONLY
 require("dotenv").config(); 
 // const User = require("./models/user"); // Not used if using direct SQL queries
-
 
 app.use(cors({
   origin: "*",
@@ -22,7 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", async (req, res) => {
-  res.send("nomnomshark")
+  res.send("nomnomshark");
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {

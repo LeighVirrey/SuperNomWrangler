@@ -1,43 +1,42 @@
-import { createResource, getResource, getResourceById, updateResource, deleteResource } from '../services/dal';
+const dal = require('../DAL/mssqlDal');
 
 export default class User {
-  constructor({ id, email, created_at }) {
-    this.id = id;
+  constructor({userId, username, email, password, isAdmin, rank}){
+    this.id = userId;
+    this.username = username;
     this.email = email;
-    this.createdAt = new Date(created_at);
+    this.password = password;
+    this.isAdmin = isAdmin;
+    this.rank = rank;
   }
 
-  // Create a new user (register)
-  static async create({ email, password }) {
-    return createResource('/register', { email, password });
+  static async getAllUsers(){
+    const query = 'SELECT * FROM Users';
+    const users = await dal.executeQuery(query);
+    return users.map(user => new User(user));
   }
-
-  // Log in an existing user
-  static async login({ email, password }) {
-    return createResource('/login', { email, password });
+  static async getUserById(userId){
+    const query = 'SELECT * FROM Users WHERE userId = @userId';
+    const params = { userId };
+    const users = await dal.executeQuery(query, params);
+    return users.length ? new User(users[0]) : null;
   }
-
-  // Fetch all users
-  static async fetchAll() {
-    const users = await getResource('/users');
-    return users.map(u => new User(u));
+  static async createUser({ username, email, password, isAdmin, rank }){
+    const query = 'INSERT INTO Users (username, email, password, isAdmin, rank) VALUES (@username, @email, @password, @isAdmin, @rank)';
+    const params = { username, email, password, isAdmin, rank };
+    await dal.executeQuery(query, params);
+    return new User({ username, email, password, isAdmin, rank });
   }
-
-  // Fetch one user by ID
-  static async fetchById(id) {
-    const u = await getResourceById('/users', id);
-    return new User(u);
+  static async updateUser(userId, { username, email, password, isAdmin, rank }){
+    const query = 'UPDATE Users SET username = @username, email = @email, password = @password, isAdmin = @isAdmin, rank = @rank WHERE userId = @userId';
+    const params = { userId, username, email, password, isAdmin, rank };
+    await dal.executeQuery(query, params);
+    return new User({ userId, username, email, password, isAdmin, rank });
   }
-
-  // Update this user's data
-  async update(updates) {
-    const updated = await updateResource('/users', this.id, updates);
-    Object.assign(this, { email: updated.email, createdAt: new Date(updated.created_at) });
-    return this;
-  }
-
-  // Delete this user
-  async delete() {
-    await deleteResource('/users', this.id);
+  static async deleteUser(userId){
+    const query = 'DELETE FROM Users WHERE userId = @userId';
+    const params = { userId };
+    await dal.executeQuery(query, params);
+    return true;
   }
 }
