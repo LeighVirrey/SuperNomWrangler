@@ -117,34 +117,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get('/api/restaurants', async (req, res) => {
-  const { lat, lng, radius = 25 } = req.query;
-
-  if (!lat || !lng) {
-    return res.status(400).json({ error: "Missing latitude or longitude" });
-  }
-
-  const userLocation = {
-    type: "Point",
-    coordinates: [parseFloat(lng), parseFloat(lat)],
-  };
-
-  try {
-    const restaurants = await Restaurant.find({
-      location: {
-        $near: {
-          $geometry: userLocation,
-          $maxDistance: radius * 1609.34, // miles to meters
-        },
-      },
-    });
-
-    res.json(restaurants);
-  } catch (err) {
-    res.status(500).json({ error: "Server error fetching restaurants" });
-  }
-});
-
 // Logout endpoint - clear the auth cookie
 app.post("/logout", (req, res) => {
   res.clearCookie("token");
