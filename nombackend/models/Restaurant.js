@@ -1,6 +1,6 @@
-import { createResource, getResource, getResourceById, updateResource, deleteResource } from '../services/dal';
+const dal = require('../DAL/mssqlDal');
 
-export default class Restaurant {
+class Restaurant {
   constructor({ id, name, address_id, created_at }) {
     this.id = id;
     this.name = name;
@@ -33,3 +33,5 @@ export default class Restaurant {
     await deleteResource('/restaurants', this.id);
   }
 }
+
+module.exports = Restaurant;

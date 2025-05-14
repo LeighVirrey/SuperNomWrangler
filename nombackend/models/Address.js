@@ -1,6 +1,6 @@
-import { createResource, getResource, getResourceById, updateResource, deleteResource } from '../services/dal';
+const dal = require('../DAL/mssqlDal');
 
-export default class Address {
+class Address {
   constructor({ id, street, city, state, zip, created_at }) {
     this.id = id;
     this.street = street;
@@ -35,3 +35,5 @@ export default class Address {
     await deleteResource('/addresses', this.id);
   }
 }
+
+module.exports = Address;

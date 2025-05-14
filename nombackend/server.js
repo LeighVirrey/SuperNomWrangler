@@ -6,6 +6,10 @@ const cookieParser = require("cookie-parser");
 const axios = require("axios"); // For Google Places API
 const sendEmail = require("./smtp"); // Your custom SMTP module
 const cors = require("cors"); // For CORS handling
+const usersClass = require("./models/Users"); 
+const addressClass = require("./models/Address");
+const restaurantClass = require("./models/Restaurant");
+const reviewClass = require("./models/Review");
 require("dotenv").config(); 
 // const User = require("./models/user"); // Not used if using direct SQL queries
 
@@ -19,7 +23,18 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", async (req, res) => {
-  res.send("nomnomshark");
+  // let newUser = await usersClass.createUser({
+  //   username: "testuser",
+  //   email: "test@example.com",
+  //   password: "password123",
+  //   is_Admin: 0,
+  //   rank: 1
+  // });
+  // console.log(newUser);
+
+  let users = await usersClass.getAllUsers();
+  res.json(users);
+  //res.send("nomnomshark");
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {

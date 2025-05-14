@@ -1,12 +1,12 @@
 const dal = require('../DAL/mssqlDal');
 
-export default class User {
-  constructor({userId, username, email, password, isAdmin, rank}){
-    this.id = userId;
+class User {
+  constructor({user_Id, username, email, password, is_Admin, rank}){
+    this.id = user_Id;
     this.username = username;
     this.email = email;
     this.password = password;
-    this.isAdmin = isAdmin;
+    this.is_Admin = is_Admin;
     this.rank = rank;
   }
 
@@ -15,28 +15,30 @@ export default class User {
     const users = await dal.executeQuery(query);
     return users.map(user => new User(user));
   }
-  static async getUserById(userId){
-    const query = 'SELECT * FROM Users WHERE userId = @userId';
-    const params = { userId };
+  static async getUserById(user_Id){
+    const query = 'SELECT * FROM Users WHERE user_Id = @user_Id';
+    const params = { user_Id };
     const users = await dal.executeQuery(query, params);
     return users.length ? new User(users[0]) : null;
   }
-  static async createUser({ username, email, password, isAdmin, rank }){
-    const query = 'INSERT INTO Users (username, email, password, isAdmin, rank) VALUES (@username, @email, @password, @isAdmin, @rank)';
-    const params = { username, email, password, isAdmin, rank };
+  static async createUser({ username, email, password, is_Admin, rank }){
+    const query = 'INSERT INTO Users (username, email, password, is_Admin, rank) VALUES (@username, @email, @password, @is_Admin, @rank)';
+    const params = { username, email, password, is_Admin, rank };
     await dal.executeQuery(query, params);
-    return new User({ username, email, password, isAdmin, rank });
+    return new User({ username, email, password, is_Admin, rank });
   }
-  static async updateUser(userId, { username, email, password, isAdmin, rank }){
-    const query = 'UPDATE Users SET username = @username, email = @email, password = @password, isAdmin = @isAdmin, rank = @rank WHERE userId = @userId';
-    const params = { userId, username, email, password, isAdmin, rank };
+  static async updateUser(userId, { username, email, password, is_Admin, rank }){
+    const query = 'UPDATE Users SET username = @username, email = @email, password = @password, is_Admin = @is_Admin, rank = @rank WHERE userId = @userId';
+    const params = { userId, username, email, password, is_Admin, rank };
     await dal.executeQuery(query, params);
-    return new User({ userId, username, email, password, isAdmin, rank });
+    return new User({ userId, username, email, password, is_Admin, rank });
   }
-  static async deleteUser(userId){
-    const query = 'DELETE FROM Users WHERE userId = @userId';
-    const params = { userId };
+  static async deleteUser(user_Id){
+    const query = 'DELETE FROM Users WHERE user_Id = @user_Id';
+    const params = { user_Id };
     await dal.executeQuery(query, params);
     return true;
   }
 }
+
+module.exports = User;
