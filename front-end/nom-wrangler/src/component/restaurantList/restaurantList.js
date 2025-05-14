@@ -19,6 +19,7 @@ const RestaurantList = () => {
             (err) => {
                 setError("Unable to retrieve location.");
                 setLoading(false);
+                
             }
         );
     }, []);
