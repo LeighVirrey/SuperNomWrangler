@@ -11,7 +11,6 @@ const addressClass = require("./models/Address");
 const restaurantClass = require("./models/Restaurant");
 const reviewClass = require("./models/Review");
 require("dotenv").config(); 
-// const User = require("./models/user"); // Not used if using direct SQL queries
 
 app.use(cors({
   origin: "*",
@@ -27,30 +26,28 @@ app.get("/", async (req, res) => {
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
 
   // Basic validation
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Username, email and password are required" });
   }
 
   try {
-    // Check if the user already exists
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
-    if (rows.length > 0) {
-      return res.status(409).json({ error: "User already exists" });
+    if(await !usersClass.checkEmailExists(email)) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = await usersClass.createUser({
+        username,
+        email,
+        password: hashedPassword,
+        is_Admin: false,
+        rank: 0
+      });
+      res.status(201).json({ message: "User registered successfully", userId: newUser.id });
     }
-
-    // Hash the user password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insert new user into the database
-    await pool.query("INSERT INTO users (email, password) VALUES (?, ?)", [email, hashedPassword]);
-
-    // Optionally send a welcome email
-    sendEmail(email, "Welcome!", "Thank you for registering!");
-
-    res.status(201).json({ message: "User registered successfully" });
+    else {
+      return res.status(400).json({ error: "Email already exists" });
+    }
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -59,35 +56,28 @@ app.post("/register", async (req, res) => {
 
 // Login endpoint
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
 
   // Basic validation
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Username, email and password are required" });
   }
 
   try {
-    // Retrieve the user from the database
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
-    if (rows.length === 0) {
+    const checkUser = await usersClass.checkEmailExists(email);
+    if (!checkUser) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    
-    const user = rows[0];
-
-    // Compare provided password with the stored hashed password
+    const user = await usersClass.getUserById(checkUser);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generate a JWT token for the user (expires in 1 hour)
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
-
-    // Set the token in an HTTP-only cookie
-    res.cookie("token", token, { httpOnly: true });
-
-    res.json({ message: "Logged in successfully" });
+    res.status(200).json({ message: "Logged in successfully" });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Internal server error" });
