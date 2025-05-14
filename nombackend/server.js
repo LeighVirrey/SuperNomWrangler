@@ -23,18 +23,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", async (req, res) => {
-  // let newUser = await usersClass.createUser({
-  //   username: "testuser",
-  //   email: "test@example.com",
-  //   password: "password123",
-  //   is_Admin: 0,
-  //   rank: 1
-  // });
-  // console.log(newUser);
-
-  let users = await usersClass.getAllUsers();
-  res.json(users);
-  //res.send("nomnomshark");
+  res.json({message: "Nomnomshark"});
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {
