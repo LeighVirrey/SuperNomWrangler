@@ -7,15 +7,22 @@ const RestaurantList = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
-  useEffect(() => {
-    const fetchRestaurants = async () => {
-      try {
-        const response = await fetch("http://localhost:4000/restaurantlist", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+    useEffect(() => {
+        // Get current location
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                });
+            },
+            (err) => {
+                setError("Unable to retrieve location.");
+                setLoading(false);
+                
+            }
+        );
+    }, []);
 
         const data = await response.json();
         setRestaurants(data);
