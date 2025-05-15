@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./restaurantList.css";
+import "./restaurantList.css"; // <-- Import the separate CSS file
 
 const RestaurantList = () => {
   const [search, setSearch] = useState("");
@@ -8,7 +8,6 @@ const RestaurantList = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
-    // Fetch data from backend
     const fetchRestaurants = async () => {
       try {
         const response = await fetch("http://localhost:4000/restaurantlist", {
@@ -17,11 +16,9 @@ const RestaurantList = () => {
             "Content-Type": "application/json",
           },
         });
-        
+
         const data = await response.json();
-        console.log("DATA: ", data)
         setRestaurants(data);
-        
       } catch (error) {
         console.error("Error fetching restaurants:", error);
       }
@@ -72,18 +69,15 @@ const RestaurantList = () => {
       </div>
 
       <div className="restaurants">
-        <h2 className="aboutHeader">RESTAURANTS</h2>
+        <h1 className="mainheader">RESTAURANTS</h1>
         <div className="reviewers">
           {filteredRestaurants.map((restaurant, index) => (
-            <div
-              key={restaurant.id}
-              className="restaurant-card"
-            >
+            <div key={restaurant.id} className="restaurant-card">
               <div
                 className="singleRest"
                 style={{
                   flexDirection: index % 2 === 0 ? "row" : "row-reverse",
-                  backgroundColor: index % 2 === 0 ? "#f46036" : "#1695a3"
+                  backgroundColor: index % 2 === 0 ? "#f46036" : "#1695a3",
                 }}
               >
                 <img
@@ -91,9 +85,9 @@ const RestaurantList = () => {
                   src={restaurant.image}
                   alt={restaurant.name}
                 />
-                <div className='restDetails'>
+                <div className="restDetails">
                   <h1>{restaurant.name}</h1>
-                  <h2><strong>Address:</strong> {restaurant.address}</h2>
+                  <h2>{restaurant.address}</h2>
                   <p>{restaurant.description}</p>
                   <p>{restaurant.distance.toFixed(1)} miles away</p>
                 </div>
@@ -104,10 +98,10 @@ const RestaurantList = () => {
       </div>
 
       {showScrollButton && (
-        <div className="scroll-to-top" onClick={scrollToTop}>
-          ↑
-        </div>
-      )}
+  <div className="scroll-to-top" onClick={scrollToTop}>
+    <div className="scroll-to-top-icon"></div>
+  </div>
+)}
     </div>
   );
 };
