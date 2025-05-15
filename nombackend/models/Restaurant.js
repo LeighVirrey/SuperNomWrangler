@@ -51,7 +51,7 @@ export default class Restaurant {
     return await Address.get(this.locationAddressID);
   }
 
-  // CRUD Methods
+  // CRUD Methods (UML naming)
   static async getAll() {
     const rows = await DAL.getAllRestaurants();
     return rows.map(r => new Restaurant(r));

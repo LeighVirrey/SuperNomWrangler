@@ -2,8 +2,8 @@ import bcrypt from 'bcryptjs';
 import * as DAL from '../dal';
 
 export default class User {
-  constructor({ id, email, username, isAdmin, rank, passwordHash, createdAt }) {
-    this.id = id;
+  constructor({ userID, email, username, isAdmin, rank, passwordHash, createdAt }) {
+    this.userID = userID;
     this.email = email;
     this.username = username;
     this.isAdmin = isAdmin;
@@ -13,8 +13,8 @@ export default class User {
   }
 
   // Getters & Setters
-  getID() { return this.id; }
-  setID(id) { this.id = id; }
+  getUserID() { return this.userID; }
+  setUserID(id) { this.userID = id; }
 
   getEmail() { return this.email; }
   setEmail(email) { this.email = email; }
@@ -28,20 +28,23 @@ export default class User {
   getRank() { return this.rank; }
   setRank(rank) { this.rank = rank; }
 
+  getPassword() { return this.passwordHash; }
+  setPassword(hash) { this.passwordHash = hash; }
+
   compareUsername(other) { return this.username === other; }
 
   static saltHash(password, rounds = 10) {
     return bcrypt.hashSync(password, rounds);
   }
 
-  // CRUD Methods
+  // CRUD Methods (UML naming)
   static async getAll() {
     const rows = await DAL.getAllUsers();
     return rows.map(u => new User(u));
   }
 
-  static async get(id) {
-    const row = await DAL.getUserByID(id);
+  static async get(userID) {
+    const row = await DAL.getUserByID(userID);
     return new User(row);
   }
 
@@ -55,13 +58,15 @@ export default class User {
     return DAL.loginUser({ email, password });
   }
 
-  async update({ email, username, isAdmin, rank }) {
-    const row = await DAL.updateUser(this.id, { email, username, isAdmin, rank });
+  async update({ email, username, isAdmin, rank, password }) {
+    const updates = { email, username, isAdmin, rank };
+    if (password) updates.passwordHash = User.saltHash(password);
+    const row = await DAL.updateUser(this.userID, updates);
     Object.assign(this, row);
     return this;
   }
 
   async delete() {
-    await DAL.deleteUser(this.id);
+    await DAL.deleteUser(this.userID);
   }
 }

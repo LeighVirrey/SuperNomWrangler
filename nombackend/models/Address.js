@@ -33,7 +33,7 @@ export default class Address {
   getCreatedAt() { return this.createdAt; }
   setCreatedAt(date) { this.createdAt = new Date(date); }
 
-  // CRUD Methods
+  // CRUD Methods (UML naming)
   static async getAll() {
     const rows = await DAL.getAllAddresses();
     return rows.map(r => new Address(r));
@@ -65,4 +65,3 @@ export default class Address {
     await DAL.deleteAddress(this.addressID);
   }
 }
-

@@ -1,12 +1,12 @@
 import * as DAL from '../dal';
 
 export default class Review {
-  constructor({ reviewID, userID, restaurantID, rating, comment, datePosted, createdAt }) {
+  constructor({ reviewID, userID, restaurantID, rating, review, datePosted, createdAt }) {
     this.reviewID = reviewID;
     this.userID = userID;
     this.restaurantID = restaurantID;
     this.rating = rating;
-    this.comment = comment;
+    this.review = review;
     this.datePosted = datePosted ? new Date(datePosted) : new Date();
     this.createdAt = createdAt ? new Date(createdAt) : new Date();
   }
@@ -24,8 +24,8 @@ export default class Review {
   getRating() { return this.rating; }
   setRating(rating) { this.rating = rating; }
 
-  getComment() { return this.comment; }
-  setComment(comment) { this.comment = comment; }
+  getReview() { return this.review; }
+  setReview(review) { this.review = review; }
 
   getDatePosted() { return this.datePosted; }
   setDatePosted(date) { this.datePosted = new Date(date); }
@@ -37,7 +37,7 @@ export default class Review {
   getCreatedAt() { return this.createdAt; }
   setCreatedAt(date) { this.createdAt = new Date(date); }
 
-  // CRUD Methods
+  // CRUD Methods (UML naming)
   static async getAll() {
     const rows = await DAL.getAllReviews();
     return rows.map(r => new Review(r));
@@ -48,14 +48,14 @@ export default class Review {
     return new Review(row);
   }
 
-  static async create({ userID, restaurantID, rating, comment, datePosted }) {
-    const row = await DAL.createReview({ userID, restaurantID, rating, comment, datePosted });
+  static async create({ userID, restaurantID, rating, review, datePosted }) {
+    const row = await DAL.createReview({ userID, restaurantID, rating, review, datePosted });
     return new Review(row);
   }
 
-  async update({ rating, comment }) {
-    const row = await DAL.updateReview(this.reviewID, { rating, comment });
-    Object.assign(this, { rating: row.rating, comment: row.comment });
+  async update({ rating, review }) {
+    const row = await DAL.updateReview(this.reviewID, { rating, review });
+    Object.assign(this, { rating: row.rating, review: row.review });
     return this;
   }
 
