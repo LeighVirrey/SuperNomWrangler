@@ -32,10 +32,13 @@ function RestaurantDetails() {
                 />
                 <div className="restaurant-content">
                     <h1 className="restaurant-name">{restaurant.name}</h1>
+                    <p className="blueText">- {restaurant.rating} -</p>
+                    <p className="blueText">- {restaurant.price} -</p>
 
                     <hr className="sectionDivider" />
                     <div className="restaurant-info">
-                        <p><strong>Contact:</strong> {restaurant.contact}</p>
+                        <p className="blueText">- {restaurant.style} -</p>
+                        <p className="blueText">- {restaurant.type} -</p>
                         <p><strong>Address:</strong> {restaurant.address}</p>
                         <p><strong>Description:</strong> {restaurant.description}</p>
                     </div>

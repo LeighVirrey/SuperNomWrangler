@@ -1,13 +1,13 @@
 .restaurant-details {
     max-width: 1000px;
     margin: 50px auto;
-    background-color: #fadcd5;
+    /* background-color: #fadcd5; */
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
     display: flex;
     padding: 32px;
     gap: 32px;
-    color: #1d222f;
+    color: #ffffff;
 }
 
 .restaurant-image {
@@ -77,11 +77,11 @@
 }
 
 .reviewContainer {
-    background-color: #ffffff;
+    background-color: #0E9594;
     border-radius: 12px;
     padding: 24px;
     margin: 0 auto 20px;
-    width: 300px;
+    width: 900px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
@@ -108,4 +108,11 @@
 .userDescription {
     font-size: 14px;
     color: #333;
+}
+
+
+.blueText {
+    font-size: large;
+    font-weight: bold;
+    color: #0E9594;
 }
