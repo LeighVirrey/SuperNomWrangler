@@ -26,7 +26,7 @@ class User {
     const query = 'SELECT * FROM Users WHERE email = @email';
     const params = { email };
     const users = await dal.executeQuery(query, params);
-    return users.user_Id;
+    return users.length > 0 ? users[0].user_Id : false;
   }
   static async createUser({ username, email, password, is_Admin, rank }){
     const query = 'INSERT INTO Users (username, email, password, is_Admin, rank) VALUES (@username, @email, @password, @is_Admin, @rank)';

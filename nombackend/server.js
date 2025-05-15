@@ -22,7 +22,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", async (req, res) => {
-  res.json({message: "Nomnomshark"});
+  let users = await usersClass.getAllUsers();
+  res.json(users);
+  //res.json({message: "Nomnomshark"});
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {
@@ -34,7 +36,9 @@ app.post("/register", async (req, res) => {
   }
 
   try {
-    if(await !usersClass.checkEmailExists(email)) {
+    let checkEmail = await usersClass.checkEmailExists(email);
+    console.log("checkEmail", checkEmail);
+    if (!checkEmail) {
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await usersClass.createUser({
         username,
@@ -69,9 +73,6 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
     const user = await usersClass.getUserById(checkUser);
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
