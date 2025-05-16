@@ -46,6 +46,13 @@ class User {
     await dal.executeQuery(query, params);
     return true;
   }
+
+  static async deleteUserName(username){
+    const query = 'DELETE FROM Users WHERE username = @username';
+    const params = { username };
+    await dal.executeQuery(query, params);
+    return true;
+  }
 }
 
 module.exports = User;
