@@ -7,7 +7,8 @@ const axios = require("axios"); // For Google Places API
 const mysql = require("mysql2/promise"); //need to replace with mssql
 const sendEmail = require("./smtp"); // Your custom SMTP module
 const cors = require("cors"); // For CORS handling
-require("dotenv").config(); 
+const { body, validationResult } = require("express-validator");
+require("dotenv").config();
 // const User = require("./models/user"); // Not used if using direct SQL queries
 
 
@@ -23,10 +24,10 @@ app.use(cookieParser());
 //#region - Should be moveed to a env file
 // Create a MySQL connection pool
 const pool = mysql.createPool({
-  host: "localhost",                // update to your host
-  user: "your_mysql_username",      // update with your username
-  password: "your_mysql_password",  // update with your password
-  database: "your_database_name",   // update with your database name
+  host: "localhost", // update to your host
+  user: "your_mysql_username", // update with your username
+  password: "your_mysql_password", // update with your password
+  database: "your_database_name", // update with your database name
 });
 
 // JWT secret key (In production, store this in environment variables)
@@ -59,7 +60,9 @@ app.post("/register", async (req, res) => {
 
   try {
     // Check if the user already exists
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
     if (rows.length > 0) {
       return res.status(409).json({ error: "User already exists" });
     }
@@ -68,7 +71,10 @@ app.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insert new user into the database
-    await pool.query("INSERT INTO users (email, password) VALUES (?, ?)", [email, hashedPassword]);
+    await pool.query("INSERT INTO users (email, password) VALUES (?, ?)", [
+      email,
+      hashedPassword,
+    ]);
 
     // Optionally send a welcome email
     sendEmail(email, "Welcome!", "Thank you for registering!");
@@ -91,11 +97,13 @@ app.post("/login", async (req, res) => {
 
   try {
     // Retrieve the user from the database
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
     if (rows.length === 0) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-    
+
     const user = rows[0];
 
     // Compare provided password with the stored hashed password
@@ -105,7 +113,9 @@ app.post("/login", async (req, res) => {
     }
 
     // Generate a JWT token for the user (expires in 1 hour)
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     // Set the token in an HTTP-only cookie
     res.cookie("token", token, { httpOnly: true });
@@ -123,192 +133,219 @@ app.post("/logout", (req, res) => {
   res.json({ message: "Logged out successfully" });
 });
 
-//#region - Restaurant Reviews 
+//#region - Restaurant Reviews
 // Mock information for testing
 
 let reviewIdCounter = 1;
 
 const reviews = [
   {
-    id: reviewIdCounter++,
-    restaurantName: "Pho Real",
-    imageUrl: "https://lh3.googleusercontent.com/gps-cs-s/AB5caB_FEWKdmdQVET9381JO8q23Cy2FwZw_Mu6HKdzEXdYwecoyMx-N0O9_EERPG0mIYQqT43eCRCX0rq6Re5s84gbovjlt4fGWyHGWNRkbNtCIFUP-edyelizr2A3_H_VBv9aqRLfc=s1360-w1360-h1020",
+    id: reviewIdCounter++, 
+    imageUrl: "https://example.com/image.jpg",
+    restaurantName: "Sushi Place",
     streetName: "Main St",
     streetNumber: "123",
-    city: "Austin",
-    state: "TX",
-    zipCode: "78701",
+    city: "Tokyo",
+    state: "TK",
+    zipCode: "12345",
     country: "USA",
-    description: "Great atmosphere and authentic Vietnamese flavors!",
-    cuisineTypes: ["Vietnamese", "Asian"],
+    description: "Best sushi in town!",
+    cuisineTypes: ["Japanese"],
     diningStyle: "Sit down",
-    priceRange: "$$",
-    otherNotes: "Wheelchair accessible",
-    operatingHours: [{ day: "Monday", open: "10:00", close: "21:00" }],
-    userReview: "The pho broth is next level. 10/10!",
-    isFlagged: false
-  }
+    priceRange: "option1",
+    extraText: "Great ambiance",
+    operatingHours: [
+      { day: "Monday", hours: "10:00 AM - 10:00 PM" },
+      { day: "Tuesday", hours: "10:00 AM - 10:00 PM" },
+    ],
+    reviewText: "Amazing food and service!",
+    ratingValue: 5,
+    isFlagged: false,
+  },
 ];
 
-// let reviewIdCounter = 0;
-// let reviews = [];
+// Endpoint to submit a restaurant review
+// Mock data for testing
+app.post(
+  "/restaurant/review",
+  [
+    // Restaurant Name: required, 2-100 chars, letters/numbers/spaces/.'-&
+    body("restaurantName")
+      .trim()
+      .matches(/^[\w\s.'&-]{2,100}$/)
+      .withMessage(
+        "Restaurant name must be 2-100 characters and contain only letters, numbers, spaces, .'-&"
+      ),
 
+    // Description: required, 1-1000 chars, no < or >
+    body("description")
+      .trim()
+      .matches(/^[^<>]{1,1000}$/)
+      .withMessage(
+        "Description must be 1-1000 characters and cannot contain < or >"
+      ),
 
-// Allows users to add reviews
-/*
-app.post("/restaurant/review", async (req, res) => {
-  const {
-    imageUrl,
-    restaurantName,
-    streetName,
-    streetNumber,
-    city,
-    state,
-    zipCode,
-    country,
-    description,
-    cuisineTypes,
-    diningStyle,
-    priceRange,
-    otherNotes,
-    operatingHours,
-    userReview,
-    userId,       // optional user id
-    isFlagged     // new field (optional)
-  } = req.body;
+    // Cuisine Types: required, must be array of allowed values
+    body("cuisineTypes")
+      .isArray({ min: 1 })
+      .withMessage("At least one cuisine type is required")
+      .custom((arr) =>
+        arr.every((type) =>
+          ["Japanese", "Chinese", "German", "Italian", "Mexican"].includes(type)
+        )
+      )
+      .withMessage("Invalid cuisine type(s)"),
 
-  if (!restaurantName || !streetName || !streetNumber || !city || !state || !zipCode || !country || !cuisineTypes || !diningStyle || !priceRange) {
-    return res.status(400).json({ error: "Missing required fields." });
-  }
+    // Dining Style: required, must be one of allowed values
+    body("diningStyle")
+      .isIn(["Sit down", "Fast Food", "Cafe", "Buffet", "Takeout"])
+      .withMessage("Dining style is invalid"),
 
-  try {
-    const [existingReviews] = await pool.query(
-      "SELECT COUNT(*) as count FROM reviews WHERE restaurantName = ? AND streetName = ? AND streetNumber = ? AND city = ? AND zipCode = ?",
-      [restaurantName, streetName, streetNumber, city, zipCode]
-    );
+    // Price Range: required, must be one of allowed options
+    body("priceRange")
+      .isIn(["option1", "option2", "option3"])
+      .withMessage("Price range is invalid"),
 
-    const isFirstReview = existingReviews[0].count === 0;
+    // Street Name: required, 2-100 chars, letters/numbers/spaces/.'-&
+    body("streetName")
+      .trim()
+      .matches(/^[\w\s.'&-]{2,100}$/)
+      .withMessage(
+        "Street name must be 2-100 characters and contain only letters, numbers, spaces, .'-&"
+      ),
 
-    if (isFirstReview && !imageUrl) {
-      return res.status(400).json({ error: "First review for a restaurant must include an image URL." });
+    // Street Number: required, 1-10 chars, numbers/letters
+    body("streetNumber")
+      .trim()
+      .matches(/^[\w\s-]{1,10}$/)
+      .withMessage(
+        "Street number must be 1-10 characters and contain only letters, numbers, spaces, or -"
+      ),
+
+    // City: required, 2-50 chars, letters/spaces/.'-&
+    body("city")
+      .trim()
+      .matches(/^[a-zA-Z\s.'&-]{2,50}$/)
+      .withMessage(
+        "City must be 2-50 characters and contain only letters, spaces, .'-&"
+      ),
+
+    // State: required, 2 uppercase letters
+    body("state")
+      .trim()
+      .matches(/^[A-Z]{2}$/)
+      .withMessage("State must be a 2-letter abbreviation (e.g., TX)"),
+
+    // Zip Code: required, 5 digits or ZIP+4
+    body("zipCode")
+      .trim()
+      .matches(/^\d{5}(-\d{4})?$/)
+      .withMessage("Zip code must be valid (e.g., 12345 or 12345-6789)"),
+
+    // Country: required, must be USA
+    body("country").equals("USA").withMessage("Country must be USA"),
+
+    // Review Text: required, 1-1000 chars, no < or >
+    body("reviewText")
+      .trim()
+      .matches(/^[^<>]{1,1000}$/)
+      .withMessage(
+        "Review must be 1-1000 characters and cannot contain < or >"
+      ),
+
+    // Extra Text: optional, 0-1000 chars, no < or >
+    body("extraText")
+      .optional()
+      .trim()
+      .matches(/^[^<>]{0,1000}$/)
+      .withMessage("Extra text cannot contain < or >"),
+
+    // Operating Hours: optional, must be valid JSON array or string
+    body("operatingHours")
+      .optional()
+      .custom((value) => {
+        try {
+          const arr = typeof value === "string" ? JSON.parse(value) : value;
+          return Array.isArray(arr);
+        } catch {
+          return false;
+        }
+      })
+      .withMessage("Operating hours must be a valid array"),
+
+    // Rating: required, integer 1-5
+    body("rating")
+      .isInt({ min: 1, max: 5 })
+      .withMessage("Rating must be an integer between 1 and 5"),
+
+    // Image URL: optional, must be a valid URL if present
+    body("imageUrl").optional().isURL().withMessage("Image URL must be valid"),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    await pool.query(
-      `INSERT INTO reviews (
-        userId, restaurantName, imageUrl,
-        streetName, streetNumber, city, state, zipCode, country,
-        description, cuisineTypes, diningStyle, priceRange,
-        otherNotes, operatingHours, userReview, isFlagged
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        userId || null,
-        restaurantName,
-        imageUrl || null,
-        streetName, streetNumber, city, state, zipCode, country,
-        description || null,
-        JSON.stringify(cuisineTypes),
-        diningStyle,
-        priceRange,
-        otherNotes || null,
-        operatingHours ? JSON.stringify(JSON.parse(operatingHours)) : null,
-        userReview || null,
-        isFlagged ? 1 : 0
-      ]
+    const {
+      imageUrl,
+      restaurantName,
+      streetName,
+      streetNumber,
+      city,
+      state,
+      zipCode,
+      country,
+      description,
+      cuisineTypes,
+      diningStyle,
+      priceRange,
+      extraText,
+      operatingHours,
+      reviewText,
+      ratingValue,
+    } = req.body;
+
+    // Check if the restaurant name already exists in the reviews array
+    const existingRestaurant = reviews.find(
+      (review) =>
+        review.restaurantName.toLowerCase() === restaurantName.toLowerCase()
     );
 
-    res.status(201).json({
-      message: "Review submitted successfully.",
-      submitted: {
-        userId: userId || null,
-        restaurantName,
-        imageUrl: imageUrl || null,
-        streetName,
-        streetNumber,
-        city,
-        state,
-        zipCode,
-        country,
-        description: description || null,
-        cuisineTypes,
-        diningStyle,
-        priceRange,
-        otherNotes: otherNotes || null,
-        operatingHours: operatingHours ? JSON.parse(operatingHours) : null,
-        userReview: userReview || null,
-        isFlagged: isFlagged ? true : false
-      }
-    });
-  } catch (error) {
-    console.error("Error submitting review:", error);
-    res.status(500).json({ error: "Internal server error." });
+    // If the restaurant is new and no imageUrl is provided, return an error
+    if (!existingRestaurant && !imageUrl) {
+      return res.status(400).json({
+        error: "First review for a restaurant must include an image URL.",
+      });
+    }
+
+    const newReview = {
+      id: reviewIdCounter++,
+      imageUrl,
+      restaurantName,
+      streetName,
+      streetNumber,
+      city,
+      state,
+      zipCode,
+      country,
+      description,
+      cuisineTypes,
+      diningStyle,
+      priceRange,
+      extraText,
+      operatingHours: JSON.parse(operatingHours || "[]"),
+      reviewText,
+      ratingValue,
+      isFlagged: false,
+    };
+
+    reviews.push(newReview);
+    res.status(201).json(newReview);
   }
-}); This has the try catch that can be used once we are further into the project*/
-
-app.post("/restaurant/review", (req, res) => {
-  const {
-    imageUrl,
-    restaurantName,
-    streetName,
-    streetNumber,
-    city,
-    state,
-    zipCode,
-    country,
-    description,
-    cuisineTypes,
-    diningStyle,
-    priceRange,
-    otherNotes,
-    operatingHours,
-    userReview
-  } = req.body;
-
-// Check if the restaurant name already exists in the reviews array
-const existingRestaurant = reviews.find(
-  (review) => review.restaurantName.toLowerCase() === restaurantName.toLowerCase()
 );
 
-// If the restaurant is new and no imageUrl is provided, return an error
-if (!existingRestaurant && !imageUrl) {
-  return res.status(400).json({
-    error: "First review for a restaurant must include an image URL."
-  });
-}
-
-  const newReview = {
-    id: reviewIdCounter++,
-    imageUrl,
-    restaurantName,
-    streetName,
-    streetNumber,
-    city,
-    state,
-    zipCode,
-    country,
-    description,
-    cuisineTypes,
-    diningStyle,
-    priceRange,
-    otherNotes,
-    operatingHours: JSON.parse(operatingHours || "[]"),
-    userReview,
-    isFlagged: false
-  };
-
-  reviews.push(newReview);
-  res.status(201).json(newReview);
-});
-
 // Get all reviews for the restaurant
-/* app.get("/restaurant/reviews", async (req, res) => {
-  try {
-    const [reviews] = await pool.query("SELECT * FROM reviews");
-    res.json(reviews);
-  } catch (err) {
-    console.error("Error fetching reviews:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});  This has the try catch that can be used once we are further into the project*/
 
 // Mock data for testing
 app.get("/restaurant/reviews", (req, res) => {
@@ -316,140 +353,194 @@ app.get("/restaurant/reviews", (req, res) => {
 });
 
 // Get a single review for the restaurant
-/*app.get("/restaurant/review/:id", async (req, res) => {
-  try {
-    const [reviews] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
-    if (reviews.length === 0) return res.status(404).json({ error: "Review not found" });
-    res.json(reviews[0]);
-  } catch (err) {
-    console.error("Error fetching review:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}); This has the try catch that can be used later*/
-
 // Mock data for testing
 app.get("/restaurant/review/:id", (req, res) => {
-  const review = reviews.find(r => r.id === parseInt(req.params.id));
+  const review = reviews.find((r) => r.id === parseInt(req.params.id));
   if (!review) return res.status(404).json({ error: "Review not found" });
   res.json(review);
 });
 
 // Allows user to update any review (only if they are the author of the review)
-/*
-app.put("/restaurant/review/:id", async (req, res) => {
-  try {
-    const [reviewRows] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
-    if (reviewRows.length === 0) return res.status(404).json({ error: "Review not found" });
+// Mock data for testing
+app.put(
+  "/restaurant/review/:id",
+  [
+    // Restaurant Name: required, 2-100 chars, letters/numbers/spaces/.'-&
+    body("restaurantName")
+      .trim()
+      .matches(/^[\w\s.'&-]{2,100}$/)
+      .withMessage(
+        "Restaurant name must be 2-100 characters and contain only letters, numbers, spaces, .'-&"
+      ),
 
+    // Description: required, 1-1000 chars, no < or >
+    body("description")
+      .trim()
+      .matches(/^[^<>]{1,1000}$/)
+      .withMessage(
+        "Description must be 1-1000 characters and cannot contain < or >"
+      ),
+
+    // Cuisine Types: required, must be array of allowed values
+    body("cuisineTypes")
+      .isArray({ min: 1 })
+      .withMessage("At least one cuisine type is required")
+      .custom((arr) =>
+        arr.every((type) =>
+          ["Japanese", "Chinese", "German", "Italian", "Mexican"].includes(type)
+        )
+      )
+      .withMessage("Invalid cuisine type(s)"),
+
+    // Dining Style: required, must be one of allowed values
+    body("diningStyle")
+      .isIn(["Sit down", "Fast Food", "Cafe", "Buffet", "Takeout"])
+      .withMessage("Dining style is invalid"),
+
+    // Price Range: required, must be one of allowed options
+    body("priceRange")
+      .isIn(["option1", "option2", "option3"])
+      .withMessage("Price range is invalid"),
+
+    // Street Name: required, 2-100 chars, letters/numbers/spaces/.'-&
+    body("streetName")
+      .trim()
+      .matches(/^[\w\s.'&-]{2,100}$/)
+      .withMessage(
+        "Street name must be 2-100 characters and contain only letters, numbers, spaces, .'-&"
+      ),
+
+    // Street Number: required, 1-10 chars, numbers/letters
+    body("streetNumber")
+      .trim()
+      .matches(/^[\w\s-]{1,10}$/)
+      .withMessage(
+        "Street number must be 1-10 characters and contain only letters, numbers, spaces, or -"
+      ),
+
+    // City: required, 2-50 chars, letters/spaces/.'-&
+    body("city")
+      .trim()
+      .matches(/^[a-zA-Z\s.'&-]{2,50}$/)
+      .withMessage(
+        "City must be 2-50 characters and contain only letters, spaces, .'-&"
+      ),
+
+    // State: required, 2 uppercase letters
+    body("state")
+      .trim()
+      .matches(/^[A-Z]{2}$/)
+      .withMessage("State must be a 2-letter abbreviation (e.g., TX)"),
+
+    // Zip Code: required, 5 digits or ZIP+4
+    body("zipCode")
+      .trim()
+      .matches(/^\d{5}(-\d{4})?$/)
+      .withMessage("Zip code must be valid (e.g., 12345 or 12345-6789)"),
+
+    // Country: required, must be USA
+    body("country").equals("USA").withMessage("Country must be USA"),
+
+    // Review Text: required, 1-1000 chars, no < or >
+    body("reviewText")
+      .trim()
+      .matches(/^[^<>]{1,1000}$/)
+      .withMessage(
+        "Review must be 1-1000 characters and cannot contain < or >"
+      ),
+
+    // Extra Text: optional, 0-1000 chars, no < or >
+    body("extraText")
+      .optional()
+      .trim()
+      .matches(/^[^<>]{0,1000}$/)
+      .withMessage("Extra text cannot contain < or >"),
+
+    // Operating Hours: optional, must be valid JSON array or string
+    body("operatingHours")
+      .optional()
+      .custom((value) => {
+        try {
+          const arr = typeof value === "string" ? JSON.parse(value) : value;
+          return Array.isArray(arr);
+        } catch {
+          return false;
+        }
+      })
+      .withMessage("Operating hours must be a valid array"),
+
+    // Rating: required, integer 1-5
+    body("rating")
+      .isInt({ min: 1, max: 5 })
+      .withMessage("Rating must be an integer between 1 and 5"),
+
+    // Image URL: optional, must be a valid URL if present
+    body("imageUrl").optional().isURL().withMessage("Image URL must be valid"),
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    // Find the review by ID
+    const review = reviews.find((r) => r.id === parseInt(req.params.id));
+
+    // If review doesn't exist, return 404
+    if (!review) return res.status(404).json({ error: "Review not found" });
+
+    // Destructure request body
     const {
       imageUrl,
-      location,
+      restaurantName,
+      streetName,
+      streetNumber,
+      city,
+      state,
+      zipCode,
+      country,
       description,
       cuisineTypes,
       diningStyle,
       priceRange,
-      otherNotes,
+      extraText,
       operatingHours,
-      userReview,
-      isFlagged 
+      reviewText,
+      ratingValue,
+      isFlagged,
     } = req.body;
 
-    await pool.query(
-      `UPDATE reviews SET 
-        imageUrl = ?, streetName = ?, streetNumber = ?, city = ?, state = ?, zipCode = ?, country = ?, 
-        description = ?, cuisineTypes = ?, diningStyle = ?, priceRange = ?, 
-        otherNotes = ?, operatingHours = ?, userReview = ?, isFlagged = ?
-      WHERE id = ?`,
-      [
-        imageUrl || null,
-        location.streetName, location.streetNumber, location.city, location.state, location.zipCode, location.country,
-        description || null,
-        JSON.stringify(cuisineTypes), diningStyle, priceRange,
-        otherNotes || null, JSON.stringify(operatingHours || []),
-        userReview || null,
-        isFlagged ? 1 : 0,
-        req.params.id
-      ]
-    );
+    // Update the review object with the new values
+    review.imageUrl = imageUrl || review.imageUrl;
+    review.restaurantName = restaurantName || review.restaurantName;
+    review.streetName = streetName || review.streetName;
+    review.streetNumber = streetNumber || review.streetNumber;
+    review.city = city || review.city;
+    review.state = state || review.state;
+    review.zipCode = zipCode || review.zipCode;
+    review.country = country || review.country;
+    review.description = description || review.description;
+    review.cuisineTypes = cuisineTypes || review.cuisineTypes;
+    review.diningStyle = diningStyle || review.diningStyle;
+    review.priceRange = priceRange || review.priceRange;
+    review.extraText = extraText || review.extraText;
+    review.operatingHours = operatingHours || review.operatingHours;
+    review.reviewText = reviewText || review.reviewText;
+    review.ratingValue = ratingValue || review.ratingValue;
 
-    res.json({ message: "Review updated successfully" });
-  } catch (err) {
-    console.error("Error updating review:", err);
-    res.status(500).json({ error: "Internal server error" });
+    // Update isFlagged only if it's passed and is a boolean
+    if (typeof isFlagged === "boolean") {
+      review.isFlagged = isFlagged;
+    }
+
+    // Return the updated review as response
+    res.json({ message: "Review updated successfully", data: review });
   }
-}); This has the try catch that can be used later*/
-
-// Mock data for testing
-app.put("/restaurant/review/:id", (req, res) => {
-  // Find the review by ID
-  const review = reviews.find(r => r.id === parseInt(req.params.id));
-  
-  // If review doesn't exist, return 404
-  if (!review) return res.status(404).json({ error: "Review not found" });
-
-  // Destructure request body
-  const {
-    imageUrl,
-    restaurantName,
-    streetName,
-    streetNumber,
-    city,
-    state,
-    zipCode,
-    country,
-    description,
-    cuisineTypes,
-    diningStyle,
-    priceRange,
-    otherNotes,
-    operatingHours,
-    userReview,
-    isFlagged 
-  } = req.body;
-
-  // Update the review object with the new values
-  review.imageUrl = imageUrl || review.imageUrl;
-  review.restaurantName = restaurantName || review.restaurantName;
-  review.streetName = streetName || review.streetName;
-  review.streetNumber = streetNumber || review.streetNumber;
-  review.city = city || review.city;
-  review.state = state || review.state;
-  review.zipCode = zipCode || review.zipCode;
-  review.country = country || review.country;
-  review.description = description || review.description;
-  review.cuisineTypes = cuisineTypes || review.cuisineTypes;
-  review.diningStyle = diningStyle || review.diningStyle;
-  review.priceRange = priceRange || review.priceRange;
-  review.otherNotes = otherNotes || review.otherNotes;
-  review.operatingHours = operatingHours || review.operatingHours;
-  review.userReview = userReview || review.userReview;
-  
-  // Update isFlagged only if it's passed and is a boolean
-  if (typeof isFlagged === "boolean") {
-    review.isFlagged = isFlagged;
-  }
-
-  // Return the updated review as response
-  res.json({ message: "Review updated successfully", data: review });
-});
+);
 
 // Remove any review (Admin only)
-/*app.delete("/restaurant/review/:id", async (req, res) => {
-  try {
-    const [reviewRows] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
-    if (reviewRows.length === 0) return res.status(404).json({ error: "Review not found" });
-
-    await pool.query("DELETE FROM reviews WHERE id = ?", [req.params.id]);
-    res.json({ message: "Review deleted successfully" });
-  } catch (err) {
-    console.error("Error deleting review:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}); This has the try catch that can be used later*/
-
 // Mock data for testing
 app.delete("/restaurant/review/:id", (req, res) => {
-  const index = reviews.findIndex(r => r.id === parseInt(req.params.id));
+  const index = reviews.findIndex((r) => r.id === parseInt(req.params.id));
   if (index === -1) return res.status(404).json({ error: "Review not found" });
 
   reviews.splice(index, 1);
@@ -457,22 +548,9 @@ app.delete("/restaurant/review/:id", (req, res) => {
 });
 
 // Flag a review for investigation (Admin and certain ranks only)
-/*app.patch("/restaurant/review/:id/flag", async (req, res) => {
-  try {
-    const [reviewRows] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
-    if (reviewRows.length === 0) return res.status(404).json({ error: "Review not found" });
-
-    await pool.query("UPDATE reviews SET isFlagged = 1 WHERE id = ?", [req.params.id]);
-    res.json({ message: "Review has been flagged for investigation" });
-  } catch (err) {
-    console.error("Error flagging review:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}); This has the try catch that can be used later*/
-
 // Mock data for testing
 app.patch("/restaurant/review/:id/flag", (req, res) => {
-  const review = reviews.find(r => r.id === parseInt(req.params.id));
+  const review = reviews.find((r) => r.id === parseInt(req.params.id));
   if (!review) return res.status(404).json({ error: "Review not found" });
 
   review.isFlagged = true;
@@ -480,20 +558,9 @@ app.patch("/restaurant/review/:id/flag", (req, res) => {
 });
 
 //To Unflag a review (Admin only)
-/*app.put("/restaurant/review/:id/unflag", async (req, res) => {
-  try {
-    const [reviewRows] = await pool.query("SELECT * FROM reviews WHERE id = ?", [req.params.id]);
-    if (reviewRows.length === 0) return res.status(404).json({ error: "Review not found" });
-
-    await pool.query("UPDATE reviews SET isFlagged = 0 WHERE id = ?", [req.params.id]);
-    res.json({ message: "Review has been unflagged successfully" });
-  } catch (err) {
-    console.error("Error unflagging review:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}); Has try catch but could be used later*/
+// Mock data for testing
 app.patch("/restaurant/review/:id/unflag", (req, res) => {
-  const review = reviews.find(r => r.id === parseInt(req.params.id));
+  const review = reviews.find((r) => r.id === parseInt(req.params.id));
   if (!review) return res.status(404).json({ error: "Review not found" });
 
   review.isFlagged = false;
@@ -501,71 +568,86 @@ app.patch("/restaurant/review/:id/unflag", (req, res) => {
 });
 //#endregion
 
-
-app.get('/api/restaurants', async (req, res) => {
+app.get("/api/restaurants", async (req, res) => {
   const { zip, radius } = req.query;
-  const apiKey = process.env.GOOGLE_API_KEY; 
+  const apiKey = process.env.GOOGLE_API_KEY;
 
-  console.log(`Received request to find restaurants near zip: ${zip}, radius: ${radius}`);
+  console.log(
+    `Received request to find restaurants near zip: ${zip}, radius: ${radius}`
+  );
 
   try {
-      // Convert zip code to lat/lng
-      const geoResponse = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${apiKey}`);
-      console.log('Geocoding response:', geoResponse.data);
+    // Convert zip code to lat/lng
+    const geoResponse = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${apiKey}`
+    );
+    console.log("Geocoding response:", geoResponse.data);
 
-      if (geoResponse.data.results.length === 0) {
-          return res.status(404).send('Invalid zip code');
+    if (geoResponse.data.results.length === 0) {
+      return res.status(404).send("Invalid zip code");
+    }
+
+    const location = geoResponse.data.results[0].geometry.location;
+    const { lat, lng } = location;
+
+    console.log(`Geocoded location: lat=${lat}, lng=${lng}`);
+
+    let restaurants = [];
+    let nextPageToken = "";
+    let keepFetching = true;
+
+    // Fetch all restaurant locations within the specified radius
+    while (keepFetching) {
+      const restaurantResponse = await axios.get(
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${
+          radius * 1609.34
+        }&type=restaurant&key=${apiKey}&pagetoken=${nextPageToken}`
+      );
+      console.log("Restaurants response:", restaurantResponse.data);
+
+      restaurants = restaurants.concat(restaurantResponse.data.results);
+
+      nextPageToken = restaurantResponse.data.next_page_token;
+
+      if (!nextPageToken) {
+        keepFetching = false;
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
+    }
 
-      const location = geoResponse.data.results[0].geometry.location;
-      const { lat, lng } = location;
+    // Fetch details for each restaurant to get hours of operation
+    const detailedRestaurants = await Promise.all(
+      restaurants.map(async (restaurant) => {
+        const detailsResponse = await axios.get(
+          `https://maps.googleapis.com/maps/api/place/details/json?place_id=${restaurant.place_id}&fields=name,formatted_address,opening_hours&key=${apiKey}`
+        );
+        const details = detailsResponse.data.result;
 
-      console.log(`Geocoded location: lat=${lat}, lng=${lng}`);
+        if (details.opening_hours && details.opening_hours.weekday_text) {
+          return {
+            name: details.name,
+            address: details.formatted_address,
+            hours: details.opening_hours.weekday_text,
+          };
+        }
 
-      let restaurants = [];
-      let nextPageToken = '';
-      let keepFetching = true;
+        return null; // Filter out restaurants with no operational hours
+      })
+    );
 
-      // Fetch all restaurant locations within the specified radius
-      while (keepFetching) {
-          const restaurantResponse = await axios.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius * 1609.34}&type=restaurant&key=${apiKey}&pagetoken=${nextPageToken}`);
-          console.log('Restaurants response:', restaurantResponse.data);
+    console.log(
+      `Total restaurants inside ${radius} miles for your zip code: ${restaurants.length}`
+    );
 
-          restaurants = restaurants.concat(restaurantResponse.data.results);
+    const operationalRestaurants = detailedRestaurants.filter(
+      (restaurant) => restaurant !== null
+    );
 
-          nextPageToken = restaurantResponse.data.next_page_token;
-
-          if (!nextPageToken) {
-              keepFetching = false;
-          } else {
-              await new Promise(resolve => setTimeout(resolve, 2000));
-          }
-      }
-
-      // Fetch details for each restaurant to get hours of operation
-      const detailedRestaurants = await Promise.all(restaurants.map(async (restaurant) => {
-          const detailsResponse = await axios.get(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${restaurant.place_id}&fields=name,formatted_address,opening_hours&key=${apiKey}`);
-          const details = detailsResponse.data.result;
-
-          if (details.opening_hours && details.opening_hours.weekday_text) {
-              return {
-                  name: details.name,
-                  address: details.formatted_address,
-                  hours: details.opening_hours.weekday_text,
-              };
-          }
-
-          return null; // Filter out restaurants with no operational hours
-      }));
-
-      console.log(`Total restaurants inside ${radius} miles for your zip code: ${restaurants.length}`);
-
-      const operationalRestaurants = detailedRestaurants.filter(restaurant => restaurant !== null);
-
-      res.json(operationalRestaurants);
+    res.json(operationalRestaurants);
   } catch (error) {
-      console.error('Error fetching restaurants:', error);
-      res.status(500).send('Error fetching restaurants');
+    console.error("Error fetching restaurants:", error);
+    res.status(500).send("Error fetching restaurants");
   }
 });
 
