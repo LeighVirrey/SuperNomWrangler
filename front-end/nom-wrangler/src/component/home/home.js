@@ -11,9 +11,9 @@ const Home = () => {
       <h1 className='mainheader'> FEATURED </h1>
       <div className='restO box-shadow'>
         <div className='singleRest'>
-          <img className='restImg' src='../images/11steakhouse.jpg' />
+          <img className='restImgLeft' src='../images/11steakhouse.jpg' />
           <div className='restDetails'>
-            <h1>Lucky J Steakhouse & Arena</h1>
+            <h1>Orange 1</h1>
             <h2 className='restAddress'>11664 Fir Rd, Carthage, MO 64836</h2>
             <p>Lucky J Steakhouse & Arena opened its doors in November 2001...</p>
           </div>
@@ -24,7 +24,7 @@ const Home = () => {
       <div className='restB box-shadow'>
         <div className='singleRest'>
           <div className='restDetails'>
-            <h1>Lucky J Steakhouse & Arena</h1>
+            <h1>Teal 1</h1>
             <h2 className='restAddress'>11664 Fir Rd, Carthage, MO 64836</h2>
             <p>
               Lucky J Steakhouse & Arena opened its doors in November 2001 in
@@ -34,7 +34,7 @@ const Home = () => {
               great food or good times, Lucky J is the place to be!
             </p>
           </div>
-          <img className='restImg' src='../images/11steakhouse.jpg' />
+          <img className='restImgRight' src='../images/11steakhouse.jpg' />
         </div>
       </div>
 
@@ -42,7 +42,7 @@ const Home = () => {
         <br />
         <div className='restO box-shadow'>
           <div className='singleRest'>
-            <img className='restImg' src='../images/11steakhouse.jpg' />
+            <img className='restImgLeft' src='../images/11steakhouse.jpg' />
             <div className='restDetails'>
               <h1>Lucky J Steakhouse & Arena</h1>
               <h2 className='restAddress'>11664 Fir Rd, Carthage, MO 64836</h2>
@@ -65,7 +65,7 @@ const Home = () => {
                 great food or good times, Lucky J is the place to be!
               </p>
             </div>
-            <img className='restImg' src='../images/11steakhouse.jpg' />
+            <img className='restImgRight' src='../images/11steakhouse.jpg' />
           </div>
         </div>
 

@@ -30,11 +30,22 @@
 }
 
 
-.restImg {
+.restImgLeft {
     width: 500px;
     height: 100%;
     object-fit: cover;
     border-radius: 0;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.restImgRight {
+    width: 500px;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
 }
 
 
