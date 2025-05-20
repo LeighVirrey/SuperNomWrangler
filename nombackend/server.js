@@ -505,7 +505,6 @@ app.delete("/address/:id", async (req, res) => {
 }
 );
 
-
 // Logout endpoint - clear the auth cookie
 //we probably don't need this anymore -zk
 app.post("/logout", (req, res) => {
