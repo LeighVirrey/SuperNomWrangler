@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './register.css';
 
-const apiUrl = 'http://localhost:6000/register';
+const apiUrl = 'http://localhost:4000/register';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -106,12 +106,15 @@ const Register = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        
         username: formData.username,
         email: formData.email,
         firstName: formData.firstName,
         lastName: formData.lastName,
         password: formData.password
       });
+
+      console.log("does this work", response);
 
       // Handle successful registration
       setRegistrationSuccess(true);

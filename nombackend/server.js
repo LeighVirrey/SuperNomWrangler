@@ -2,7 +2,7 @@ const bcrypt = require("bcryptjs");
 const express = require("express");
 const session = require("express-session");
 const app = express();
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const axios = require("axios"); // For Google Places API
 const sendEmail = require("./smtp"); // Your custom SMTP module
@@ -969,7 +969,7 @@ app.get('/api/restaurants', async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
