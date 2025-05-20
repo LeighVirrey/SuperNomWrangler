@@ -179,3 +179,14 @@
   border-color: white;
 }
 
+
+/* tablet view */
+@media screen and (max-width: 1024px) {
+    
+}
+
+
+/* phone view */
+@media screen and (max-width: 768px) {
+    
+}
