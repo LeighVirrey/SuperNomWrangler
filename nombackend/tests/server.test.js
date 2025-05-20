@@ -1,4 +1,4 @@
-
+const usersClass = require('../models/Users')
 
 test("server is running", () => {
     return fetch("http://localhost:4000").then((response) => {
@@ -49,6 +49,100 @@ test("register user POST same user params Returns 409", () => {
         expect(response.status).toBe(409);
     });
 })
+
+test("update user PUT all params Returns 200", () => {
+    return fetch("http://localhost:4000/user/1", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: "updateduser",
+            password: "updatedpass",
+            email: "updateduser@example.com"
+        })
+    }).then((response) => {
+        expect(response.status).toBe(200);
+    });
+})
+
+test("update user PUT missing params Returns 400", () => {
+    return fetch("http://localhost:4000/user/1", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+    }).then((response) => {
+        expect(response.status).toBe(400);
+    });
+})
+
+test("update user PUT wrong params Returns 404", () => {
+    return fetch("http://localhost:4000/user/999", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: "testuser",
+            password: "testpass",
+            email: "testuser@example.com"
+        })
+    }).then((response) => {
+        expect(response.status).toBe(404);
+    });
+})
+
+test("admin update user PUT all params Returns 200", () => {
+    return fetch("http://localhost:4000/admin/editUser/1", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: "updateduser",
+            password: "updatedpass",
+            email: "updateduser@example.com",
+            is_Admin: true,
+            rank: 1
+        })
+    }).then((response) => {
+        expect(response.status).toBe(200);
+    });
+})
+
+test("admin update user PUT missing params Returns 400", () => {
+    return fetch("http://localhost:4000/admin/editUser/1", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+    }).then((response) => {
+        expect(response.status).toBe(400);
+    });
+})
+
+// test("delete user DELETE Returns 200", () => {
+//     return fetch("http://localhost:4000/user/1", {
+//         method: "DELETE",
+//         headers: {
+//             "Content-Type": "application/json"
+//         }
+//     }).then((response) => {
+//         expect(response.status).toBe(200);
+//     });
+// })
+
+test("delete user DELETE wrong params returns 404", () => {
+    return fetch("http://localhost:4000/user/999", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then((response) => {
+        expect(response.status).toBe(404);
+    });
+});
 
 test("login user POST all params Returns 200", () => {
     return fetch("http://localhost:4000/login", {

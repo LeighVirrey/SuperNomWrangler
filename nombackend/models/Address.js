@@ -1,37 +1,80 @@
-import { createResource, getResource, getResourceById, updateResource, deleteResource } from '../services/dal';
+const DAL = require('../DAL/mssqlDal');
 
-export default class Address {
-  constructor({ id, street, city, state, zip, created_at }) {
-    this.id = id;
-    this.street = street;
+class Address {
+  constructor({ address_Id, name_Street, suite, city, country, state, zip_Code }) {
+    this.address_Id = address_Id;
+    this.name_Street = name_Street;
+    this.suite = suite;
     this.city = city;
+    this.country = country;
     this.state = state;
-    this.zip = zip;
-    this.createdAt = new Date(created_at);
+    this.zip_Code = zip_Code;
   }
 
-  static async create({ street, city, state, zip }) {
-    const data = await createResource('/addresses', { street, city, state, zip });
-    return new Address(data);
+  // Getters & Setters
+  getAddressId() { return this.address_Id; }
+  setAddressId(id) { this.address_Id = id; }
+
+  getStreetName() { return this.name_Street; }
+  setStreetName(name) { this.name_Street = name; }
+
+  getSuite() { return this.suite; }
+  setSuite(suite) { this.suite = suite; }
+
+  getCity() { return this.city; }
+  setCity(city) { this.city = city; }
+
+  getState() { return this.state; }
+  setState(state) { this.state = state; }
+
+  getCountry() { return this.country; }
+  setCountry(country) { this.country = country; }
+
+  getZipCode() { return this.zip_Code; }
+  setZipCode(zip) { this.zip_Code = zip; }
+
+
+  // CRUD Methods (UML naming)
+  static async getAll() {
+    const query = 'SELECT * FROM Address';
+    const rows = await DAL.executeQuery(query);
+    return rows.map(r => new Address(r));
   }
 
-  static async fetchAll() {
-    const list = await getResource('/addresses');
-    return list.map(a => new Address(a));
+  static async get(address_Id) {
+    const query = 'SELECT * FROM Address WHERE address_Id = @address_Id';
+    const params = { address_Id };
+    const rows = await DAL.executeQuery(query, params);
+    return rows.length ? new Address(rows[0]) : null;
   }
 
-  static async fetchById(id) {
-    const a = await getResourceById('/addresses', id);
-    return new Address(a);
+  static async getFromAddress({ name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'SELECT * FROM Address WHERE name_Street = @name_Street AND suite = @suite AND city = @city AND state = @state AND zip_Code = @zip_Code AND country = @country';
+    const params = { name_Street, suite, city, state, zip_Code, country };
+    const rows = await DAL.executeQuery(query, params);
+    return rows.length ? new Address(rows[0]) : null;
   }
 
-  async update(updates) {
-    const data = await updateResource('/addresses', this.id, updates);
-    Object.assign(this, updates);
-    return this;
+  static async create({ name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'INSERT INTO Address (name_Street, suite, city, state, zip_Code, country) VALUES (@name_Street, @suite, @city, @state, @zip_Code, @country)';
+    const params = { name_Street, suite, city, state, zip_Code, country };
+    await DAL.executeQuery(query, params);
+    return new Address(name_Street, suite, city, state, zip_Code, country);
   }
 
-  async delete() {
-    await deleteResource('/addresses', this.id);
+  static async update({ address_Id, name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'UPDATE Address SET name_Street = @name_Street, suite = @suite, city = @city, state = @state, zip_Code = @zip_Code, country = @country WHERE address_Id = @address_Id';
+    const params = { address_Id, name_Street, suite, city, state, zip_Code, country };
+    await DAL.executeQuery(query, params);
+    return new Address(name_Street, suite, city, state, zip_Code, country);
+  }
+
+  static async delete( address_Id ) {
+    const query = 'DELETE FROM Address WHERE address_Id = @address_Id';
+    const params = { address_Id };
+    await DAL.executeQuery(query, params);
+    return { address_Id };
   }
 }
+
+module.exports = Address;
