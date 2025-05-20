@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
 
-const apiUrl = 'http://localhost:6000/login';
+const apiUrl = 'http://localhost:4000/login';
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ 
