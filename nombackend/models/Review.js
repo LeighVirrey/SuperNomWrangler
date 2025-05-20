@@ -1,24 +1,25 @@
 const DAL = require('../DAL/mssqlDal')
 
 class Review {
-  constructor({ reviewId, userId, restaurantId, rating, review, datePosted }) {
-    this.reviewId  = reviewId;
-    this.userId = userId;
-    this.restaurantId = restaurantId;
+  constructor({ review_Id, user_Id, restaurant_Id, rating, review, date_Posted, is_Flagged }) {
+    this.review_Id  = review_Id;
+    this.user_Id = user_Id;
+    this.restaurant_Id = restaurant_Id;
     this.rating = rating;
     this.review = review;
-    this.datePosted = datePosted ? new Date(datePosted) : new Date();
+    this.date_Posted = date_Posted ? new Date(date_Posted) : new Date();
+    this.is_Flagged = is_Flagged;
   }
 
   // Getters & Setters
-  getReviewId() { return this.reviewId; }
-  setReviewId(id) { this.reviewId = id; }
+  getReviewId() { return this.review_Id; }
+  setReviewId(id) { this.review_Id = id; }
 
-  getUserId() { return this.userId; }
-  setUserId(id) { this.userId = id; }
+  getUserId() { return this.user_Id; }
+  setUserId(id) { this.user_Id = id; }
 
-  getRestaurantId() { return this.restaurantId; }
-  setRestaurantId(id) { this.restaurantId = id; }
+  getRestaurantId() { return this.restaurant_Id; }
+  setRestaurantId(id) { this.restaurant_Id = id; }
 
   getRating() { return this.rating; }
   setRating(rating) { this.rating = rating; }
@@ -28,6 +29,9 @@ class Review {
 
   getDatePosted() { return this.datePosted; }
   setDatePosted(date) { this.datePosted = new Date(date); }
+
+  getIsFlagged() { return this.is_Flagged; }
+  setIsFlagged(is_Flagged) { this.is_Flagged = is_Flagged; }
 
   checkProfan() {
     //implement this later, please intall the profanity package as I cannot do so right now -ZK
@@ -40,51 +44,52 @@ class Review {
     return rows.map(r => new Review(r));
   }
 
-  static async get(reviewId) {
-    const query = 'SELECT * FROM Reviews WHERE reviewId = @reviewId';
-    const params = { reviewId };
+  static async get(review_Id) {
+    const query = 'SELECT * FROM Reviews WHERE review_Id = @review_Id';
+    const params = { review_Id };
     const rows = await DAL.executeQuery(query, params);
     return rows.length ? new Review(rows[0]) : null;
   }
 
-  static async getByUserId(userId) {
-    const query = 'SELECT * FROM Reviews WHERE userId = @userId';
-    const params = { userId };
+  static async getByUserId(user_Id) {
+    const query = 'SELECT * FROM Reviews WHERE user_Id = @user_Id';
+    const params = { user_Id };
     const rows = await DAL.executeQuery(query, params);
     return rows.length ? new Review(rows[0]) : null;
   }
-  static async getByRestaurantId(restaurantId) {
-    const query = 'SELECT * FROM Reviews WHERE restaurantId = @restaurantId';
-    const params = { restaurantId };
+  static async getByRestaurantId(restaurant_Id) {
+    const query = 'SELECT * FROM Reviews WHERE restaurant_Id = @restaurant_Id';
+    const params = { restaurant_Id };
     const rows = await DAL.executeQuery(query, params);
     return rows.length ? new Review(rows[0]) : null;
   }
-  static async getByUserIdAndRestaurantId({ userId, restaurantId }) {
-    const query = 'SELECT * FROM Reviews WHERE userId = @userId AND restaurantId = @restaurantId';
-    const params = { userId, restaurantId };
+  static async getByUserIdAndRestaurantId({ user_Id, restaurant_Id }) {
+    const query = 'SELECT * FROM Reviews WHERE user_Id = @user_Id AND restaurant_Id = @restaurant_Id';
+    const params = { user_Id, restaurant_Id };
     const rows = await DAL.executeQuery(query, params);
     return rows.length ? new Review(rows[0]) : null;
   }
 
-  static async create({ userId, restaurantId, rating, review, datePosted }) {
-    const query = 'INSERT INTO Reviews (userId, restaurantId, rating, review, datePosted) VALUES (@userId, @restaurantId, @rating, @review, @datePosted)';
-    const params = { userId, restaurantId, rating, review, datePosted };
-    const row = await DAL.executeQuery(query, params);
-    return new Review(row);
-  }
-
-  static async update({ reviewId, rating, review }) {
-    const query = 'UPDATE Reviews SET rating = @rating, review = @review WHERE reviewId = @reviewId';
-    const params = { reviewId, rating, review };
-    const row = await DAL.executeQuery(query, params);
-    return new Review(row);
-  }
-
-  static async delete({ reviewId }) {
-    const query = 'DELETE FROM Reviews WHERE reviewId = @reviewId';
-    const params = { reviewId };
+  static async create({ user_Id, restaurant_Id, rating, review, is_Flagged }) {
+    const date_Posted = new Date();
+    const query = 'INSERT INTO Reviews (user_Id, restaurant_Id, rating, review, date_Posted, is_Flagged) VALUES (@user_Id, @restaurant_Id, @rating, @review, @date_Posted, @is_Flagged)';
+    const params = { user_Id, restaurant_Id, rating, review, date_Posted, is_Flagged };
     await DAL.executeQuery(query, params);
-    return { reviewId };
+    return new Review({ user_Id, restaurant_Id, rating, review, date_Posted, is_Flagged });
+  }
+
+  static async update({ review_Id, rating, review, is_Flagged }) {
+    const query = 'UPDATE Reviews SET rating = @rating, review = @review, is_Flagged = @is_Flagged WHERE review_Id = @review_Id';
+    const params = { review_Id, rating, review, is_Flagged };
+    await DAL.executeQuery(query, params);
+    return new Review({ review_Id, rating, review, is_Flagged });
+  }
+
+  static async delete({ review_Id }) {
+    const query = 'DELETE FROM Reviews WHERE review_Id = @review_Id';
+    const params = { review_Id };
+    await DAL.executeQuery(query, params);
+    return { review_Id };
   }
 }
 

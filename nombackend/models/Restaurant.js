@@ -1,50 +1,66 @@
 const DAL = require('../DAL/mssqlDal');
 
 class Restaurant {
-  constructor({ restaurantId, restaurantName, addressId, imgURL, description, priceRange, cuisine, operatingHours, isFlagged }) {
-    this.restaurantId = restaurantId;
-    this.restaurantName = restaurantName;
-    this.addressId = addressId;
-    this.imgURL = imgURL;
+  constructor({ restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style }) {
+    this.restaurant_Id = restaurant_Id;
+    this.name = name;
+    this.address_Id = address_Id;
+    this.img_Url = img_Url;
     this.description = description;
-    this.priceRange = priceRange;
-    this.cuisine = cuisine;
-    this.operatingHours = operatingHours;
-    this.isFlagged = isFlagged;
+    this.price_Range = price_Range;
+    this.cuisine_Type = cuisine_Type;
+    this.dining_Style = dining_Style;
+    this.operating_Hours = operating_Hours;
+    this.is_Flagged = is_Flagged;
+    this.hidden_Gem = hidden_Gem;
+    this.mom_And_Pop = mom_And_Pop;
+    this.nook_And_Cranny = nook_And_Cranny;
+
   }
 
   // Getters & Setters
-  getRestaurantId() { return this.restaurantId; }
-  setRestaurantId(id) { this.restaurantId = id; }
+  getRestaurantId() { return this.restaurant_Id; }
+  setRestaurantId(id) { this.restaurant_Id = id; }
 
-  getRestaurantName() { return this.restaurantName; }
-  setRestaurantName(name) { this.restaurantName = name; }
+  getName() { return this.name; }
+  setName(name) { this.name = name; }
 
-  getAddressId() { return this.addressId; }
-  setAddressId(id) { this.addressId = id; }
+  getAddressId() { return this.address_Id; }
+  setAddressId(id) { this.address_Id = id; }
 
-  getImgURL() { return this.imgURL; }
-  setImgURL(url) { this.imgURL = url; }
+  getImgURL() { return this.img_Url; }
+  setImgURL(url) { this.img_Url = url; }
 
   getDescription() { return this.description; }
   setDescription(desc) { this.description = desc; }
 
-  getPriceRange() { return this.priceRange; }
-  setPriceRange(range) { this.priceRange = range; }
+  getPriceRange() { return this.price_Range; }
+  setPriceRange(range) { this.price_Range = range; }
 
-  getCuisine() { return this.cuisine; }
-  setCuisine(cuisine) { this.cuisine = cuisine; }
+  getCuisine() { return this.cuisine_Type; }
+  setCuisine(cuisine) { this.cuisine_Type = cuisine; }
 
-  getOperatingHours() { return this.operatingHours; }
-  setOperatingHours(hours) { this.operatingHours = hours; }
+  getOperatingHours() { return this.operating_Hours; }
+  setOperatingHours(hours) { this.operating_Hours = hours; }
 
-  getIsFlagged() { return this.isFlagged; }
-  setIsFlagged(flag) { this.isFlagged = flag; }
+  getIsFlagged() { return this.is_Flagged; }
+  setIsFlagged(flag) { this.is_Flagged = flag; }
 
+  getHidden_Gem() { return this.hidden_Gem; }
+  setHidden_Gem(hidden) { this.hidden_Gem = hidden; }
+
+  getMom_And_Pop() { return this.mom_And_Pop; }
+  setMom_And_Pop(mom) { this.mom_And_Pop = mom; }
+
+  getNook_And_Cranny() { return this.nook_And_Cranny; }
+  setNook_And_Cranny(nook) { this.nook_And_Cranny = nook; }
+
+  getDining_Style() { return this.dining_Style; }
+  setDining_Style(style) { this.dining_Style = style; }
 
   // Relationship Method
   async getAddress() {
-    return await Address.get(this.locationAddressID);
+    return await Address.get(this.address_Id);
   }
 
   // CRUD Methods (UML naming)
@@ -54,32 +70,32 @@ class Restaurant {
     return rows.map(r => new Restaurant(r));
   }
 
-  static async get(restaurantId) {
-    const query = 'SELECT * FROM Restaurants WHERE restaurantId = @restaurantId';
-    const params = { restaurantId };
+  static async get(restaurant_Id) {
+    const query = 'SELECT * FROM Restaurants WHERE restaurant_Id = @restaurant_Id';
+    const params = { restaurant_Id };
     const rows = await DAL.executeQuery(query, params);
     return rows.length ? new Restaurant(rows[0]) : null;
   }
 
-  static async create({ restaurantName, addressId, imgURL, description, priceRange, cuisine, operatingHours, isFlagged }) {
-    const query = 'INSERT INTO Restaurants (restaurantName, addressId, imgURL, description, priceRange, cuisine, operatingHours, isFlagged) VALUES (@restaurantName, @addressId, @imgURL, @description, @priceRange, @cuisine, @operatingHours, @isFlagged)';
-    const params = { restaurantName, addressId, imgURL, description, priceRange, cuisine, operatingHours, isFlagged };
-    const row = await DAL.executeQuery(query, params);
-    return new Restaurant(row);
-  }
-
-  static async update({ restaurantId, restaurantName, addressId, imgURL, description, priceRange, cuisine, operatingHours, isFlagged }) {
-    const query = 'UPDATE Restaurants SET restaurantName = @restaurantName, addressId = @addressId, imgURL = @imgURL, description = @description, priceRange = @priceRange, cuisine = @cuisine, operatingHours = @operatingHours, isFlagged = @isFlagged WHERE restaurantId = @restaurantId';
-    const params = { restaurantId, restaurantName, addressId, imgURL, description, priceRange, cuisine, operatingHours, isFlagged };
-    const row = await DAL.executeQuery(query, params);
-    return new Restaurant(row);
-  }
-
-  static async delete({ restaurantId }) {
-    const query = 'DELETE FROM Restaurants WHERE restaurantId = @restaurantId';
-    const params = { restaurantId };
+  static async create({ name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style }) {
+    const query = 'INSERT INTO Restaurants (name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style) VALUES (@name, @address_Id, @img_Url, @description, @price_Range, @cuisine_Type, @operating_Hours, @is_Flagged, @hidden_Gem, @mom_And_Pop, @nook_And_Cranny, @dining_Style)';
+    const params = { name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style };
     await DAL.executeQuery(query, params);
-    return { restaurantId };
+    return new Restaurant({ name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style });
+  }
+
+  static async update({ restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style }) {
+    const query = 'UPDATE Restaurants SET name = @name, address_Id = @address_Id, img_Url = @img_Url, description = @description, price_Range = @price_Range, cuisine_Type = @cuisine_Type, operating_Hours = @operating_Hours, is_Flagged = @is_Flagged, hidden_Gem = @hidden_Gem, mom_And_Pop = @mom_And_Pop, nook_And_Cranny = @nook_And_Cranny, dining_Style = @dining_Style WHERE restaurant_Id = @restaurant_Id';
+    const params = { restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style };
+    await DAL.executeQuery(query, params);
+    return new Restaurant({ restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style });
+  }
+
+  static async delete({ restaurant_Id }) {
+    const query = 'DELETE FROM Restaurants WHERE restaurant_Id = @restaurant_Id';
+    const params = { restaurant_Id };
+    await DAL.executeQuery(query, params);
+    return { restaurant_Id };
   }
 }
 

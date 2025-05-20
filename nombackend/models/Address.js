@@ -1,21 +1,22 @@
 const DAL = require('../DAL/mssqlDal');
 
 class Address {
-  constructor({ addressId, streetName, suite, city, state, zipCode }) {
-    this.addressId = addressId;
-    this.streetName = streetName;
+  constructor({ address_Id, name_Street, suite, city, country, state, zip_Code }) {
+    this.address_Id = address_Id;
+    this.name_Street = name_Street;
     this.suite = suite;
     this.city = city;
+    this.country = country;
     this.state = state;
-    this.zipCode = zipCode;
+    this.zip_Code = zip_Code;
   }
 
   // Getters & Setters
-  getAddressId() { return this.addressId; }
-  setAddressId(id) { this.addressId = id; }
+  getAddressId() { return this.address_Id; }
+  setAddressId(id) { this.address_Id = id; }
 
-  getStreetName() { return this.streetName; }
-  setStreetName(name) { this.streetName = name; }
+  getStreetName() { return this.name_Street; }
+  setStreetName(name) { this.name_Street = name; }
 
   getSuite() { return this.suite; }
   setSuite(suite) { this.suite = suite; }
@@ -26,50 +27,53 @@ class Address {
   getState() { return this.state; }
   setState(state) { this.state = state; }
 
-  getZipCode() { return this.zipCode; }
-  setZipCode(zip) { this.zipCode = zip; }
+  getCountry() { return this.country; }
+  setCountry(country) { this.country = country; }
+
+  getZipCode() { return this.zip_Code; }
+  setZipCode(zip) { this.zip_Code = zip; }
 
 
   // CRUD Methods (UML naming)
   static async getAll() {
-    const query = 'SELECT * FROM Addresses';
+    const query = 'SELECT * FROM Address';
     const rows = await DAL.executeQuery(query);
     return rows.map(r => new Address(r));
   }
 
-  static async get(addressId) {
-    const query = 'SELECT * FROM Addresses WHERE addressId = @addressId';
-    const params = { addressId };
+  static async get(address_Id) {
+    const query = 'SELECT * FROM Address WHERE address_Id = @address_Id';
+    const params = { address_Id };
     const rows = await DAL.executeQuery(query, params);
     return rows.length ? new Address(rows[0]) : null;
   }
 
-  static async getFromAddress({ streetName, suite, city, state, zipCode }) {
-    const query = 'SELECT * FROM Addresses WHERE streetName = @streetName AND suite = @suite AND city = @city AND state = @state AND zipCode = @zipCode';
-    const params = { streetName, suite, city, state, zipCode };
+  static async getFromAddress({ name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'SELECT * FROM Address WHERE name_Street = @name_Street AND suite = @suite AND city = @city AND state = @state AND zip_Code = @zip_Code AND country = @country';
+    const params = { name_Street, suite, city, state, zip_Code, country };
     const rows = await DAL.executeQuery(query, params);
     return rows.length ? new Address(rows[0]) : null;
   }
 
-  static async create({ streetName, suite, city, state, zipCode }) {
-    const query = 'INSERT INTO Addresses (streetName, suite, city, state, zipCode) VALUES (@streetName, @suite, @city, @state, @zipCode)';
-    const params = { streetName, suite, city, state, zipCode };
-    const row = await DAL.executeQuery(query, params);
-    return new Address(row);
-  }
-
-  static async update({ addressId, streetName, suite, city, state, zipCode }) {
-    const query = 'UPDATE Addresses SET streetName = @streetName, suite = @suite, city = @city, state = @state, zipCode = @zipCode WHERE addressId = @addressId';
-    const params = { addressId, streetName, suite, city, state, zipCode };
-    const row = await DAL.executeQuery(query, params);
-    return new Address(row);
-  }
-
-  static async delete({ addressId }) {
-    const query = 'DELETE FROM Addresses WHERE addressId = @addressId';
-    const params = { addressId };
+  static async create({ name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'INSERT INTO Address (name_Street, suite, city, state, zip_Code, country) VALUES (@name_Street, @suite, @city, @state, @zip_Code, @country)';
+    const params = { name_Street, suite, city, state, zip_Code, country };
     await DAL.executeQuery(query, params);
-    return { addressId };
+    return new Address(name_Street, suite, city, state, zip_Code, country);
+  }
+
+  static async update({ address_Id, name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'UPDATE Address SET name_Street = @name_Street, suite = @suite, city = @city, state = @state, zip_Code = @zip_Code, country = @country WHERE address_Id = @address_Id';
+    const params = { address_Id, name_Street, suite, city, state, zip_Code, country };
+    await DAL.executeQuery(query, params);
+    return new Address(name_Street, suite, city, state, zip_Code, country);
+  }
+
+  static async delete( address_Id ) {
+    const query = 'DELETE FROM Address WHERE address_Id = @address_Id';
+    const params = { address_Id };
+    await DAL.executeQuery(query, params);
+    return { address_Id };
   }
 }
 
