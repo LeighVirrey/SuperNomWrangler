@@ -1,4 +1,4 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
@@ -57,7 +57,7 @@ app.post("/register", async (req, res) => {
 });
 
 // Login endpoint
-app.post("/login", async (req, res) => {
+app.get("/login", async (req, res) => {
   const { username, email, password } = req.body;
 
   // Basic validation
