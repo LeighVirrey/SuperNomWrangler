@@ -48,10 +48,10 @@ body, html {
 
 .restaurants {
   margin-top: 2rem;
-  width: 100%;
+  /* width: 100%; */
   max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
+  /* margin-left: auto;
+  margin-right: auto; */
 }
 
 .aboutHeader {
@@ -62,10 +62,12 @@ body, html {
   margin-bottom: 1.5rem;
 }
 
-.reviewers {
+.rest-list-item {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  align-content: center;
+  max-width: 1000px;
 }
 
 .restaurant-card {
@@ -82,14 +84,16 @@ body, html {
   flex-direction: row;
   flex-wrap: wrap;
   width: 100%;
+  background-color: #291414;
 }
 
 .restImg {
-  width: 100%;
-  max-width: 500px;
+  width: 200px; 
   height: auto;
   object-fit: cover;
-  flex: 1 1 300px;
+  /* padding:15px; */
+  background-color: #291414;
+  border-radius: 12px;
 }
 
 .restDetails {
@@ -98,9 +102,9 @@ body, html {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
+  align-items: flex-end;
   color: white;
-  text-align: left;
+  border-radius: 12px;
   overflow-wrap: break-word;
   word-break: break-word;
 }
@@ -120,6 +124,9 @@ body, html {
   line-height: 1.4;
 }
 
+.img-div{
+background-color: #291414;
+}
 .scroll-to-top {
   position: fixed;
   bottom: 1.5rem;

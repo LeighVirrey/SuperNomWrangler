@@ -70,22 +70,28 @@ const RestaurantList = () => {
 
       <div className="restaurants">
         <h1 className="mainheader">RESTAURANTS</h1>
-        <div className="reviewers">
+        <div className="rest-list-item">
           {filteredRestaurants.map((restaurant, index) => (
             <div key={restaurant.id} className="restaurant-card">
+
               <div
                 className="singleRest"
                 style={{
                   flexDirection: index % 2 === 0 ? "row" : "row-reverse",
-                  backgroundColor: index % 2 === 0 ? "#f46036" : "#1695a3",
                 }}
               >
+
                 <img
                   className="restImg"
+                  style={{margin: index % 2 === 0 ? "0px 15px 0px 0px" : "0px 0px 0px 15px",}}
                   src={restaurant.image}
                   alt={restaurant.name}
                 />
-                <div className="restDetails">
+                <br />
+                <div className="restDetails" style={{
+                  backgroundColor: index % 2 === 0 ? "#f46036" : "#1695a3",
+                  alignItems: index % 2 === 0 ? "flex-start" : "flex-end",
+                }}>
                   <h1>{restaurant.name}</h1>
                   <h2>{restaurant.address}</h2>
                   <p>{restaurant.description}</p>
@@ -98,10 +104,10 @@ const RestaurantList = () => {
       </div>
 
       {showScrollButton && (
-  <div className="scroll-to-top" onClick={scrollToTop}>
-    <div className="scroll-to-top-icon"></div>
-  </div>
-)}
+        <div className="scroll-to-top" onClick={scrollToTop}>
+          <div className="scroll-to-top-icon"></div>
+        </div>
+      )}
     </div>
   );
 };
