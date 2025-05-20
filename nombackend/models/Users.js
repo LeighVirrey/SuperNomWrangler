@@ -45,17 +45,17 @@ class User {
   }
   static async createUser({ username, email, password, is_Admin, rank }){
     const query = 'INSERT INTO Users (username, email, password, is_Admin, rank) VALUES (@username, @email, @password, @is_Admin, @rank)';
-    const hashedPassword = await User.saltHashPassword(password);
-    const params = { username, email, hashedPassword, is_Admin, rank };
+    password = await User.saltHashPassword(password);
+    const params = { username, email, password, is_Admin, rank };
     await DAL.executeQuery(query, params);
-    return new User({ username, email, hashedPassword, is_Admin, rank });
+    return new User({ username, email, password, is_Admin, rank });
   }
   static async updateUser(userId, { username, email, password, is_Admin, rank }){
     const query = 'UPDATE Users SET username = @username, email = @email, password = @password, is_Admin = @is_Admin, rank = @rank WHERE userId = @userId';
-    const hashedPassword = await User.saltHashPassword(password);
-    const params = { userId, username, email, hashedPassword, is_Admin, rank };
+    password = await User.saltHashPassword(password);
+    const params = { userId, username, email, password, is_Admin, rank };
     await DAL.executeQuery(query, params);
-    return new User({ userId, username, email, hashedPassword, is_Admin, rank });
+    return new User({ userId, username, email, password, is_Admin, rank });
   }
   static async deleteUser(user_Id){
     const query = 'DELETE FROM Users WHERE user_Id = @user_Id';

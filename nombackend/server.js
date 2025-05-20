@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
@@ -35,13 +35,11 @@ app.post("/register", async (req, res) => {
 
   try {
     let checkEmail = await usersClass.checkEmailExists(email);
-    console.log("checkEmail", checkEmail);
     if (!checkEmail) {
-      const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await usersClass.createUser({
         username,
         email,
-        password: hashedPassword,
+        password,
         is_Admin: false,
         rank: 0
       });
