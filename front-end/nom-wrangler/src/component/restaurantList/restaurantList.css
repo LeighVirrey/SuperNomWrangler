@@ -154,9 +154,16 @@ background-color: #291414;
   .restDetails {
     width: 100%;
   }
+  .restImg{
+    margin: 0px 0px 0px 0px;
+  }
 
   .restDetails {
     padding: 1rem;
+  }
+
+  .mainheader{
+    font-size: 30px !important;
   }
 }
 .scroll-to-top {
