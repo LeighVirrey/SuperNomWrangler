@@ -30,14 +30,14 @@
   margin-right: 90px;
 }
 
-@media screen and (max-width: 1024px) {
+/* @media screen and (max-width: 1024px) {
   .nav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     border-bottom: #F2542D solid 6px;
-    /* border-bottom-width: 2000px; */
+    border-bottom-width: 2000px;
     
 
   }
@@ -55,7 +55,7 @@
     margin-right: 30px;
   }
 
-}
+} */
 
 @media screen and (max-width: 768px) {
   .nav {
@@ -92,8 +92,7 @@
     justify-content: center;
     text-align: center;
     border-bottom: #F2542D solid 6px;
-    margin-left: 4rem;
-    margin-right: 400rem;
+    margin-left: 3.5rem;
     width: 300px;
 
   }
