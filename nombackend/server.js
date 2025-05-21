@@ -13,9 +13,10 @@ const reviewClass = require("./models/Review");
 require("dotenv").config(); 
 
 app.use(cors({
-  origin: "*",
+  origin: "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 }));
 // Middleware setup
 app.use(express.json());
@@ -62,7 +63,6 @@ app.get("/login", async (req, res) => {
   if (!username || !email || !password) {
     return res.status(400).json({ error: "Username, email and password are required" });
   }
-
   try {
     const checkUser = await usersClass.checkEmailExists(email);
     if (!checkUser) {
