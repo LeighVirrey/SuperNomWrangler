@@ -75,20 +75,20 @@ const RestaurantList = () => {
             <div key={restaurant.id} className="restaurant-card">
 
               <div
-                className="singleRest"
+                className="singleRest individual"
                 style={{
                   flexDirection: index % 2 === 0 ? "row" : "row-reverse",
                 }}
               >
 
                 <img
-                  className="restImg"
+                  className="restImg pic"
                   style={{margin: index % 2 === 0 ? "0px 15px 0px 0px" : "0px 0px 0px 15px",}}
                   src={restaurant.image}
                   alt={restaurant.name}
                 />
                 <br />
-                <div className="restDetails" style={{
+                <div className="restDetails info" style={{
                   backgroundColor: index % 2 === 0 ? "#f46036" : "#1695a3",
                   alignItems: index % 2 === 0 ? "flex-start" : "flex-end",
                 }}>

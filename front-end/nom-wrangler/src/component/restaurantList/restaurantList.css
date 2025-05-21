@@ -79,7 +79,7 @@ body, html {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.singleRest {
+.individual {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -87,7 +87,7 @@ body, html {
   background-color: #291414;
 }
 
-.restImg {
+.pic {
   width: 200px; 
   height: auto;
   object-fit: cover;
@@ -96,7 +96,7 @@ body, html {
   border-radius: 12px;
 }
 
-.restDetails {
+.info {
   flex: 1 1 300px;
   padding: 1.5rem;
   display: flex;
@@ -145,7 +145,7 @@ background-color: #291414;
   z-index: 10;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 575px) {
   .singleRest {
     flex-direction: column !important;
   }
