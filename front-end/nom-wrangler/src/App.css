@@ -1,4 +1,4 @@
-.navbutton{
+.navbutton {
   background-color: transparent;
   color: #F2542D;
   border: none;
@@ -6,7 +6,7 @@
   font-weight: bolder;
 }
 
-.nav{
+.nav {
   display: flex;
   /* flex-wrap: wrap; */
   align-items: center;
@@ -17,62 +17,98 @@
 
 }
 
-.logo{
+.logo {
   width: 600px;
   margin-right: 90px;
 }
 
-.buttons{
+.buttons {
   display: flex;
   flex-direction: column;
-  justify-items:right;
+  justify-items: right;
   text-align: center;
   margin-right: 90px;
 }
 
 @media screen and (max-width: 1024px) {
-    .nav {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        border-bottom: #F2542D solid 6px;
-        margin-left: 24rem;
-        margin-right: 22rem;
-    }
-    .logo {
-        width: 400px;
-        margin-right: 30px;
-    }
-    .buttons{
-        display: flex;
-        flex-direction: column;
-        justify-items:right;
-        text-align: center;
-        margin-right: 30px;
-    }
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    border-bottom: #F2542D solid 6px;
+    /* border-bottom-width: 2000px; */
+    
+
+  }
+
+  .logo {
+    width: 400px;
+    margin-right: 30px;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    justify-items: right;
+    text-align: center;
+    margin-right: 30px;
+  }
 
 }
 
 @media screen and (max-width: 768px) {
-    .nav {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-        border-bottom: #F2542D solid 6px;
-        margin-left: 6rem;
-        margin-right: 6rem;
-    }
-    .logo{
-      width: 300px;
-      margin-right: 30px;
-    }
-    .buttons{
-      display: flex;
-      flex-direction: column;
-      justify-items:right;
-      text-align: center;
-      margin-right: 15px;
-    }
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    border-bottom: #F2542D solid 6px;
+    margin-left: 6rem;
+    margin-right: 6rem;
+    width: 1000px;
+
+  }
+
+  .logo {
+    width: 300px;
+    margin-right: 30px;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    justify-items: right;
+    text-align: center;
+    margin-right: 15px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-bottom: #F2542D solid 6px;
+    margin-left: 4rem;
+    margin-right: 400rem;
+    width: 300px;
+
+  }
+
+  .navbutton {
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+    font-size: 30px;
+    text-decoration: none;
+  }
+
+   .logo {
+    width: 200px;
+    margin-right: 30px;
+  }
+  
 }
