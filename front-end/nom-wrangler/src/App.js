@@ -7,7 +7,7 @@ import Login from './component/login/login'
 import Nav from './component/nav/nav'
 import About from './component/about/about'
 import Review from './component/userReview/UserReview'
-import Details from './component/restaurantDetails/RestaurantDetails'
+import Register from './component/register/register'
 
 
 function App() {
@@ -25,7 +25,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/map" element={<Map />} />
           <Route path="/review" element={<Review />} />
-          <Route path="/restaurantDetails" element={<Details />} />
+          <Route path="/register" element={<Register />} />
+          {/* <Route path="/restaurantDetails" element={<Details />} /> */}
         </Routes>
       </div>
     </Router>

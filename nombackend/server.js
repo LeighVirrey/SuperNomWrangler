@@ -1,11 +1,13 @@
 const bcrypt = require("bcryptjs");
 const express = require("express");
+const session = require("express-session");
 const app = express();
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const axios = require("axios"); // For Google Places API
 const sendEmail = require("./smtp"); // Your custom SMTP module
 const cors = require("cors"); // For CORS handling
+const { body, validationResult } = require("express-validator");
 const usersClass = require("./models/Users"); 
 const addressClass = require("./models/Address");
 const restaurantClass = require("./models/Restaurant");
@@ -55,25 +57,53 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   // Basic validation
   if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+    return res.status(400).json({ 
+      success: false,
+      message: "Username and password are required" 
+    });
   }
+
   try {
     const user = await usersClass.getUserByUsername(username);
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid credentials" });
+    
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid credentials" 
+      });
     }
 
-    res.status(200).json({ message: "Logged in successfully" });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid credentials" 
+      });
+    }
+
+    // Successful login
+    res.status(200).json({ 
+      success: true,
+      message: "Logged in successfully",
+      user: {
+        id: user.id,
+        username: user.username
+        // Add any other non-sensitive user data you need
+      }
+    });
+
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ 
+      success: false,
+      message: "Internal server error" 
+    });
   }
 });
 
@@ -176,6 +206,7 @@ app.delete("/user/:id", async (req, res) => {
     console.error("Error deleting user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+});
 
 app.get('/api/restaurants', async (req, res) => {
   const { lat, lng, radius = 25 } = req.query;
