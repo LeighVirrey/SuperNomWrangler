@@ -34,7 +34,9 @@ app.post("/register", async (req, res) => {
   let { username, email, password, imgUrl } = req.body;
   // Basic validation
   if (!username || !email || !password) {
-    return res.status(400).json({ error: "Username, email and password are required" });
+    return res
+      .status(400)
+      .json({ error: "Username, email and password are required" });
   }
   if(!imgUrl){
     imgUrl = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
@@ -49,11 +51,12 @@ app.post("/register", async (req, res) => {
         password,
         imgUrl,
         is_Admin: false,
-        rank: 0
+        rank: 0,
       });
-      res.status(201).json({ message: "User registered successfully", userId: newUser.id });
-    }
-    else {
+      res
+        .status(201)
+        .json({ message: "User registered successfully", userId: newUser.id });
+    } else {
       return res.status(409).json({ error: "Email already exists" });
     }
   } catch (error) {
@@ -172,8 +175,7 @@ app.get("/user", async (req, res) => {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 app.get("/user/:id", async (req, res) => {
   const { id } = req.params;
@@ -187,8 +189,7 @@ app.get("/user/:id", async (req, res) => {
     console.error("Error fetching user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 //update user, normal endpoint for when user is updating themselves
 app.put("/user/:id", async (req, res) => {
@@ -218,8 +219,7 @@ app.put("/user/:id", async (req, res) => {
     console.error("Error updating user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 //edit user endpoint
 app.put("/admin/editUser/:id", async (req, res) => {
@@ -283,8 +283,7 @@ app.get("/restaurant", async (req, res) => {
     console.error("Error fetching restaurants:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 app.get("/restaurant/:id", async (req, res) => {
   const { id } = req.params;
@@ -298,8 +297,7 @@ app.get("/restaurant/:id", async (req, res) => {
     console.error("Error fetching restaurant:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 app.post("/restaurant", async (req, res) => {
   const { name, img_Url, description, price_Range, cuisine_Type, operating_Hours, hidden_Gem, mom_And_Pop, nook_And_Cranny, is_Flagged } = req.body;
@@ -319,7 +317,7 @@ app.post("/restaurant", async (req, res) => {
       city,
       state,
       zip_Code,
-      country
+      country,
     });
     const address_Id = (await addressClass.getFromAddress({ name_Street, number_Street, suite, city, state, zip_Code, country })).getAddressId();
     await restaurantClass.create({
@@ -333,7 +331,7 @@ app.post("/restaurant", async (req, res) => {
       hidden_Gem,
       mom_And_Pop,
       nook_And_Cranny,
-      is_Flagged
+      is_Flagged,
     });
     const newRestaurantWithId = await restaurantClass.getByAddressId(address_Id);
     res.status(201).json(newRestaurantWithId);
@@ -341,8 +339,7 @@ app.post("/restaurant", async (req, res) => {
     console.error("Error creating restaurant:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 app.put("/restaurant/:id", async (req, res) => {
   const { id } = req.params;
@@ -363,7 +360,7 @@ app.put("/restaurant/:id", async (req, res) => {
     if (!restaurant) {
       return res.status(404).json({ error: "Restaurant not found" });
     }
-    const updatedRestaurant = await restaurantClass.update( {
+    const updatedRestaurant = await restaurantClass.update({
       restaurant_Id: id,
       name,
       address_Id,
@@ -375,15 +372,17 @@ app.put("/restaurant/:id", async (req, res) => {
       hidden_Gem,
       mom_And_Pop,
       nook_And_Cranny,
-      is_Flagged
+      is_Flagged,
     });
-    res.json({ message: "Restaurant updated successfully", restaurant: updatedRestaurant });
+    res.json({
+      message: "Restaurant updated successfully",
+      restaurant: updatedRestaurant,
+    });
   } catch (error) {
     console.error("Error updating restaurant:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 app.delete("/restaurant/:id", async (req, res) => {
   const { id } = req.params;
@@ -398,31 +397,111 @@ app.delete("/restaurant/:id", async (req, res) => {
     console.error("Error deleting restaurant:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
+//reviews endpoints
+//this one has a query, so if you're searching for a specific review by a user or restaurant or both then use it in the query
+app.get("/review", async (req, res) => {
+  const restaurant_Id = req.query.restaurant_Id;
+  const user_Id = req.query.user_Id;
+  try {
+    let reviews;
+    if (restaurant_Id && user_Id) {
+      reviews = await reviewClass.getByUserIdAndRestaurantId({
+        user_Id,
+        restaurant_Id,
+      });
+    } else if (restaurant_Id) {
+      reviews = await reviewClass.getByRestaurantId(restaurant_Id);
+    } else if (user_Id) {
+      reviews = await reviewClass.getByUserId(user_Id);
+    } else {
+      reviews = await reviewClass.getAll();
+    }
+    res.json(reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-// app.get('/api/restaurants', async (req, res) => {
-//   const { lat, lng, radius = 25 } = req.query;
+app.get("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const review = await reviewClass.get(id);
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+    res.json(review);
+  } catch (error) {
+    console.error("Error fetching review:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-//   if (!lat || !lng) {
-//     return res.status(400).json({ error: "Missing latitude or longitude" });
-//   }
+app.post("/review", async (req, res) => {
+  const { user_Id, restaurant_Id, rating, review, is_Flagged } = req.body;
+  if (
+    !user_Id ||
+    !restaurant_Id ||
+    !rating ||
+    !review ||
+    is_Flagged === undefined
+  ) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+  try {
+    const newReview = await reviewClass.create({
+      user_Id,
+      restaurant_Id,
+      rating,
+      review,
+      is_Flagged,
+    });
+    res.status(201).json(newReview);
+  } catch (error) {
+    console.error("Error creating review:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-//   const userLocation = {
-//     type: "Point",
-//     coordinates: [parseFloat(lng), parseFloat(lat)],
-//   };
+app.put("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  const { rating, review, is_Flagged } = req.body;
+  if (!rating || !review || is_Flagged === undefined) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+  try {
+    const updatedReview = await reviewClass.update({
+      reviewId: id,
+      rating,
+      review,
+      is_Flagged,
+    });
+    if (!updatedReview) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+    res.json({ message: "Review updated successfully", review: updatedReview });
+  } catch (error) {
+    console.error("Error updating review:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-//   try {
-//     const restaurants = await Restaurant.find({
-//       location: {
-//         $near: {
-//           $geometry: userLocation,
-//           $maxDistance: radius * 1609.34, // miles to meters
-//         },
-//       },
-//     });
+app.delete("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const review = await reviewClass.get(id);
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+    await reviewClass.delete(id);
+    res.json({ message: "Review deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 //     res.json(restaurants);
 //   } catch (err) {
@@ -468,13 +547,15 @@ app.put("/address/:id", async (req, res) => {
     if (!updatedAddress) {
       return res.status(404).json({ error: "Address not found" });
     }
-    res.json({ message: "Address updated successfully", address: updatedAddress });
+    res.json({
+      message: "Address updated successfully",
+      address: updatedAddress,
+    });
   } catch (error) {
     console.error("Error updating address:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 app.delete("/address/:id", async (req, res) => {
   const { id } = req.params;
@@ -489,8 +570,7 @@ app.delete("/address/:id", async (req, res) => {
     console.error("Error deleting address:", error);
     res.status(500).json({ error: "Internal server error" });
   }
-}
-);
+});
 
 //
 //SOMETHING DELETED THE ENTIRETY OF REVIEW ENDPOINTS IM PISSED OFF -zk
@@ -1026,7 +1106,61 @@ app.put(
     // Return the updated review as response
     res.json({ message: "Review updated successfully", data: review });
   }
-);
+); 
+
+// Mock data for testing
+app.put("/restaurant/review/:id", (req, res) => {
+  // Find the review by ID
+  const review = reviews.find((r) => r.id === parseInt(req.params.id));
+
+  // If review doesn't exist, return 404
+  if (!review) return res.status(404).json({ error: "Review not found" });
+
+  // Destructure request body
+  const {
+    imageUrl,
+    restaurantName,
+    streetName,
+    streetNumber,
+    city,
+    state,
+    zipCode,
+    country,
+    description,
+    cuisineTypes,
+    diningStyle,
+    priceRange,
+    otherNotes,
+    operatingHours,
+    userReview,
+    isFlagged,
+  } = req.body;
+
+  // Update the review object with the new values
+  review.imageUrl = imageUrl || review.imageUrl;
+  review.restaurantName = restaurantName || review.restaurantName;
+  review.streetName = streetName || review.streetName;
+  review.streetNumber = streetNumber || review.streetNumber;
+  review.city = city || review.city;
+  review.state = state || review.state;
+  review.zipCode = zipCode || review.zipCode;
+  review.country = country || review.country;
+  review.description = description || review.description;
+  review.cuisineTypes = cuisineTypes || review.cuisineTypes;
+  review.diningStyle = diningStyle || review.diningStyle;
+  review.priceRange = priceRange || review.priceRange;
+  review.otherNotes = otherNotes || review.otherNotes;
+  review.operatingHours = operatingHours || review.operatingHours;
+  review.userReview = userReview || review.userReview;
+
+  // Update isFlagged only if it's passed and is a boolean
+  if (typeof isFlagged === "boolean") {
+    review.isFlagged = isFlagged;
+  }
+
+  // Return the updated review as response
+  res.json({ message: "Review updated successfully", data: review });
+});
 
 // Remove any review (Admin only)
 // Mock data for testing
@@ -1139,6 +1273,134 @@ app.get("/api/restaurants", async (req, res) => {
   } catch (error) {
     console.error("Error fetching restaurants:", error);
     res.status(500).send("Error fetching restaurants");
+  }
+});
+
+app.get("/api/top-restaurants", async (req, res) => {
+  const { zip, radius = 25 } = req.query;
+  const apiKey = process.env.GOOGLE_API_KEY;
+  const radiusMeters = radius * 1609.34;
+
+  if (!zip) {
+    return res.status(400).json({ error: "Zip code is required" });
+  }
+
+  try {
+    // 1. Get lat/lng for zip code
+    const geoResponse = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${apiKey}`
+    );
+    if (geoResponse.data.results.length === 0) {
+      return res.status(404).json({ error: "Invalid zip code" });
+    }
+    const { lat, lng } = geoResponse.data.results[0].geometry.location;
+
+    // 2. Get restaurants using Places API v1 with includedPrimaryTypes
+    const foodTypes = [
+      "restaurant",
+      "cafe",
+      "bar",
+      "bakery",
+      "meal_delivery",
+      "meal_takeaway",
+      "night_club",
+    ];
+
+    const placesResponse = await axios.post(
+      `https://places.googleapis.com/v1/places:searchNearby?key=${apiKey}`,
+      {
+        includedPrimaryTypes: foodTypes,
+        languageCode: "en",
+        maxResultCount: 20,
+        locationRestriction: {
+          circle: {
+            center: { latitude: lat, longitude: lng },
+            radius: radiusMeters,
+          },
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-FieldMask":
+            "places.displayName,places.formattedAddress,places.primaryType",
+        },
+      }
+    );
+
+    const googleRestaurants = placesResponse.data.places || [];
+
+    // 3. Match Google restaurants with your reviews by name
+    const matched = [];
+    const usedNames = new Set();
+
+    for (const gRest of googleRestaurants) {
+      const name = gRest.displayName?.text || "";
+      const nameKey = name.trim().toLowerCase();
+      if (!nameKey || usedNames.has(nameKey)) continue;
+
+      const match = reviews.filter(
+        (r) => r.restaurantName.toLowerCase() === nameKey
+      );
+
+      if (match.length > 0) {
+        const avgRating =
+          match.reduce((sum, r) => sum + (r.ratingValue || r.rating || 0), 0) /
+          match.length;
+
+        matched.push({
+          name,
+          address: gRest.formattedAddress,
+          avgRating,
+          reviewCount: match.length,
+          imageUrl: match[0].imageUrl || null,
+          primaryType: gRest.primaryType || null,
+        });
+        usedNames.add(nameKey);
+      }
+    }
+
+    let result;
+    if (matched.length > 0) {
+      // Sort by rating and review count
+      matched.sort((a, b) =>
+        b.avgRating !== a.avgRating
+          ? b.avgRating - a.avgRating
+          : b.reviewCount - a.reviewCount
+      );
+      result = matched.slice(0, 4);
+    } else {
+      // Return top 4 nearby restaurants from Google data
+      const uniqueGoogle = [];
+      const seenNames = new Set();
+
+      for (const r of googleRestaurants) {
+        const name = r.displayName?.text || "";
+        const nameKey = name.trim().toLowerCase();
+        if (!nameKey || seenNames.has(nameKey)) continue;
+
+        uniqueGoogle.push({
+          name,
+          address: r.formattedAddress,
+          avgRating: null,
+          reviewCount: 0,
+          imageUrl: null,
+          primaryType: r.primaryType || null,
+        });
+
+        seenNames.add(nameKey);
+        if (uniqueGoogle.length === 4) break;
+      }
+      result = uniqueGoogle;
+    }
+
+    res.json(result);
+  } catch (error) {
+    console.error(
+      "Error fetching top restaurants:",
+      error?.response?.data || error.message
+    );
+    res.status(500).json({ error: "Error fetching top restaurants" });
   }
 });
 
