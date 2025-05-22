@@ -39,7 +39,6 @@ const Home = () => {
         </div>
       </div>
 
-      <div>
         <br />
         <div className='restO box-shadow'>
           <div className='singleRest'>
@@ -68,12 +67,13 @@ const Home = () => {
             </div>
             <img className='restImgRight' src='../images/11steakhouse.jpg' />
           </div>
-        </div>
 
-        <Link to="/restaurantList">
+        
+      </div>
+
+      <Link to="/restaurantList">
           <button className='BlueButton'>FIND MORE RESTAURANTS</button>
         </Link>
-      </div>
 
       <h1 className='mainheader'> TOP REVIEWERS </h1>
 
