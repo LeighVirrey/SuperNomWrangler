@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
-
-const apiUrl = 'http://localhost:4000/login';
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ 
@@ -17,12 +15,6 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  
-  const patterns = {
-    username: /^[a-zA-Z0-9_]{4,20}$/, 
-    password: /^.{8,}$/ 
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLoginData({ ...loginData, [name]: value });
@@ -34,198 +26,70 @@ const Login = () => {
     
     if (!value) {
       errorMsg = 'This field is required';
-    } else if (name === 'username' && !patterns.username.test(value)) {
-      errorMsg = 'Username must be 4-20 chars (letters, numbers, underscores)';
-    } else if (name === 'password' && !patterns.password.test(value)) {
+    } else if (name === 'username' && (value.length < 4 || value.length > 20)) {
+      errorMsg = 'Username must be 4-20 characters';
+    } else if (name === 'password' && value.length < 8) {
       errorMsg = 'Password must be at least 8 characters';
     }
 
     setErrors({ ...errors, [name]: errorMsg });
-    return errorMsg === '';
   };
 
   const validateForm = () => {
-    let valid = true;
-    const newErrors = { ...errors };
-
-    for (const field in loginData) {
-      if (!validateField(field, loginData[field])) {
-        valid = false;
-      }
-    }
-
-    setErrors(newErrors);
-    return valid;
-  };
-
-  //region
-  // // Secure token storage functions
-  // const storeToken = (token) => {
-  //   try {
-  //     // For HTTP-only cookies (preferred for production):
-  //     // document.cookie = `authToken=${token}; Secure; HttpOnly; SameSite=Strict; path=/; max-age=86400`;
-      
-  //     // For local storage (less secure but common):
-  //     localStorage.setItem('authToken', token);
-  //      if (userData) {
-  //       localStorage.setItem('user', JSON.stringify({
-  //         id: userData.id,
-  //         username: userData.username,
-  //       }));
-  //     }
-  //     return true;
-  //   } catch (err) {
-  //     console.error('Token storage failed:', err);
-  //     return false;
-  //   }
-  // };
-
-  // const clearToken = () => {
-  //   try {
-  //     // For cookies:
-  //     // document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      
-  //     // For local storage:
-  //     localStorage.removeItem('authToken');
-  //   } catch (err) {
-  //     console.error('Token removal failed:', err);
-  //   }
-  // };
-  //endregion
-
-  const storeAuthData = (token, userData) => {
-    try {
-      // Store token in localStorage
-      localStorage.setItem('authToken', token);
-      
-      // Store basic user data (avoid sensitive information)
-      if (userData) {
-        localStorage.setItem('user', JSON.stringify({
-          id: userData.id,
-          username: userData.username,
-          // Other non-sensitive user data
-        }));
-      }
-      return true;
-    } catch (err) {
-      console.error('Storage failed:', err);
-      return false;
-    }
-  };
-
-  const clearAuthData = () => {
-    try {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-    } catch (err) {
-      console.error('Storage cleanup failed:', err);
-    }
-  };
-
-  //region
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError('');
+    let isValid = true;
     
-  //   if (!validateForm()) {
-  //     return;
-  //   }
+    // Validate username
+    if (!loginData.username || loginData.username.length < 4 || loginData.username.length > 20) {
+      setErrors(prev => ({...prev, username: 'Username must be 4-20 characters'}));
+      isValid = false;
+    }
+    
+    // Validate password
+    if (!loginData.password || loginData.password.length < 8) {
+      setErrors(prev => ({...prev, password: 'Password must be at least 8 characters'}));
+      isValid = false;
+    }
 
-  //   setLoading(true);
+    return isValid;
+  };
 
-  //   try {
-  //     // Simulate API call
-  //     const response = await fetch('/api/auth/login', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(loginData),
-  //       credentials: 'include' // For HTTP-only cookies
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (response.ok) {
-  //       // For JWT token in response body (if not using HTTP-only cookies)
-  //       if (data.token) {
-  //         if (!storeToken(data.token)) {
-  //           throw new Error('Failed to store authentication token');
-  //         }
-  //       }
-        
-  //       // Store additional user data if needed (avoid sensitive data)
-  //       if (data.user) {
-  //         localStorage.setItem('user', JSON.stringify({
-  //           id: data.user.id,
-  //           username: data.user.username,
-  //           // Other non-sensitive user data
-  //         }));
-  //       }
-
-  //       navigate('/');
-  //     } else {
-  //       clearToken();
-  //       setError(data.message || 'Login failed. Please try again.');
-  //     }
-  //   } catch (err) {
-  //     console.error('Login error:', err);
-  //     clearToken();
-  //     setError('An error occurred during login. Please try again.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  //endregion
-
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
     if (!validateForm()) return;
 
     setLoading(true);
-    clearAuthData();
 
     try {
-      const response = await fetch(apiUrl, { 
+      const response = await fetch('http://localhost:4000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginData),
-        credentials: 'include' // For HTTP-only cookies
+        body: JSON.stringify(loginData)
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (!data.success) {
         throw new Error(data.message || 'Login failed');
       }
 
-      // If using JWT in response body (not HTTP-only cookies)
-      if (data.token) {
-        if (!storeAuthData(data.token, data.user)) {
-          throw new Error('Failed to store authentication data');
-        }
+      // Store basic user data if needed
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
       }
 
       // Redirect on successful login
-      navigate(data.redirectTo || '/dashboard');
+      navigate('/profile');
       
     } catch (err) {
-      setError(err.message || 'An error occurred during login. Please try again.');
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      navigate('/profile'); 
-    }
-  }, [navigate]);
 
   return (
     <div className="container">
@@ -242,7 +106,6 @@ const Login = () => {
               value={loginData.username}
               onChange={handleChange}
               required
-              autoComplete="username"
               className={errors.username ? 'error-input' : ''}
             />
             {errors.username && <span className="error-message">{errors.username}</span>}
@@ -258,7 +121,6 @@ const Login = () => {
               value={loginData.password}
               onChange={handleChange}
               required
-              autoComplete="current-password"
               className={errors.password ? 'error-input' : ''}
             />
             {errors.password && <span className="error-message">{errors.password}</span>}
@@ -271,14 +133,7 @@ const Login = () => {
             className="login-button"
             disabled={loading || !!errors.username || !!errors.password}
           >
-            {loading ? (
-              <>
-                <span className="spinner"></span>
-                Logging in...
-              </>
-            ) : (
-              'Login'
-            )}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 

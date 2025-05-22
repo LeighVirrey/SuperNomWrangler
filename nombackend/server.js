@@ -57,36 +57,53 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   // Basic validation
   if (!username || !password) {
-    return res.status(400).json({ error: "Username and password are required" });
+    return res.status(400).json({ 
+      success: false,
+      message: "Username and password are required" 
+    });
   }
+
   try {
     const user = await usersClass.getUserByUsername(username);
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      req.session.loginAttempts += 1;
-
-      if (req.session.loginAttempts >= MAX_LOGIN_ATTEMPTS) {
-        return res.status(403).json({ error: "Too many login attempts. Try again later." });
-      }
-
+    
+    if (!user) {
       return res.status(401).json({ 
-        error: "Invalid credentials",
-        attemptsLeft: MAX_LOGIN_ATTEMPTS - req.session.loginAttempts
+        success: false,
+        message: "Invalid credentials" 
       });
     }
 
-    req.session.loginAttempts = 0;
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    
+    if (!isPasswordValid) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid credentials" 
+      });
+    }
 
-    res.status(200).json({ message: "Logged in successfully" });
+    // Successful login
+    res.status(200).json({ 
+      success: true,
+      message: "Logged in successfully",
+      user: {
+        id: user.id,
+        username: user.username
+        // Add any other non-sensitive user data you need
+      }
+    });
+
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ 
+      success: false,
+      message: "Internal server error" 
+    });
   }
 });
 
