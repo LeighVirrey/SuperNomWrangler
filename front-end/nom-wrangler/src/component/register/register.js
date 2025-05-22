@@ -95,23 +95,26 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('formData:', formData);
 
     if (!validateForm() || isSubmitting) return;
 
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${apiUrl}`, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         
-        username: formData.username,
+        body: JSON.stringify({
+                  username: formData.username,
         email: formData.email,
         firstName: formData.firstName,
         lastName: formData.lastName,
         password: formData.password
+        }),
       });
 
       console.log("does this work", response);

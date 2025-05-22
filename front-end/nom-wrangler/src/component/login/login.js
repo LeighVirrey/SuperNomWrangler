@@ -188,7 +188,7 @@ const Login = () => {
     clearAuthData();
 
     try {
-      const response = await fetch(`${apiUrl}`, { 
+      const response = await fetch(apiUrl, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
