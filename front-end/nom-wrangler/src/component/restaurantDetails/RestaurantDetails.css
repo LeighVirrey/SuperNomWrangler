@@ -1,0 +1,118 @@
+.restaurant-details {
+    max-width: 1000px;
+    margin: 50px auto;
+    /* background-color: #fadcd5; */
+    border-radius: 12px;
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); */
+    display: flex;
+    padding: 32px;
+    gap: 32px;
+    color: #ffffff;
+}
+
+.restaurant-image {
+    width: 350px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.restaurant-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.restaurant-name {
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.sectionDivider {
+    border: none;
+    border-top: 4px solid orange;
+    margin: 16px 0;
+}
+
+.restaurant-info p {
+    font-size: 16px;
+    margin: 6px 0;
+    line-height: 1.5;
+}
+
+/* Button */
+.leaveReview {
+    margin-top: 24px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: teal;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.leaveReview:hover {
+    background-color: #007c7c;
+}
+
+/* Review Section */
+.restaurantReviews-container {
+    max-width: 1000px;
+    margin: 40px auto 0;
+    padding: 0 32px;
+}
+
+.reviewTitle {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.reviewContainer {
+    background-color: #0E9594;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 0 auto 20px;
+    width: 900px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.profileImage {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 12px;
+}
+
+.username {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.userRating {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.userDescription {
+    font-size: 14px;
+    color: #333;
+}
+
+
+.blueText {
+    font-size: large;
+    font-weight: bold;
+    color: #0E9594;
+}

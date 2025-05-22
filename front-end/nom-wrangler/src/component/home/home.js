@@ -3,10 +3,10 @@ import './home.css'
 import { Link } from 'react-router-dom'
 
 const Home = () => {
+
   return (
     <div className='home'>
       <h1 className='mainheader'> FEATURED </h1>
-
       <div className='restO box-shadow'>
         <div className='singleRest'>
           <img className='restImg' src='../images/11steakhouse.jpg' />
