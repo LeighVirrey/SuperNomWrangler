@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const axios = require("axios"); // For Google Places API
 const sendEmail = require("./smtp"); // Your custom SMTP module
 const cors = require("cors"); // For CORS handling
+const { body, validationResult } = require("express-validator");
 const usersClass = require("./models/Users"); 
 const addressClass = require("./models/Address");
 const restaurantClass = require("./models/Restaurant");
@@ -188,6 +189,7 @@ app.delete("/user/:id", async (req, res) => {
     console.error("Error deleting user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
+});
 
 app.get('/api/restaurants', async (req, res) => {
   const { lat, lng, radius = 25 } = req.query;
