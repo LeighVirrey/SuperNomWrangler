@@ -1,85 +1,54 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const axios = require("axios"); // For Google Places API
-const mysql = require("mysql2/promise"); //need to replace with mssql
 const sendEmail = require("./smtp"); // Your custom SMTP module
 const cors = require("cors"); // For CORS handling
-const { body, validationResult } = require("express-validator");
-require("dotenv").config();
-// const User = require("./models/user"); // Not used if using direct SQL queries
-
+const usersClass = require("./models/Users"); 
+const addressClass = require("./models/Address");
+const restaurantClass = require("./models/Restaurant");
+const reviewClass = require("./models/Review");
+require("dotenv").config(); 
 
 app.use(cors({
-  origin: "*",
+  origin: "http://localhost:3000",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 }));
 // Middleware setup
 app.use(express.json());
 app.use(cookieParser());
 
-//#region - Should be moveed to a env file
-// Create a MySQL connection pool
-const pool = mysql.createPool({
-  host: "localhost", // update to your host
-  user: "your_mysql_username", // update with your username
-  password: "your_mysql_password", // update with your password
-  database: "your_database_name", // update with your database name
-});
-
-// JWT secret key (In production, store this in environment variables)
-const JWT_SECRET = "YOUR_SECRET_KEY";
-//#endregion
-
-// Middleware to authenticate JWT token from cookies
-const authenticateToken = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ error: "Access denied" });
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: "Invalid token" });
-    req.user = user;
-    next();
-  });
-};
-
-app.get("/", (req, res) => {
-  res.send("nom nom nom");
+app.get("/", async (req, res) => {
+  res.json({ message: "Nomnomshark" });
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
 
   // Basic validation
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Username, email and password are required" });
   }
 
   try {
-    // Check if the user already exists
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
-    if (rows.length > 0) {
-      return res.status(409).json({ error: "User already exists" });
+    let checkEmail = await usersClass.checkEmailExists(email);
+    if (!checkEmail) {
+      const newUser = await usersClass.createUser({
+        username,
+        email,
+        password,
+        is_Admin: false,
+        rank: 0
+      });
+      res.status(201).json({ message: "User registered successfully", userId: newUser.id });
     }
-
-    // Hash the user password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insert new user into the database
-    await pool.query("INSERT INTO users (email, password) VALUES (?, ?)", [
-      email,
-      hashedPassword,
-    ]);
-
-    // Optionally send a welcome email
-    sendEmail(email, "Welcome!", "Thank you for registering!");
-
-    res.status(201).json({ message: "User registered successfully" });
+    else {
+      return res.status(409).json({ error: "Email already exists" });
+    }
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -87,50 +56,130 @@ app.post("/register", async (req, res) => {
 });
 
 // Login endpoint
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+app.get("/login", async (req, res) => {
+  const { username, email, password } = req.body;
 
   // Basic validation
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Username, email and password are required" });
   }
-
   try {
-    // Retrieve the user from the database
-    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
-      email,
-    ]);
-    if (rows.length === 0) {
+    const checkUser = await usersClass.checkEmailExists(email);
+    if (!checkUser) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-
-    const user = rows[0];
-
-    // Compare provided password with the stored hashed password
+    const user = await usersClass.getUserById(checkUser);
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generate a JWT token for the user (expires in 1 hour)
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    // Set the token in an HTTP-only cookie
-    res.cookie("token", token, { httpOnly: true });
-
-    res.json({ message: "Logged in successfully" });
+    res.status(200).json({ message: "Logged in successfully" });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Logout endpoint - clear the auth cookie
-app.post("/logout", (req, res) => {
-  res.clearCookie("token");
-  res.json({ message: "Logged out successfully" });
+app.get("/user", async (req, res) => {
+  try {
+    const users = await usersClass.getAllUsers();
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+app.get("/user/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await usersClass.getUserById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+//update user, normal endpoint for when user is updating themselves
+app.put("/user/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, email, password } = req.body;
+
+  if (!username || !email) {
+    return res.status(400).json({ error: "Username and email are required" });
+  }
+
+  try {
+    const user = await usersClass.getUserById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update user details
+    const updatedUser = await usersClass.updateUser(id, {
+      username,
+      email,
+      password: password ? await bcrypt.hash(password, 10) : user.password,
+    });
+
+    res.json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+//edit user endpoint
+app.put("/admin/editUser/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, email, is_Admin, rank } = req.body;
+
+  if (!username || !email || is_Admin === undefined || rank === undefined) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    const user = await usersClass.getUserById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update user details
+    const updatedUser = await usersClass.updateUser(id, {
+      username,
+      email,
+      is_Admin,
+      rank
+    });
+
+    res.json({ message: "User updated successfully", user: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.delete("/user/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await usersClass.getUserById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    await usersClass.deleteUser(id);
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 //#region - Restaurant Reviews
