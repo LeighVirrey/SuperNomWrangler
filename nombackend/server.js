@@ -56,7 +56,7 @@ app.post("/register", async (req, res) => {
 });
 
 // Login endpoint
-app.get("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, email, password } = req.body;
 
   // Basic validation
