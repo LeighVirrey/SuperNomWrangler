@@ -37,6 +37,13 @@ class User {
     return users.length ? new User(users[0]) : null;
   }
 
+  static async getUserByUsername(username){
+    const query = 'SELECT * FROM Users WHERE username = @username';
+    const params = { username };
+    const users = await DAL.executeQuery(query, params);
+    return users.length ? new User(users[0]) : null;
+  }
+
   static async checkEmailExists(email){
     const query = 'SELECT * FROM Users WHERE email = @email';
     const params = { email };

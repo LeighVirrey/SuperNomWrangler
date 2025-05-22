@@ -57,18 +57,14 @@ app.post("/register", async (req, res) => {
 
 // Login endpoint
 app.post("/login", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, password } = req.body;
 
   // Basic validation
-  if (!username || !email || !password) {
-    return res.status(400).json({ error: "Username, email and password are required" });
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username and password are required" });
   }
   try {
-    const checkUser = await usersClass.checkEmailExists(email);
-    if (!checkUser) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-    const user = await usersClass.getUserById(checkUser);
+    const user = await usersClass.getUserByUsername(username);
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
