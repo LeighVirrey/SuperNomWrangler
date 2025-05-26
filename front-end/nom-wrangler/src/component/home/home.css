@@ -181,6 +181,7 @@
 
 
 /* tablet view */
+/* ipad mini/ */
 @media screen and (max-width: 768px) {
 
     .backToTopButton{
@@ -234,10 +235,13 @@
 
 
 /* phone view */
+/* pixel 7 */
 @media screen and (max-width: 480px) {
     .restO, .restB {
         width: 95%;
+        height: auto;
     }
+    
 
     .restImgRight{
         /* border-radius: 15px; */
@@ -302,6 +306,13 @@
     .BlueButton{
         width: 100%;
         font-size: 1.5rem;
+    }
+    .backToTopButton {
+        right: 20px;
+        bottom: 20px;
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
     }
 }
 
