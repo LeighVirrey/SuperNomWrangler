@@ -45,6 +45,7 @@
     height: 350px;
     object-fit: cover;
     margin-right: 2rem;
+    border-radius: 15px;
 }
 
 .detailsleft{
@@ -63,6 +64,7 @@
     height: 20rem;
     object-fit: cover;
     margin-left: 2rem;
+    border-radius: 15px;
 }
 
 .detailsright{
