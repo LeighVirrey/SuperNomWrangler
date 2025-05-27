@@ -1,9 +1,10 @@
 import React from 'react'
 import './about.css'
+// import BackToTop from '../backToTop/backToTop'
 
 const About = () => {
   return (
-    <div>
+    <div className='aboutPage'>
       <div className='aboutContainer'>
         <img className='aboutSteak box-shadow' src='../images/steak.jpg' alt="about" />
         <h1 className='aboutHeader'>SUPER NOM WRANGLER</h1>
@@ -22,7 +23,7 @@ const About = () => {
         <div className='flex'>
           <div className='detailsright'>
             <h1 className='name'>Johanna Johnson</h1>
-            <h4> Johanna UPDATE THIS</h4>
+            <h4> I'm an experienced Front-end developer. I enjoy working with new frameworks as well as basic code to build and design websites. I can be a software developer too, although I might not be the best at it. I love to learn new things and expand my knowledge to more than I already know.! I also own a cute cat named Khole.</h4>
           </div>
           <img className='box-shadow pfpright' src='../images/johanna.jfif' alt="johanna" />
         </div>
@@ -32,7 +33,7 @@ const About = () => {
           <div className='detailsleft'>
             <h1 className='name'>Erin Mitchell</h1>
             <h4> I'm a passionate UI/UX Designer with a background in web development and graphic design. With a strong eye for detail and a user-centered approach, I specialize in wireframing, prototyping, and front-end development to bring designs to life. I'm always exploring new design trends and technologies to craft seamless, accessible, and aesthetically pleasing digital experiences.</h4>
-          </div>
+            </div>
         </div>
 
         <div className='flex'>
@@ -54,7 +55,7 @@ const About = () => {
         <div className='flex'>
           <div className='detailsstokes'>
             <h1 className='name'>Alexander Stokes</h1>
-            <h2> ALEXANDER UPDATE THIS</h2>
+            <h4> Hey there! I’m Alexander—part coder, part gamer, and full-time motorcycle enthusiast. Whether I’m writing code, riding twisty backroads, or leveling up in the latest RPG, I bring the same passion and curiosity into everything I do. This project is my way of blending creativity, technology, and a bit of adrenaline—thanks for stopping by and being part of the ride!</h4>
           </div>
           <img className='box-shadow pfpright' src='../images/alexander.png' alt="alexander" />
         </div>
@@ -78,6 +79,7 @@ const About = () => {
       </div>
       <div>
       </div>
+      {/* <BackToTop /> */}
     </div>
   )
 }

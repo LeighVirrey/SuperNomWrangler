@@ -1,19 +1,23 @@
 .aboutSteak{
     margin-top: 2rem;
-    width: 80rem;
-    height: 20rem;
+    width: 90%;
+    height: 200px;
     object-fit: cover;
     border-radius: var(--border-radius-md);
+}
+
+.aboutPage{
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 .aboutContainer{
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     border-bottom: 5px solid var(--color-primary);
-    margin-left:6rem;
-    margin-right: 6rem;
+    align-content: center;
+    
 }
 
 .aboutHeader{
@@ -23,7 +27,7 @@
 }
 
 .aboutSub{
-    width: 80rem;
+    width: 90%;
     font-weight: bold;
     color: #C8C8C8;
     margin-top: -2rem;
@@ -32,14 +36,13 @@
 
 .aboutTeam{
     margin-top: 6rem;
-    margin-left: 6rem;
     margin-bottom: 5rem;
 
 }
 
 .pfpleft{
-    width: 20rem;
-    height: 20rem;
+    width: 350px;
+    height: 350px;
     object-fit: cover;
     margin-right: 2rem;
 }
@@ -50,8 +53,10 @@
     align-items: flex-start;
     justify-content: center;
     margin-top: 2rem;
+    text-align: left;
     
 }
+
 
 .pfpright{
     width: 20rem;
@@ -66,7 +71,8 @@
     align-items: flex-end;
     justify-content: center;
     margin-top: 2rem;
-    margin-left: 27rem;
+    margin-left: 5%;
+    text-align: right;
     
 }
 
@@ -76,7 +82,8 @@
     align-items: flex-end;
     justify-content: center;
     margin-top: 2rem;
-    margin-left: 37rem;
+    margin-left: 25%;
+    text-align: right;
     
 }
 
@@ -86,7 +93,8 @@
     align-items: flex-end;
     justify-content: center;
     margin-top: 2rem;
-    margin-left: 27rem;
+    margin-left:3%;
+    text-align: right;
     
 }
 
@@ -96,7 +104,8 @@
     align-items: flex-end;
     justify-content: center;
     margin-top: 2rem;
-    margin-left: 47rem;
+    margin-left: 25%;
+    text-align: right;
     
 }
 .name{
