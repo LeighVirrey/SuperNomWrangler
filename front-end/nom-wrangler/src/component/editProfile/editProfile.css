@@ -1,10 +1,10 @@
 .edit-profile-container {
-  background-color: #231a13;
+  background-color: #2d1a0f;
   color: #f5f2e7;
   padding: 2rem;
   font-family: 'Arial', sans-serif;
   text-align: center;
-  border-top: 4px solid #e0562a;
+  /* border-top: 4px solid #e0562a; */
   min-height: 100vh;
 }
 
