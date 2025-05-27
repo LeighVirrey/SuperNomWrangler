@@ -9,6 +9,7 @@ import About from './component/about/about'
 import Review from './component/userReview/UserReview'
 import RestaurantList from './component/restaurantList/restaurantList';
 import Details from './component/restaurantDetails/RestaurantDetails'
+import Register from './component/register/register'
 
 
 
@@ -27,7 +28,8 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/restaurantList" element={< RestaurantList />} />
           <Route path="/review" element={<Review />} />
-          <Route path="/restaurantDetails" element={<Details />} />
+          <Route path="/register" element={<Register />} />
+          {/* <Route path="/restaurantDetails" element={<Details />} /> */}
         </Routes>
       </div>
     </Router>
