@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './profile.css';
 
 const Profile = () => {
@@ -26,7 +27,9 @@ const Profile = () => {
                     </div>
                     <div className="gear-icon">⚙️</div>
                 </div>
+                <Link to="/EditProfile" className="edit-profile-link">
                 <button className="edit-profile-btn">Edit Profile</button>
+                </Link>
             </div>
 
             <div className="reviews-section">
