@@ -192,6 +192,14 @@ app.get("/restaurantlist", async (req, res) => {
   res.json(dummyRestaurants);
 });
 
+app.get("/restaurantlist", async (req, res) => {
+  let dummyRestaurants = await DAL.getRestaurants()
+
+  console.log(dummyRestaurants)
+
+  res.json(dummyRestaurants);
+});
+
 // app.get('/api/restaurants', async (req, res) => {
 //   const { lat, lng, radius = 25 } = req.query;
 

@@ -11,6 +11,7 @@ import RestaurantList from './component/restaurantList/restaurantList';
 import Details from './component/restaurantDetails/RestaurantDetails'
 
 
+
 function App() {
   return (
     <Router>
