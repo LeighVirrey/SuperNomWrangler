@@ -747,6 +747,7 @@ app.post("/restaurant/review", (req, res) => {
     otherNotes,
     operatingHours,
     userReview,
+    ratingValue, 
   } = req.body;
 
   // Check if the restaurant name already exists in the reviews array
@@ -779,6 +780,7 @@ app.post("/restaurant/review", (req, res) => {
     otherNotes,
     operatingHours: JSON.parse(operatingHours || "[]"),
     userReview,
+    ratingValue: typeof ratingValue === "number" ? ratingValue : null, 
     isFlagged: false,
   };
 
@@ -892,6 +894,7 @@ app.put("/restaurant/review/:id", (req, res) => {
     operatingHours,
     userReview,
     isFlagged,
+    ratingValue
   } = req.body;
 
   // Update the review object with the new values
@@ -910,6 +913,7 @@ app.put("/restaurant/review/:id", (req, res) => {
   review.otherNotes = otherNotes || review.otherNotes;
   review.operatingHours = operatingHours || review.operatingHours;
   review.userReview = userReview || review.userReview;
+  review.ratingValue = ratingValue || review.ratingValue // Update ratingValue only if it's a number
 
   // Update isFlagged only if it's passed and is a boolean
   if (typeof isFlagged === "boolean") {
@@ -1155,41 +1159,29 @@ app.get("/api/top-restaurants", async (req, res) => {
       }
     }
 
-    let result;
-    if (matched.length > 0) {
-      // Sort by rating and review count
-      matched.sort((a, b) =>
-        b.avgRating !== a.avgRating
-          ? b.avgRating - a.avgRating
-          : b.reviewCount - a.reviewCount
-      );
-      result = matched.slice(0, 4);
-    } else {
-      // Return top 4 nearby restaurants from Google data
-      const uniqueGoogle = [];
-      const seenNames = new Set();
+    // Fill up to 4 with closest Google restaurants not already in matched
+    const result = [...matched];
+    const seenNames = new Set(matched.map(r => r.name.trim().toLowerCase()));
 
-      for (const r of googleRestaurants) {
-        const name = r.displayName?.text || "";
-        const nameKey = name.trim().toLowerCase();
-        if (!nameKey || seenNames.has(nameKey)) continue;
+    for (const r of googleRestaurants) {
+      const name = r.displayName?.text || "";
+      const nameKey = name.trim().toLowerCase();
+      if (!nameKey || seenNames.has(nameKey)) continue;
 
-        uniqueGoogle.push({
-          name,
-          address: r.formattedAddress,
-          avgRating: null,
-          reviewCount: 0,
-          imageUrl: null,
-          primaryType: r.primaryType || null,
-        });
+      result.push({
+        name,
+        address: r.formattedAddress,
+        avgRating: null,
+        reviewCount: 0,
+        imageUrl: null,
+        primaryType: r.primaryType || null,
+      });
 
-        seenNames.add(nameKey);
-        if (uniqueGoogle.length === 4) break;
-      }
-      result = uniqueGoogle;
+      seenNames.add(nameKey);
+      if (result.length === 4) break;
     }
 
-    res.json(result);
+    res.json(result.slice(0, 4));
   } catch (error) {
     console.error(
       "Error fetching top restaurants:",
