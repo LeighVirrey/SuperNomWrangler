@@ -6,8 +6,7 @@
 
 .restO {
     display: flex;
-    flex-direction: column;
-    width: 1000px;
+    width: 60%;
     background-color: var(--color-primary);
     border-radius: var(--border-radius-md);
 
@@ -16,8 +15,7 @@
 
 .restB {
     display: flex;
-    flex-direction: column;
-    width: 1000px;
+    width: 60%;
     background-color: var(--color-secondary);
     border-radius: var(--border-radius-md);
 
@@ -31,7 +29,7 @@
 
 
 .restImgLeft {
-    width: 500px;
+    width: 50%;
     height: 100%;
     object-fit: cover;
     border-radius: 0;
@@ -40,7 +38,7 @@
 }
 
 .restImgRight {
-    width: 500px;
+    width: 50%;
     height: 100%;
     object-fit: cover;
     border-radius: 0;
@@ -52,7 +50,6 @@
 .restDetails {
     padding-left: 20px;
     text-align: left;
-    /* box-shadow: 0px 0px 20px #291414; */
 }
 
 .reviewers{
@@ -96,25 +93,29 @@
 
 .about{
     display: flex;
-    flex-direction: row;
+    gap: 2rem;
     align-items: center;
     justify-content: center;
     margin-bottom: 2rem;
+    margin-right: 10%;
 }
 
 .steak{
-    width: 42rem;
+    width: 80%;
     height: 100%;
     object-fit: cover;
     border-radius: var(--border-radius-md);
     background-size: cover;
+    margin-left: 20%
+
 }
 
 .map{
-    width: 42rem;
-    height: 20rem;
+    width: 75%;
+    height: 100%;
     object-fit: cover;
     border-radius: var(--border-radius-md);
+    margin-left: 20%;
 }
 
 .aboutHeader{
@@ -125,9 +126,8 @@
 .aboutText{
     color: black;
     border-radius: var(--border-radius-md);
-    margin-left: 3rem;
     background-color: var(--color-primary);
-    width: 30rem;
+    width: 60%;
     padding-left: 5rem;
     padding-right: 5rem;
     padding-bottom: 2rem;
@@ -146,9 +146,8 @@
 .mapText{
     color: black;
     border-radius: var(--border-radius-md);
-    margin-left: 3rem;
     background-color: #AE3233;
-    width: 30rem;
+    width: 60%;
     padding-left: 5rem;
     padding-right: 5rem;
     padding-bottom: 2rem;
@@ -156,8 +155,8 @@
 
 .backToTopButton {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 10%;
+  right: 5%;
   z-index: 100;
   width: 50px;
   height: 50px;
@@ -180,9 +179,9 @@
 }
 
 
-/* tablet view */
+/* tablet view
 /* ipad mini/ */
-@media screen and (max-width: 768px) {
+/* @media screen and (max-width: 768px) {
 
     .backToTopButton{
         right: 100px;
@@ -236,7 +235,7 @@
 
 /* phone view */
 /* pixel 7 */
-@media screen and (max-width: 480px) {
+/* @media screen and (max-width: 480px) {
     .restO, .restB {
         width: 95%;
         height: auto;
@@ -244,7 +243,6 @@
     
 
     .restImgRight{
-        /* border-radius: 15px; */
         border-bottom-left-radius: 15px;
         border-bottom-right-radius: 15px;
         width: 100%;
@@ -314,10 +312,10 @@
         height: 40px;
         font-size: 18px;
     }
-}
+} */
 
 /* Small phone view */
-@media screen and (max-width: 320px) {
+/* @media screen and (max-width: 320px) {
     .restImgLeft, .restImgRight {
         height: 12rem;
     }
@@ -330,4 +328,4 @@
     .aboutText, .mapText {
         font-size: 0.9rem;
     }
-}
+} */ 
