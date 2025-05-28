@@ -119,18 +119,17 @@
 .aboutHeader{
     margin-bottom: 3rem;
     font-weight: bold;
-    font-size: 90%;
+    font-size: 70%;
 }
 .aboutText{
     color: black;
     border-radius: var(--border-radius-md);
     background-color: var(--color-primary);
     width: 60%;
-    padding-left: 5%;
-    padding-right: 5%;
-    padding-bottom: 2%;
-    font-size: 90%;
-
+    padding-left: 5rem;
+    padding-right: 5rem;
+    padding-bottom: 2rem;
+    font-size: 75%;
 }
 
 .aboutButton{
