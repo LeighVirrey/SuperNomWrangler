@@ -4,7 +4,7 @@ body {
 }
 
 .signup-container {
-  min-height: 100vh;
+  min-height: 60vh;
   background-color: #2b2118;
   display: flex;
   justify-content: center;
@@ -147,9 +147,9 @@ body {
 }
 
 /* phone view */
-@media (max-width: 412px) {
-  .signup-contianer {
-    padding: 50%;
+@media (max-width: 915px) {
+  .signup-container {
+    padding: 15px;
   }
 
   .signup-box {
