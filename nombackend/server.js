@@ -707,32 +707,40 @@ app.post("/logout", (req, res) => {
 //#region - Restaurant Reviews
 // Mock information for testing
 
-let reviewIdCounter = 1;
+let reviewIdCounter = 0;
 
 const reviews = [
   {
-    id: reviewIdCounter++, 
-    imageUrl: "https://example.com/image.jpg",
-    restaurantName: "Sushi Place",
-    streetName: "Main St",
-    streetNumber: "123",
-    city: "Tokyo",
-    state: "TK",
-    zipCode: "12345",
-    country: "USA",
-    description: "Best sushi in town!",
-    cuisineTypes: ["Japanese"],
+    id: reviewIdCounter++,
+    restaurantName: "Red Iguana",
+    description: "Home of the Best Mexican Food in Utah. Red Iguana offers a truly unique dining experience – authentic Mexican food in a festive, casual atmosphere.",
+    cuisineTypes: ["Mexican"],
     diningStyle: "Sit down",
     priceRange: "option1",
-    extraText: "Great ambiance",
+    streetName: "W North Temple St",
+    streetNumber: "736",
+    city: "Salt Lake City",
+    state: "UT",
+    zipCode: "84116",
+    country: "USA",
+    reviewText: "Generous portions, chalked full off rice, beans, vegetables, meat, and cheese!",
+    extraText: "This place can get very busy.",
     operatingHours: [
-      { day: "Monday", hours: "10:00 AM - 10:00 PM" },
-      { day: "Tuesday", hours: "10:00 AM - 10:00 PM" },
+      { "day": "Monday", "hours": "11:00 AM - 9:00 PM" },
+      { "day": "Tuesday", "hours": "11:00 AM - 9:00 PM" },
+      { "day": "Wednesday", "hours": "11:00 AM - 9:00 PM" },
+      { "day": "Thursday", "hours": "11:00 AM - 9:00 PM" },
+      { "day": "Friday", "hours": "11:00 AM - 10:00 PM" },
+      { "day": "Saturday", "hours": "11:00 AM - 10:00 PM" },
+      { "day": "Sunday", "hours": "11:00 AM - 9:00 PM" }
     ],
-    reviewText: "Amazing food and service!",
-    ratingValue: 5,
+    ratingValue: 3,
+    imageUrl: "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqSam5iYjLtSHx1ATYDDE--MQ1TsORphbQB_6byyVFm5l2A695tgMup4fQyhMrFs9Ur-I6FHlc5uGbXb--X86cmu0FrZXjN4V9tXtgZh1FrnMEQ6lYqFqt3KSpYYGBHVA3LGfzZ=s1360-w1360-h1020-rw",
+    mom_And_Pop: true,
+    hidden_Gem: true,
+    nook_And_Cranny: false,
     isFlagged: false,
-  },
+  }
 ];
 
 // Endpoint to submit a restaurant review
@@ -915,6 +923,72 @@ app.post(
     res.status(201).json(newReview);
   }
 );
+
+// Mock endpoint to create a new restaurant review
+// Endpoint to create a new restaurant review
+app.post("/restaurant/review", (req, res) => {
+  const {
+    imageUrl,
+    restaurantName,
+    streetName,
+    streetNumber,
+    city,
+    state,
+    zipCode,
+    country,
+    description,
+    cuisineTypes,
+    diningStyle,
+    priceRange,
+    otherNotes,
+    operatingHours,
+    userReview,
+    ratingValue,
+    hidden_Gem,
+    mom_And_Pop,
+    nook_And_Cranny,
+  } = req.body;
+
+  // Check if the restaurant name already exists in the reviews array
+  const existingRestaurant = reviews.find(
+    (review) =>
+      review.restaurantName.toLowerCase() === restaurantName.toLowerCase()
+  );
+
+  // If the restaurant is new and no imageUrl is provided, return an error
+  if (!existingRestaurant && !imageUrl) {
+    return res.status(400).json({
+      error: "First review for a restaurant must include an image URL.",
+    });
+  }
+
+  const newReview = {
+    id: reviewIdCounter++,
+    imageUrl,
+    restaurantName,
+    streetName,
+    streetNumber,
+    city,
+    state,
+    zipCode,
+    country,
+    description,
+    cuisineTypes,
+    diningStyle,
+    priceRange,
+    otherNotes,
+    operatingHours: JSON.parse(operatingHours || "[]"),
+    userReview,
+    hidden_Gem: !!hidden_Gem,
+    mom_And_Pop: !!mom_And_Pop,
+    nook_And_Cranny: !!nook_And_Cranny,
+    ratingValue: typeof ratingValue === "number" ? ratingValue : null,
+    isFlagged: false,
+  };
+
+  reviews.push(newReview);
+  res.status(201).json(newReview);
+});
 
 // Get all reviews for the restaurant
 
@@ -1134,7 +1208,10 @@ app.put("/restaurant/review/:id", (req, res) => {
     operatingHours,
     userReview,
     isFlagged,
-    ratingValue
+    ratingValue,
+    hidden_Gem,
+    mom_And_Pop,
+    nook_And_Cranny,
   } = req.body;
 
   // Update the review object with the new values
@@ -1153,7 +1230,10 @@ app.put("/restaurant/review/:id", (req, res) => {
   review.otherNotes = otherNotes || review.otherNotes;
   review.operatingHours = operatingHours || review.operatingHours;
   review.userReview = userReview || review.userReview;
-  review.ratingValue = ratingValue || review.ratingValue // Update ratingValue only if it's a number
+  review.ratingValue = ratingValue || review.ratingValue;
+  review.hidden_Gem = typeof hidden_Gem === "boolean" ? hidden_Gem : review.hidden_Gem;
+  review.mom_And_Pop = typeof mom_And_Pop === "boolean" ? mom_And_Pop : review.mom_And_Pop;
+  review.nook_And_Cranny = typeof nook_And_Cranny === "boolean" ? nook_And_Cranny : review.nook_And_Cranny;
 
   // Update isFlagged only if it's passed and is a boolean
   if (typeof isFlagged === "boolean") {
@@ -1354,7 +1434,7 @@ app.get("/api/top-restaurants", async (req, res) => {
           name,
           address: gRest.formattedAddress,
           avgRating,
-          reviewCount: match.length,
+          description: match[0].description || null,
           imageUrl: match[0].imageUrl || null,
           primaryType: gRest.primaryType || null,
         });
@@ -1375,7 +1455,7 @@ app.get("/api/top-restaurants", async (req, res) => {
         name,
         address: r.formattedAddress,
         avgRating: null,
-        reviewCount: 0,
+        description: r.description || null,
         imageUrl: null,
         primaryType: r.primaryType || null,
       });
