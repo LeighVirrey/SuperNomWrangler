@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from './component/home/home'
-import Map from './component/map/map'
+// import Map from './component/map/map'
 import Profile from './component/profile/profile'
 import EditProfile from './component/editProfile/editProfile';
 import Login from './component/login/login'
