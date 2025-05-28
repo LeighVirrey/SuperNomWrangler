@@ -612,36 +612,45 @@ app.post("/logout", (req, res) => {
 //#region - Restaurant Reviews
 // Mock information for testing
 
-let reviewIdCounter = 1;
+let reviewIdCounter = 0;
 
 const reviews = [
   {
     id: reviewIdCounter++,
-    restaurantName: "Pho Real",
-    imageUrl:
-      "https://lh3.googleusercontent.com/gps-cs-s/AB5caB_FEWKdmdQVET9381JO8q23Cy2FwZw_Mu6HKdzEXdYwecoyMx-N0O9_EERPG0mIYQqT43eCRCX0rq6Re5s84gbovjlt4fGWyHGWNRkbNtCIFUP-edyelizr2A3_H_VBv9aqRLfc=s1360-w1360-h1020",
-    streetName: "Main St",
-    streetNumber: "123",
-    city: "Austin",
-    state: "TX",
-    zipCode: "78701",
-    country: "USA",
-    description: "Great atmosphere and authentic Vietnamese flavors!",
-    cuisineTypes: ["Vietnamese", "Asian"],
+    restaurantName: "Red Iguana",
+    description: "Home of the Best Mexican Food in Utah. Red Iguana offers a truly unique dining experience – authentic Mexican food in a festive, casual atmosphere.",
+    cuisineTypes: ["Mexican"],
     diningStyle: "Sit down",
-    priceRange: "$$",
-    otherNotes: "Wheelchair accessible",
-    operatingHours: [{ day: "Monday", open: "10:00", close: "21:00" }],
-    userReview: "The pho broth is next level. 10/10!",
+    priceRange: "option1",
+    streetName: "W North Temple St",
+    streetNumber: "736",
+    city: "Salt Lake City",
+    state: "UT",
+    zipCode: "84116",
+    country: "USA",
+    reviewText: "Generous portions, chalked full off rice, beans, vegetables, meat, and cheese!",
+    extraText: "This place can get very busy.",
+    operatingHours: [
+      { "day": "Monday", "hours": "11:00 AM - 9:00 PM" },
+      { "day": "Tuesday", "hours": "11:00 AM - 9:00 PM" },
+      { "day": "Wednesday", "hours": "11:00 AM - 9:00 PM" },
+      { "day": "Thursday", "hours": "11:00 AM - 9:00 PM" },
+      { "day": "Friday", "hours": "11:00 AM - 10:00 PM" },
+      { "day": "Saturday", "hours": "11:00 AM - 10:00 PM" },
+      { "day": "Sunday", "hours": "11:00 AM - 9:00 PM" }
+    ],
+    ratingValue: 3,
+    imageUrl: "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqSam5iYjLtSHx1ATYDDE--MQ1TsORphbQB_6byyVFm5l2A695tgMup4fQyhMrFs9Ur-I6FHlc5uGbXb--X86cmu0FrZXjN4V9tXtgZh1FrnMEQ6lYqFqt3KSpYYGBHVA3LGfzZ=s1360-w1360-h1020-rw",
+    mom_And_Pop: true,
+    hidden_Gem: true,
+    nook_And_Cranny: false,
     isFlagged: false,
-  },
+  }
 ];
 
-// let reviewIdCounter = 0;
 // let reviews = [];
 
-// Allows users to add reviews
-/*
+/* Allows users to add reviews
 app.post("/restaurant/review", async (req, res) => {
   const {
     imageUrl,
@@ -729,7 +738,8 @@ app.post("/restaurant/review", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 }); This has the try catch that can be used once we are further into the project*/
-
+// Mock endpoint to create a new restaurant review
+// Endpoint to create a new restaurant review
 app.post("/restaurant/review", (req, res) => {
   const {
     imageUrl,
@@ -747,7 +757,10 @@ app.post("/restaurant/review", (req, res) => {
     otherNotes,
     operatingHours,
     userReview,
-    ratingValue, 
+    ratingValue,
+    hidden_Gem,
+    mom_And_Pop,
+    nook_And_Cranny,
   } = req.body;
 
   // Check if the restaurant name already exists in the reviews array
@@ -780,7 +793,10 @@ app.post("/restaurant/review", (req, res) => {
     otherNotes,
     operatingHours: JSON.parse(operatingHours || "[]"),
     userReview,
-    ratingValue: typeof ratingValue === "number" ? ratingValue : null, 
+    hidden_Gem: !!hidden_Gem,
+    mom_And_Pop: !!mom_And_Pop,
+    nook_And_Cranny: !!nook_And_Cranny,
+    ratingValue: typeof ratingValue === "number" ? ratingValue : null,
     isFlagged: false,
   };
 
@@ -894,7 +910,10 @@ app.put("/restaurant/review/:id", (req, res) => {
     operatingHours,
     userReview,
     isFlagged,
-    ratingValue
+    ratingValue,
+    hidden_Gem,
+    mom_And_Pop,
+    nook_And_Cranny,
   } = req.body;
 
   // Update the review object with the new values
@@ -913,7 +932,10 @@ app.put("/restaurant/review/:id", (req, res) => {
   review.otherNotes = otherNotes || review.otherNotes;
   review.operatingHours = operatingHours || review.operatingHours;
   review.userReview = userReview || review.userReview;
-  review.ratingValue = ratingValue || review.ratingValue // Update ratingValue only if it's a number
+  review.ratingValue = ratingValue || review.ratingValue;
+  review.hidden_Gem = typeof hidden_Gem === "boolean" ? hidden_Gem : review.hidden_Gem;
+  review.mom_And_Pop = typeof mom_And_Pop === "boolean" ? mom_And_Pop : review.mom_And_Pop;
+  review.nook_And_Cranny = typeof nook_And_Cranny === "boolean" ? nook_And_Cranny : review.nook_And_Cranny;
 
   // Update isFlagged only if it's passed and is a boolean
   if (typeof isFlagged === "boolean") {
@@ -1151,7 +1173,7 @@ app.get("/api/top-restaurants", async (req, res) => {
           name,
           address: gRest.formattedAddress,
           avgRating,
-          reviewCount: match.length,
+          description: match[0].description || null,
           imageUrl: match[0].imageUrl || null,
           primaryType: gRest.primaryType || null,
         });
@@ -1172,7 +1194,7 @@ app.get("/api/top-restaurants", async (req, res) => {
         name,
         address: r.formattedAddress,
         avgRating: null,
-        reviewCount: 0,
+        description: r.description || null,
         imageUrl: null,
         primaryType: r.primaryType || null,
       });
