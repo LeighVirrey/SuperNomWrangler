@@ -115,3 +115,65 @@ body {
   border-radius: 4px;
   cursor: pointer;
 }
+
+/* tablet view */
+@media (max-width: 768px) {
+  .signup-box {
+    padding: 30px;
+    max-width: 600px;
+  }
+
+  .signup-title {
+    font-size: 34px;
+  }
+
+  .signup-form .form-row {
+    gap: 20px;
+    margin-right: 0;
+  }
+
+  .signup-form label {
+    font-size: 14px;
+  }
+
+  .signup-from input {
+    padding: 8px
+  }
+
+  .form-button button {
+    font-size: 18px;
+    padding: 10px 30px;
+  }
+}
+
+/* phone view */
+@media (max-width: 480px) {
+  .signup-contianer {
+    padding: 10px
+  }
+
+  .signup-box {
+    padding: 20px;
+    border-radius: 15px;
+  }
+
+  .signup-title {
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+
+  .signup-form .form-row {
+    flex-direction: column;
+    gap: 15px;;
+  }
+
+  .signup-form .form-group {
+    width: 100%;
+    flex: unset;
+  }
+
+  .signup-form input {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
