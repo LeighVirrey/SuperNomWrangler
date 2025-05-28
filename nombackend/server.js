@@ -273,9 +273,9 @@ app.get("/restaurant/:id", async (req, res) => {
 
 app.post("/restaurant", async (req, res) => {
   const { name, img_Url, description, price_Range, cuisine_Type, operating_Hours, hidden_Gem, mom_And_Pop, nook_And_Cranny, is_Flagged } = req.body;
-  const { name_Street, suite, city, state, zip_Code, country } = req.body;
+  const { name_Street, number_Street, suite, city, state, zip_Code, country } = req.body;
 
-  if (!name || !img_Url || !description || !price_Range || !operating_Hours || !cuisine_Type || !name_Street || !city || !state || !zip_Code || hidden_Gem === undefined || mom_And_Pop === undefined || nook_And_Cranny === undefined || is_Flagged === undefined || !country) {
+  if (!name || !img_Url || !description || !price_Range || !operating_Hours || !cuisine_Type || !name_Street || !number_Street || !city || !state || !zip_Code || hidden_Gem === undefined || mom_And_Pop === undefined || nook_And_Cranny === undefined || is_Flagged === undefined || !country) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
@@ -284,14 +284,15 @@ app.post("/restaurant", async (req, res) => {
     //the details they put for the address is created first so that it can be placed as an id.
     await addressClass.create({
       name_Street,
+      number_Street,
       suite,
       city,
       state,
       zip_Code,
       country
     });
-    const address_Id = (await addressClass.getFromAddress({ name_Street, suite, city, state, zip_Code, country })).getAddressId();
-    const newRestaurant = await restaurantClass.create({
+    const address_Id = (await addressClass.getFromAddress({ name_Street, number_Street, suite, city, state, zip_Code, country })).getAddressId();
+    await restaurantClass.create({
       name,
       address_Id,
       img_Url,
@@ -304,8 +305,8 @@ app.post("/restaurant", async (req, res) => {
       nook_And_Cranny,
       is_Flagged
     });
-
-    res.status(201).json(newRestaurant);
+    const newRestaurantWithId = await restaurantClass.getByAddressId(address_Id);
+    res.status(201).json(newRestaurantWithId);
   } catch (error) {
     console.error("Error creating restaurant:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -316,18 +317,18 @@ app.post("/restaurant", async (req, res) => {
 app.put("/restaurant/:id", async (req, res) => {
   const { id } = req.params;
   const { name, img_Url, description, price_Range, cuisine_Type, operating_Hours, hidden_Gem, mom_And_Pop, nook_And_Cranny, is_Flagged } = req.body;
-  const { name_Street, suite, city, state, zip_Code, country } = req.body;
-  if (!name || !img_Url || !description || !price_Range || !cuisine_Type || !name_Street || !suite || !city || !state || !zip_Code || !country || hidden_Gem === undefined || mom_And_Pop === undefined || nook_And_Cranny === undefined || is_Flagged === undefined) {
+  const { name_Street, number_Street, suite, city, state, zip_Code, country } = req.body;
+  if (!name || !img_Url || !description || !price_Range || !cuisine_Type || !name_Street || !number_Street || !suite || !city || !state || !zip_Code || !country || hidden_Gem === undefined || mom_And_Pop === undefined || nook_And_Cranny === undefined || is_Flagged === undefined) {
     return res.status(400).json({ error: "All fields are required" });
   }
   try {
     // Update address first, then restaurant
-    const address = await addressClass.getFromAddress({ name_Street, suite, city, state, zip_Code, country });
+    const address = await addressClass.getFromAddress({ name_Street, number_Street, suite, city, state, zip_Code, country });
     if (!address) {
       return res.status(404).json({ error: "Address not found" });
     }
     const address_Id = address.getAddressId();
-    await addressClass.update({ address_Id, name_Street, suite, city, state, zip_Code, country });
+    await addressClass.update({ address_Id, name_Street, number_Street, suite, city, state, zip_Code, country });
     const restaurant = await restaurantClass.get(id);
     if (!restaurant) {
       return res.status(404).json({ error: "Restaurant not found" });
@@ -502,12 +503,12 @@ app.get("/address/:id", async (req, res) => {
 
 app.put("/address/:id", async (req, res) => {
   const { id } = req.params;
-  const { name_Street, suite, city, state, zipCode } = req.body;
-  if (!name_Street || !suite || !city || !state || !zipCode) {
+  const { name_Street, number_Street, suite, city, state, zipCode } = req.body;
+  if (!name_Street || !number_Street || !suite || !city || !state || !zipCode) {
     return res.status(400).json({ error: "All fields are required" });
   }
   try {
-    const updatedAddress = await addressClass.update({ id, name_Street, suite, city, state, zipCode });
+    const updatedAddress = await addressClass.update({ id, name_Street, number_Street, suite, city, state, zipCode });
     if (!updatedAddress) {
       return res.status(404).json({ error: "Address not found" });
     }
