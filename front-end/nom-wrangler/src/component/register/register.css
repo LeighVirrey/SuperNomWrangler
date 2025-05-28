@@ -117,7 +117,7 @@ body {
 }
 
 /* tablet view */
-@media (max-width: 768px) {
+@media (max-width: 1180px) {
   .signup-box {
     padding: 30px;
     max-width: 600px;
@@ -147,13 +147,13 @@ body {
 }
 
 /* phone view */
-@media (max-width: 480px) {
+@media (max-width: 412px) {
   .signup-contianer {
-    padding: 10px
+    padding: 50%;
   }
 
   .signup-box {
-    padding: 20px;
+    padding: 40px;
     border-radius: 15px;
   }
 
@@ -175,5 +175,11 @@ body {
   .signup-form input {
     font-size: 14px;
     padding: 10px;
+  }
+
+  .form-button button {
+    font-size: 16px;
+    padding: 10px 25px;
+    width: 100%;
   }
 }
