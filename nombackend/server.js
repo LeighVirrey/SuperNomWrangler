@@ -29,11 +29,14 @@ app.get("/", async (req, res) => {
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, imgUrl } = req.body;
 
   // Basic validation
   if (!username || !email || !password) {
     return res.status(400).json({ error: "Username, email and password are required" });
+  }
+  if(!imgUrl){
+    imgUrl = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
   }
 
   try {
@@ -43,6 +46,7 @@ app.post("/register", async (req, res) => {
         username,
         email,
         password,
+        imgUrl,
         is_Admin: false,
         rank: 0
       });
@@ -136,7 +140,7 @@ app.get("/user/:id", async (req, res) => {
 //update user, normal endpoint for when user is updating themselves
 app.put("/user/:id", async (req, res) => {
   const { id } = req.params;
-  const { username, email, password } = req.body;
+  const { username, email, password, imgUrl } = req.body;
 
   if (!username || !email) {
     return res.status(400).json({ error: "Username and email are required" });
@@ -153,6 +157,7 @@ app.put("/user/:id", async (req, res) => {
       username,
       email,
       password: password ? await bcrypt.hash(password, 10) : user.password,
+      imgUrl: imgUrl ? imgUrl : user.imgUrl
     });
 
     res.json({ message: "User updated successfully", user: updatedUser });
@@ -166,7 +171,7 @@ app.put("/user/:id", async (req, res) => {
 //edit user endpoint
 app.put("/admin/editUser/:id", async (req, res) => {
   const { id } = req.params;
-  const { username, email, is_Admin, rank } = req.body;
+  const { username, email, is_Admin, rank, imgUrl } = req.body;
 
   if (!username || !email || is_Admin === undefined || rank === undefined) {
     return res.status(400).json({ error: "All fields are required" });
@@ -183,7 +188,8 @@ app.put("/admin/editUser/:id", async (req, res) => {
       username,
       email,
       is_Admin,
-      rank
+      rank,
+      imgUrl: imgUrl ? imgUrl : user.imgUrl
     });
 
     res.json({ message: "User updated successfully", user: updatedUser });
