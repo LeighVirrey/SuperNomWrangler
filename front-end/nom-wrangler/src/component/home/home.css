@@ -2,6 +2,8 @@
 
 .home {
     justify-items: center;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 .restO {
@@ -96,41 +98,39 @@
     gap: 2rem;
     align-items: center;
     justify-content: center;
-    margin-bottom: 2rem;
-    margin-right: 10%;
+    margin-bottom: 1rem;
+    width: fit-content;
 }
 
 .steak{
-    width: 80%;
-    height: 100%;
+    height: 400px;
     object-fit: cover;
     border-radius: var(--border-radius-md);
-    background-size: cover;
-    margin-left: 20%
 
 }
 
 .map{
-    width: 75%;
-    height: 100%;
+    height: 280px;
     object-fit: cover;
     border-radius: var(--border-radius-md);
-    margin-left: 20%;
+    margin-left: -10%;
 }
 
 .aboutHeader{
     margin-bottom: 3rem;
     font-weight: bold;
-    font-size: 60px;
+    font-size: 90%;
 }
 .aboutText{
     color: black;
     border-radius: var(--border-radius-md);
     background-color: var(--color-primary);
     width: 60%;
-    padding-left: 5rem;
-    padding-right: 5rem;
-    padding-bottom: 2rem;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-bottom: 2%;
+    font-size: 90%;
+
 }
 
 .aboutButton{
@@ -140,7 +140,8 @@
     color: var(--color-text);
     font-size: x-large;
     padding: 1rem;
-    width: 15rem;
+    width: 45%;
+    font-size: 95%;
 }
 
 .mapText{
@@ -148,9 +149,11 @@
     border-radius: var(--border-radius-md);
     background-color: #AE3233;
     width: 60%;
-    padding-left: 5rem;
-    padding-right: 5rem;
-    padding-bottom: 2rem;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-bottom: 2%;
+    font-size: 90%;
+
 }
 
 .backToTopButton {
