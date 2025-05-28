@@ -12,9 +12,9 @@ export const nav = () => {
               <Link to="/">
                 <button className="navbutton">HOME</button>
               </Link>
-              <Link to="/map">
+              {/* <Link to="/map">
                 <button className="navbutton">MAP</button>
-              </Link>
+              </Link> */}
               <Link to="/profile">
                 <button className="navbutton">PROFILE</button>
               </Link>
