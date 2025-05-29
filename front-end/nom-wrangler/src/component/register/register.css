@@ -34,8 +34,9 @@ body {
 .signup-form .form-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 35px;
   margin-bottom: 20px;
+  margin-right: 20px;
 }
 
 .signup-form .form-group {
@@ -65,8 +66,10 @@ body {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  width: 100%;         
+  box-sizing: border-box;
 }
-
+ 
 .form-button button {
   background-color: #b7410e;
   color: white;
@@ -80,4 +83,35 @@ body {
 
 .form-button button:hover {
   background-color: #9e360c;
+}
+
+.form-button button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error {
+  padding-top: 20px;
+  color: #ff3333;
+  font-size: 0.875rem;
+}
+
+.success-message {
+  text-align: center;
+  padding: 2rem;
+}
+
+.success-message h2 {
+  color: #4BB543;
+  margin-bottom: 1rem;
+}
+
+.success-message button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

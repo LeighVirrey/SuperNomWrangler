@@ -1,71 +1,115 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import "./restaurantList.css"; // <-- Import the separate CSS file
 
 const RestaurantList = () => {
-    const [restaurants, setRestaurants] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-    const [location, setLocation] = useState(null);
+  const [search, setSearch] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
+  const [showScrollButton, setShowScrollButton] = useState(false);
 
-    useEffect(() => {
-        // Get current location
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                setLocation({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                });
-            },
-            (err) => {
-                setError("Unable to retrieve location.");
-                setLoading(false);
-            }
-        );
-    }, []);
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/restaurantlist", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-    useEffect(() => {
-        if (!location) return;
+        const data = await response.json();
+        setRestaurants(data);
+      } catch (error) {
+        console.error("Error fetching restaurants:", error);
+      }
+    };
 
-        const fetchRestaurants = async () => {
-            try {
-                const response = await axios.get(`/api/restaurants`, {
-                    params: {
-                        lat: location.lat,
-                        lng: location.lng,
-                        radius: 25, // in miles
-                    },
-                });
-                setRestaurants(response.data);
-            } catch (err) {
-                setError("Failed to load restaurants.");
-            } finally {
-                setLoading(false);
-            }
-        };
+    fetchRestaurants();
 
-        fetchRestaurants();
-    }, [location]);
+    const handleScroll = () => {
+      setShowScrollButton(window.scrollY > 300);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    if (loading) return <div className="text-center p-4">Loading...</div>;
-    if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    setSuggestions([]);
+  };
 
-    return (
-        <div className="p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {restaurants.map((restaurant) => (
-                <div
-                    key={restaurant._id}
-                    className="border rounded-2xl p-4 shadow hover:shadow-lg transition"
-                >
-                    <h2 className="text-xl font-semibold">{restaurant.name}</h2>
-                    <p className="text-gray-600">{restaurant.address}</p>
-                    <p className="text-sm text-green-600">
-                        {restaurant.distance?.toFixed(1)} miles away
-                    </p>
-                    {/* Optional: Add tags, ratings, etc. */}
-                </div>
+  const filteredRestaurants = restaurants.filter((restaurant) =>
+    restaurant.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div className="home">
+      <div className="search-section">
+        <input
+          type="text"
+          placeholder="Search restaurants..."
+          value={search}
+          onChange={handleSearchChange}
+          className="search-bar"
+        />
+        {suggestions.length > 0 && (
+          <div className="search-options">
+            {suggestions.map((s, i) => (
+              <div key={i} className="search-option">
+                {s}
+              </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      <div className="restaurants">
+        <h1 className="mainheader">RESTAURANTS</h1>
+        <div className="rest-list-item">
+          {filteredRestaurants.map((restaurant, index) => (
+            <div key={restaurant.id} className="restaurant-card">
+
+              <div
+                className="singleRest individual"
+                style={{
+                  flexDirection: index % 2 === 0 ? "row" : "row-reverse",
+                }}
+              >
+
+                <img
+                  className="restImg pic"
+                  style={{margin: index % 2 === 0 ? "0px 15px 0px 0px" : "0px 0px 0px 15px",}}
+                  src={restaurant.image}
+                  alt={restaurant.name}
+                />
+                <br />
+                <div className="restDetails info" style={{
+                  backgroundColor: index % 2 === 0 ? "#f46036" : "#1695a3",
+                  alignItems: index % 2 === 0 ? "flex-start" : "flex-end",
+                }}>
+                  <h1>{restaurant.name}</h1>
+                  <h2>{restaurant.address}</h2>
+                  <p>{restaurant.description}</p>
+                  <p>{restaurant.distance.toFixed(1)} miles away</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-    );
+      </div>
+
+      {showScrollButton && (
+        <div className="scroll-to-top" onClick={scrollToTop}>
+          <div className="scroll-to-top-icon"></div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default RestaurantList;
