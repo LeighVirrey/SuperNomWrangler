@@ -4,7 +4,7 @@ body {
 }
 
 .signup-container {
-  min-height: 100vh;
+  min-height: 60vh;
   background-color: #2b2118;
   display: flex;
   justify-content: center;
@@ -34,8 +34,9 @@ body {
 .signup-form .form-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 35px;
   margin-bottom: 20px;
+  margin-right: 20px;
 }
 
 .signup-form .form-group {
@@ -65,8 +66,10 @@ body {
   display: flex;
   justify-content: center;
   margin-top: 20px;
+  width: 100%;         
+  box-sizing: border-box;
 }
-
+ 
 .form-button button {
   background-color: #b7410e;
   color: white;
@@ -80,4 +83,103 @@ body {
 
 .form-button button:hover {
   background-color: #9e360c;
+}
+
+.form-button button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.error {
+  padding-top: 20px;
+  color: #ff3333;
+  font-size: 0.875rem;
+}
+
+.success-message {
+  text-align: center;
+  padding: 2rem;
+}
+
+.success-message h2 {
+  color: #4BB543;
+  margin-bottom: 1rem;
+}
+
+.success-message button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* tablet view */
+@media (max-width: 1180px) {
+  .signup-box {
+    padding: 35px;
+    max-width: 600px;
+  }
+
+  .signup-title {
+    font-size: 34px;
+  }
+
+  .signup-form .form-row {
+    gap: 25px;
+    margin-right: 0;
+  }
+
+  .signup-form label {
+    font-size: 14px;
+  }
+
+  .signup-from input {
+    padding: 8px
+  }
+
+  .form-button button {
+    font-size: 18px;
+    padding: 10px 30px;
+  }
+}
+
+/* phone view */
+@media (max-width: 915px) {
+  .signup-container {
+    padding: 15px;
+  }
+
+  .signup-box {
+    padding: 40px;
+    border-radius: 15px;
+  }
+
+  .signup-title {
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+
+  .signup-form .form-row {
+    flex-direction: column;
+    gap: 15px;;
+  }
+
+  .signup-form .form-group {
+    width: 100%;
+    flex: unset;
+  }
+
+  .signup-form input {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .form-button button {
+    font-size: 16px;
+    padding: 10px 25px;
+    width: 100%;
+  }
 }

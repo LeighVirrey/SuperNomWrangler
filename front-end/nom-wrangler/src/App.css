@@ -8,7 +8,7 @@
 
 .nav{
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   align-items: center;
   justify-content: center;
   border-bottom: #F2542D solid 5px;
@@ -27,5 +27,27 @@
   flex-direction: column;
   justify-items:right;
   text-align: center;
-  margin-right: 90px;
+}
+
+@media (max-width: 1300px) {
+  .nav{
+    flex-wrap: wrap;
+    text-align: center;
+  }
+  .logo {
+    margin: auto;
+    width:200px;
+  }
+.navbutton{
+  font-size: 30px;
+}
+}
+
+@media (max-width: 1300px) {
+  .logo {
+    width:300px;
+  }
+.navbutton{
+  font-size: 30px;
+}
 }
