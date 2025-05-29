@@ -1,19 +1,23 @@
 .aboutSteak{
     margin-top: 2rem;
-    width: 80rem;
-    height: 20rem;
+    width: 90%;
+    height: 200px;
     object-fit: cover;
     border-radius: var(--border-radius-md);
+}
+
+.aboutPage{
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 .aboutContainer{
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     border-bottom: 5px solid var(--color-primary);
-    margin-left:6rem;
-    margin-right: 6rem;
+    align-content: center;
+    
 }
 
 .aboutHeader{
@@ -23,11 +27,91 @@
 }
 
 .aboutSub{
-    width: 80rem;
+    width: 90%;
     font-weight: bold;
     color: #C8C8C8;
     margin-top: -2rem;
     margin-bottom: 2rem;
 }
 
+.aboutTeam{
+    margin-top: 6rem;
+    margin-bottom: 5rem;
 
+}
+
+.pfpleft{
+    width: 350px;
+    height: 350px;
+    object-fit: cover;
+    margin-right: 2rem;
+    border-radius: 15px;
+}
+
+.detailsleft{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin-top: 2rem;
+    text-align: left;
+    
+}
+
+
+.pfpright{
+    width: 20rem;
+    height: 20rem;
+    object-fit: cover;
+    margin-left: 2rem;
+    border-radius: 15px;
+}
+
+.detailsright{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 5%;
+    text-align: right;
+    
+}
+
+.detailslauren{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 25%;
+    text-align: right;
+    
+}
+
+.detailsstokes{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left:3%;
+    text-align: right;
+    
+}
+
+.detailszk{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 25%;
+    text-align: right;
+    
+}
+.name{
+    font-size: 5rem;
+    font-weight: bold;
+    margin-bottom: -1rem;
+}
