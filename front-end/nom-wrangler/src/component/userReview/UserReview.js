@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import './UserReview.css';
+import React, { useState, useEffect } from "react";
+import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import "./UserReview.css";
 
 const UserReview = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState('');
@@ -14,7 +15,27 @@ const UserReview = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [address, setAddress] = useState('');
+  const [mapCenter, setMapCenter] = useState({ lat: 40.7608, lng: -111.891 });
   const maxCharacters = 1000;
+
+  useEffect(() => {
+    if (!address) return;
+    const geocode = async () => {
+      const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          address
+        )}&key=${apiKey}`
+      );
+      const data = await response.json();
+      if (data.results && data.results[0]) {
+        const location = data.results[0].geometry.location;
+        setMapCenter(location);
+      }
+    };
+    geocode();
+  }, [address]);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -44,59 +65,38 @@ const UserReview = () => {
   };
 
   const validateForm = () => {
-    // Restaurant Name: required, 2-100 chars, letters/numbers/spaces/.'-
-    if (!restaurantName.trim()) {
-      return "Restaurant name is required.";
-    }
     if (!/^[\w\s.'&-]{2,100}$/.test(restaurantName.trim())) {
       return "Restaurant name must be 2-100 characters and contain only letters, numbers, spaces, .'-&";
     }
-
-    // Rating: required, 1-5
     if (ratingValue < 1 || ratingValue > 5) {
       return "Please select a rating between 1 and 5.";
-    }
-
-    // Description: required, 1-1000 chars, no < or >
-    if (!description.trim()) {
-      return "Description is required.";
     }
     if (!/^[^<>]{1,1000}$/.test(description.trim())) {
       return "Description must be 1-1000 characters and cannot contain < or >.";
     }
-
-    // Price Range: required, must be one of the allowed options
     const validPriceRanges = ["option1", "option2", "option3"];
     if (!validPriceRanges.includes(selectedPriceRange)) {
       return "Please select a valid price range.";
     }
-
-    // Review: required, 1-1000 chars, no < or >
     if (!reviewText.trim()) {
       return "Please provide a review.";
     }
     if (!/^[^<>]{1,1000}$/.test(reviewText.trim())) {
       return "Review must be 1-1000 characters and cannot contain < or >.";
     }
-
-    // Extra Text: optional, 0-1000 chars, no < or >
     if (extraText && !/^[^<>]{0,1000}$/.test(extraText.trim())) {
       return "Extra text cannot contain < or >.";
     }
-
-    // Image: optional, max 5MB
     if (selectedImage && selectedImage.size > 5 * 1024 * 1024) {
       return "Image size must be less than 5MB.";
     }
-
-    // Operating Hours: optional, HHMM-HHMM format
     if (
       hours &&
       !/^([01]\d|2[0-3])([0-5]\d)-([01]\d|2[0-3])([0-5]\d)$/.test(hours.trim())
     ) {
       return "Operating hours must be in HHMM-HHMM format.";
     }
-
+    
     return null;
   };
 
@@ -270,6 +270,26 @@ const UserReview = () => {
           <h3>Images (Optional):</h3>
           <input type="file" accept="image/*" onChange={handleImageChange} />
           {imagePreview && <img src={imagePreview} alt="Preview" width="200" />}
+        </div>
+
+        <div className="addressInput">
+          <h3>Restaurant Address:</h3>
+          <input
+            type="text"
+            placeholder="123 Main St, City, State"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+        </div>
+        <div className="mapContainer">
+          <h3>Address Map:</h3>
+          <APIProvider apiKey={process.env.REACT_APP_GOOGLE_API_KEY}>
+            <Map
+              center={mapCenter}
+              zoom={15}
+              style={{ width: "100%", height: 300 }}
+            />
+          </APIProvider>
         </div>
 
         <button className="submitReview" type="submit" disabled={loading}>
