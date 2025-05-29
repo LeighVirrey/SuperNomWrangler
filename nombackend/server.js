@@ -13,6 +13,8 @@ const addressClass = require("./models/Address");
 const restaurantClass = require("./models/Restaurant");
 const reviewClass = require("./models/Review");
 require("dotenv").config(); 
+// const User = require("./models/user"); // Not used if using direct SQL queries
+const { DAL } = require('./DAL/mssqlDal')
 
 app.use(cors({
   origin: "http://localhost:3000",
@@ -214,36 +216,13 @@ app.delete("/user/:id", async (req, res) => {
   }
 });
 
-app.get('/api/restaurants', async (req, res) => {
-  const { lat, lng, radius = 25 } = req.query;
+app.get("/restaurantlist", async (req, res) => {
+  let dummyRestaurants = await DAL.getRestaurants()
 
-  if (!lat || !lng) {
-    return res.status(400).json({ error: "Missing latitude or longitude" });
-  }
+  console.log(dummyRestaurants)
 
-  const userLocation = {
-    type: "Point",
-    coordinates: [parseFloat(lng), parseFloat(lat)],
-  };
-
-  try {
-    const restaurants = await Restaurant.find({
-      location: {
-        $near: {
-          $geometry: userLocation,
-          $maxDistance: radius * 1609.34, // miles to meters
-        },
-      },
-    });
-
-    res.json(restaurants);
-  } catch (err) {
-    res.status(500).json({ error: "Server error fetching restaurants" });
-  }
-}
-);
-
-
+  res.json(dummyRestaurants);
+});
 //Restaurant endpoints, edit them if you'd like as I know some already exist -ZK
 app.get("/restaurant", async (req, res) => {
   try {
@@ -371,133 +350,41 @@ app.delete("/restaurant/:id", async (req, res) => {
 }
 );
 
-//reviews endpoints
-//this one has a query, so if you're searching for a specific review by a user or restaurant or both then use it in the query
-app.get("/review", async (req, res) => {
-  const restaurant_Id = req.query.restaurant_Id;
-  const user_Id = req.query.user_Id;
-  try {
-    let reviews;
-    if (restaurant_Id && user_Id) {
-      reviews = await reviewClass.getByUserIdAndRestaurantId({ user_Id, restaurant_Id });
-    } else if (restaurant_Id) {
-      reviews = await reviewClass.getByRestaurantId(restaurant_Id);
-    } else if (user_Id) {
-      reviews = await reviewClass.getByUserId(user_Id);
-    } else {
-      reviews = await reviewClass.getAll();
-    }
-    res.json(reviews);
-  } catch (error) {
-    console.error("Error fetching reviews:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-);
+app.get("/restaurantlist", async (req, res) => {
+  let dummyRestaurants = await DAL.getRestaurants()
 
-app.get("/review/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const review = await reviewClass.get(id);
-    if (!review) {
-      return res.status(404).json({ error: "Review not found" });
-    }
-    res.json(review);
-  } catch (error) {
-    console.error("Error fetching review:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-);
+  console.log(dummyRestaurants)
 
-app.post("/review", async (req, res) => {
-  const { user_Id, restaurant_Id, rating, review, is_Flagged } = req.body;
-  if (!user_Id || !restaurant_Id || !rating || !review || is_Flagged === undefined) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-  try {
-    const newReview = await reviewClass.create({ user_Id, restaurant_Id, rating, review, is_Flagged });
-    res.status(201).json(newReview);
-  } catch (error) {
-    console.error("Error creating review:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-);
+  res.json(dummyRestaurants);
+});
 
-app.put("/review/:id", async (req, res) => {
-  const { id } = req.params;
-  const { rating, review, is_Flagged } = req.body;
-  if (!rating || !review || is_Flagged === undefined) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-  try {
-    const updatedReview = await reviewClass.update({ reviewId: id, rating, review, is_Flagged });
-    if (!updatedReview) {
-      return res.status(404).json({ error: "Review not found" });
-    }
-    res.json({ message: "Review updated successfully", review: updatedReview });
-  } catch (error) {
-    console.error("Error updating review:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-);
+// app.get('/api/restaurants', async (req, res) => {
+//   const { lat, lng, radius = 25 } = req.query;
 
-app.delete("/review/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const review = await reviewClass.get(id);
-    if (!review) {
-      return res.status(404).json({ error: "Review not found" });
-    }
-    await reviewClass.delete(id);
-    res.json({ message: "Review deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting review:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-);
-
-app.get("/address", async (req, res) => {
-  try {
-    const addresses = await addressClass.getAll();
-    res.json(addresses);
-  } catch (error) {
-    console.error("Error fetching addresses:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-);
-app.get("/address/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const address = await addressClass.get(id);
-    if (!address) {
-      return res.status(404).json({ error: "Address not found" });
-    }
-    res.json(address);
-  } catch (error) {
-    console.error("Error fetching address:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
-);
-
-//disabled since creating a restaurant creates the address, creating a new address itself will not have a matching restaurant -ZK
-// app.post("/address", async (req, res) => {
-//   const { streetName, suite, city, state, zipCode } = req.body;
-//   if (!streetName || !suite || !city || !state || !zipCode) {
-//     return res.status(400).json({ error: "All fields are required" });
+//   if (!lat || !lng) {
+//     return res.status(400).json({ error: "Missing latitude or longitude" });
 //   }
+
+//   const userLocation = {
+//     type: "Point",
+//     coordinates: [parseFloat(lng), parseFloat(lat)],
+//   };
+
 //   try {
-//     const newAddress = await addressClass.create({ streetName, suite, city, state, zipCode });
-//     res.status(201).json(newAddress);
-//   } catch (error) {
-//     console.error("Error creating address:", error);
-//     res.status(500).json({ error: "Internal server error" });
+//     const restaurants = await Restaurant.find({
+//       location: {
+//         $near: {
+//           $geometry: userLocation,
+//           $maxDistance: radius * 1609.34, // miles to meters
+//         },
+//       },
+//     });
+
+//     res.json(restaurants);
+//   } catch (err) {
+//     res.status(500).json({ error: "Server error fetching restaurants" });
 //   }
+// });
 // }
 // );
 
