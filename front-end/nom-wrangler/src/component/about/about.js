@@ -64,7 +64,7 @@ const About = () => {
           <img className='box-shadow pfpleft' src='../images/cal.jpg' alt="cal" />
           <div className='detailsleft'>
             <h1 className='name'>Calvin Bryant</h1>
-            <h2> CALVIN UPDATE THIS</h2>
+            <h2> I am a loving Father of 2 amazing kids and a wonderful wife. And the reason why I play video games is to escape reality, because with video games, you can be anything you want to be. But being a Father is the greatest gift in the world. I also love superheroes, comic books, and horror movies. </h2>
           </div>
         </div>
 
