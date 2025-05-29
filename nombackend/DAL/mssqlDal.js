@@ -23,6 +23,15 @@ const getPool = async () => {
 }
 
 exports.DAL = {
+        executeQuery: async (query, params = {}) => {
+        const pool = await getPool();
+        const request = pool.request();
+        for (const key in params) {
+            request.input(key, params[key]);
+        }
+        const result = await request.query(query);
+        return result.recordset;
+        },
     getRestaurants: async () => {
         const dummyRestaurants = [
             {
