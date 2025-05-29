@@ -22,7 +22,7 @@ function App() {
         {/* Define Routes */}
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/map" element={<Map />} />
+          {/* <Route path="/map" element={<Map />} /> */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/about" element={<About />} />
