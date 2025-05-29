@@ -1,8 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Link } from 'react-router-dom';
 import './profile.css';
 
 const Profile = () => {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        // Fetch user data from API or context
+        const fetchUserData = async () => {
+            const response = await fetch('http://localhost:3000/user/:id');
+            const data = await response.json();
+            setUser(data);
+        };
+
+        fetchUserData();
+    }, []);
+
+    if (!user) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="profile-container">
             <div className="profile-header">
@@ -14,10 +31,10 @@ const Profile = () => {
                         className="profile-avatar"
                     />
                     <div className="profile-text">
-                        <h2>@TXRED</h2>
-                        <p>txred@gmail.com</p>
-                        <p>20 reviews</p>
-                        <p>gold hot dog</p>
+                        <h2>{user.name}</h2>
+                        <p>{user.email}</p>
+                        <p>{user.reviewCount} reviews</p>
+                        <p>{user.trophyLevel} hot dog</p>
                         <div className="trophies">
                             {[...Array(8)].map((_, i) => (
                                 <span key={i} className="trophy-dot" />
