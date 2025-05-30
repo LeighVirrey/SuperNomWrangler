@@ -31,6 +31,7 @@ function App() {
           <Route path="/review" element={<Review />} />
           <Route path="/register" element={<Register />} />
           <Route path="/editProfile" element={<EditProfile />} />
+          <Route path="/user/:id" element={<Profile />} />
           {/* <Route path="/restaurantDetails" element={<Details />} /> */}
         </Routes>
       </div>
