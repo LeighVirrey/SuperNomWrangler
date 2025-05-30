@@ -82,7 +82,7 @@ import { Link, useParams } from 'react-router-dom';
 import './profile.css';
 
 const Profile = () => {
-  const { id } = useParams(); // Assumes you're using React Router and URL contains `/user/:id`
+  const { id } = useParams(); 
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
 
@@ -114,10 +114,9 @@ const Profile = () => {
             alt="Profile"
             className="profile-picture"
           />
-          <h1>{user.name}</h1>
+          <h1>{user.firstName}</h1>
           <p>Email: {user.email}</p>
           <p>Username: {user.username}</p>
-          {/* Add more user fields as needed */}
         </div>
         <Link to="/edit-profile" className="edit-profile-button">Edit Profile</Link>
       </div>
