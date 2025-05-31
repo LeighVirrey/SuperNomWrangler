@@ -1,7 +1,7 @@
 const DAL = require('../DAL/mssqlDal');
 
 class Restaurant {
-  constructor({ restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style, extra_Text }) {
+  constructor({ restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style }) {
     this.restaurant_Id = restaurant_Id;
     this.name = name;
     this.address_Id = address_Id;
@@ -15,7 +15,7 @@ class Restaurant {
     this.hidden_Gem = hidden_Gem;
     this.mom_And_Pop = mom_And_Pop;
     this.nook_And_Cranny = nook_And_Cranny;
-    this.extra_Text = extra_Text || ''; 
+
   }
 
   // Getters & Setters
@@ -58,9 +58,6 @@ class Restaurant {
   getDining_Style() { return this.dining_Style; }
   setDining_Style(style) { this.dining_Style = style; }
 
-  getExtraText() { return this.extra_Text; }
-  setExtraText(text) { this.extra_Text = text; }
-
   // Relationship Method
   async getAddress() {
     return await Address.get(this.address_Id);
@@ -80,23 +77,16 @@ class Restaurant {
     return rows.length ? new Restaurant(rows[0]) : null;
   }
 
-  static async getByAddressId(address_Id) {
-    const query = 'SELECT * FROM Restaurants WHERE address_Id = @address_Id';
-    const params = { address_Id };
-    const rows = await DAL.executeQuery(query, params);
-    return rows.length ? new Restaurant(rows[0]) : null;
-  }
-
-  static async create({ name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style, extra_Text }) {
-    const query = 'INSERT INTO Restaurants (name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style, extra_Text) VALUES (@name, @address_Id, @img_Url, @description, @price_Range, @cuisine_Type, @operating_Hours, @is_Flagged, @hidden_Gem, @mom_And_Pop, @nook_And_Cranny, @dining_Style, @extra_Text)';
-    const params = { name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style, extra_Text };
+  static async create({ name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style }) {
+    const query = 'INSERT INTO Restaurants (name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style) VALUES (@name, @address_Id, @img_Url, @description, @price_Range, @cuisine_Type, @operating_Hours, @is_Flagged, @hidden_Gem, @mom_And_Pop, @nook_And_Cranny, @dining_Style)';
+    const params = { name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style };
     await DAL.executeQuery(query, params);
     return new Restaurant({ name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style });
   }
 
-  static async update({ restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style, extra_Text }) {
-    const query = 'UPDATE Restaurants SET name = @name, address_Id = @address_Id, img_Url = @img_Url, description = @description, price_Range = @price_Range, cuisine_Type = @cuisine_Type, operating_Hours = @operating_Hours, is_Flagged = @is_Flagged, hidden_Gem = @hidden_Gem, mom_And_Pop = @mom_And_Pop, nook_And_Cranny = @nook_And_Cranny, dining_Style = @dining_Style, extra_Text = @extra_Text WHERE restaurant_Id = @restaurant_Id';
-    const params = { restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style, extra_Text };
+  static async update({ restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style }) {
+    const query = 'UPDATE Restaurants SET name = @name, address_Id = @address_Id, img_Url = @img_Url, description = @description, price_Range = @price_Range, cuisine_Type = @cuisine_Type, operating_Hours = @operating_Hours, is_Flagged = @is_Flagged, hidden_Gem = @hidden_Gem, mom_And_Pop = @mom_And_Pop, nook_And_Cranny = @nook_And_Cranny, dining_Style = @dining_Style WHERE restaurant_Id = @restaurant_Id';
+    const params = { restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style };
     await DAL.executeQuery(query, params);
     return new Restaurant({ restaurant_Id, name, address_Id, img_Url, description, price_Range, cuisine_Type, operating_Hours, is_Flagged, hidden_Gem, mom_And_Pop, nook_And_Cranny, dining_Style });
   }

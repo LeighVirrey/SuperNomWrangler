@@ -1,10 +1,9 @@
 const DAL = require('../DAL/mssqlDal');
 
 class Address {
-  constructor({ address_Id, name_Street, number_Street, suite, city, country, state, zip_Code }) {
+  constructor({ address_Id, name_Street, suite, city, country, state, zip_Code }) {
     this.address_Id = address_Id;
     this.name_Street = name_Street;
-    this.number_Street = number_Street;
     this.suite = suite;
     this.city = city;
     this.country = country;
@@ -18,9 +17,6 @@ class Address {
 
   getStreetName() { return this.name_Street; }
   setStreetName(name) { this.name_Street = name; }
-
-  getStreetNumber() { return this.number_Street; }
-  setStreetNumber(number) { this.number_Street = number; }
 
   getSuite() { return this.suite; }
   setSuite(suite) { this.suite = suite; }
@@ -52,25 +48,25 @@ class Address {
     return rows.length ? new Address(rows[0]) : null;
   }
 
-  static async getFromAddress({ name_Street, number_Street, suite, city, state, zip_Code, country }) {
-    const query = 'SELECT * FROM Address WHERE name_Street = @name_Street AND number_Street = @number_Street AND suite = @suite AND city = @city AND state = @state AND zip_Code = @zip_Code AND country = @country';
-    const params = { name_Street, number_Street, suite, city, state, zip_Code, country };
+  static async getFromAddress({ name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'SELECT * FROM Address WHERE name_Street = @name_Street AND suite = @suite AND city = @city AND state = @state AND zip_Code = @zip_Code AND country = @country';
+    const params = { name_Street, suite, city, state, zip_Code, country };
     const rows = await DAL.executeQuery(query, params);
     return rows.length ? new Address(rows[0]) : null;
   }
 
-  static async create({ name_Street, number_Street, suite, city, state, zip_Code, country }) {
-    const query = 'INSERT INTO Address (name_Street, number_Street, suite, city, state, zip_Code, country) VALUES (@name_Street, @number_Street, @suite, @city, @state, @zip_Code, @country)';
-    const params = { name_Street, number_Street, suite, city, state, zip_Code, country };
+  static async create({ name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'INSERT INTO Address (name_Street, suite, city, state, zip_Code, country) VALUES (@name_Street, @suite, @city, @state, @zip_Code, @country)';
+    const params = { name_Street, suite, city, state, zip_Code, country };
     await DAL.executeQuery(query, params);
-    return new Address(name_Street, number_Street, suite, city, state, zip_Code, country);
+    return new Address(name_Street, suite, city, state, zip_Code, country);
   }
 
-  static async update({ address_Id, name_Street, number_Street, suite, city, state, zip_Code, country }) {
-    const query = 'UPDATE Address SET name_Street = @name_Street, number_Street = @number_Street, suite = @suite, city = @city, state = @state, zip_Code = @zip_Code, country = @country WHERE address_Id = @address_Id';
-    const params = { address_Id, name_Street, number_Street, suite, city, state, zip_Code, country };
+  static async update({ address_Id, name_Street, suite, city, state, zip_Code, country }) {
+    const query = 'UPDATE Address SET name_Street = @name_Street, suite = @suite, city = @city, state = @state, zip_Code = @zip_Code, country = @country WHERE address_Id = @address_Id';
+    const params = { address_Id, name_Street, suite, city, state, zip_Code, country };
     await DAL.executeQuery(query, params);
-    return new Address(name_Street, number_Street, suite, city, state, zip_Code, country);
+    return new Address(name_Street, suite, city, state, zip_Code, country);
   }
 
   static async delete( address_Id ) {

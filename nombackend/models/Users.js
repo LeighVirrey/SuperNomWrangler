@@ -2,14 +2,13 @@ const DAL = require('../DAL/mssqlDal');
 const bcrypt = require('bcryptjs');
 
 class User {
-  constructor({user_Id, username, email, password, is_Admin, rank, imgUrl}){
+  constructor({user_Id, username, email, password, is_Admin, rank}){
     this.id = user_Id;
     this.username = username;
     this.email = email;
     this.password = password;
     this.is_Admin = is_Admin;
     this.rank = rank;
-    this.imgUrl = imgUrl;
   }
 
   // Getters & Setters
@@ -25,8 +24,6 @@ class User {
   setIsAdmin(is_Admin) { this.is_Admin = is_Admin; }
   getRank() { return this.rank; }
   setRank(rank) { this.rank = rank; }
-  getImgUrl() { return this.imgUrl; }
-  setImgUrl(imgUrl) { this.imgUrl = imgUrl; }
 
   static async getAllUsers(){
     const query = 'SELECT * FROM Users';
@@ -53,17 +50,17 @@ class User {
     const users = await DAL.executeQuery(query, params);
     return users.length > 0 ? users[0].user_Id : false;
   }
-  static async createUser({ username, email, password, is_Admin, rank, imgUrl }){
-    const query = 'INSERT INTO Users (username, email, password, is_Admin, rank, imgUrl) VALUES (@username, @email, @password, @is_Admin, @rank, @imgUrl)';
+  static async createUser({ username, email, password, is_Admin, rank }){
+    const query = 'INSERT INTO Users (username, email, password, is_Admin, rank) VALUES (@username, @email, @password, @is_Admin, @rank)';
     const hashedPassword = await User.saltHashPassword(password);
-    const params = { username, email, password: hashedPassword, is_Admin, rank, imgUrl };
+    const params = { username, email, password: hashedPassword, is_Admin, rank };
     await DAL.executeQuery(query, params);
-    return new User({ username, email, password: hashedPassword, is_Admin, rank, imgUrl });
+    return new User({ username, email, password: hashedPassword, is_Admin, rank });
   }
-  static async updateUser(userId, { username, email, password, is_Admin, rank, imgUrl }){
-    const query = 'UPDATE Users SET username = @username, email = @email, password = @password, is_Admin = @is_Admin, rank = @rank, imgUrl = @imgUrl WHERE userId = @userId';
+  static async updateUser(userId, { username, email, password, is_Admin, rank }){
+    const query = 'UPDATE Users SET username = @username, email = @email, password = @password, is_Admin = @is_Admin, rank = @rank WHERE userId = @userId';
     const hashedPassword = await User.saltHashPassword(password);
-    const params = { userId, username, email, password: hashedPassword, is_Admin, rank, imgUrl };
+    const params = { userId, username, email, password: hashedPassword, is_Admin, rank };
     await DAL.executeQuery(query, params);
     return new User({ userId, username, email, password: hashedPassword, is_Admin, rank });
   }
