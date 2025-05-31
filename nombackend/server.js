@@ -57,6 +57,58 @@ app.post("/register", async (req, res) => {
   }
 });
 
+app.put("/editprofile", async (req, res) => {
+  const { userId, username, email, firstName, lastName, password } = req.body;
+
+  if (!userId || !username || !email) {
+    return res.status(400).json({ error: "User ID, username, and email are required" });
+  }
+
+  try {
+    const user = await usersClass.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Optional: check if email is changing and already in use by another user
+    if (email !== user.email) {
+      const emailExists = await usersClass.checkEmailExists(email);
+      if (emailExists) {
+        return res.status(409).json({ error: "Email is already in use" });
+      }
+    }
+
+    // Build update data object
+    const updatedData = {
+      username,
+      email,
+      firstName: firstName || "",
+      lastName: lastName || "",
+    };
+
+    if (password && password.length >= 8) {
+      updatedData.password = password; // Hash inside DAL ideally
+    }
+
+    const updatedUser = await usersClass.updateUser(userId, updatedData);
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+      },
+    });
+  } catch (error) {
+    console.error("Error during profile update:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
