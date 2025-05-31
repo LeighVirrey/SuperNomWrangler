@@ -401,13 +401,6 @@ app.delete("/restaurant/:id", async (req, res) => {
 }
 );
 
-app.get("/restaurantlist", async (req, res) => {
-  let dummyRestaurants = await DAL.getRestaurants()
-
-  console.log(dummyRestaurants)
-
-  res.json(dummyRestaurants);
-});
 
 // app.get('/api/restaurants', async (req, res) => {
 //   const { lat, lng, radius = 25 } = req.query;
@@ -439,6 +432,31 @@ app.get("/restaurantlist", async (req, res) => {
 // }
 // );
 
+//SOMETHING ALSO DELETED THE ADDRESS GET ENDPOINTS WTF -zk
+app.get("/address", async (req, res) => {
+  try {
+    const addresses = await addressClass.getAll();
+    res.json(addresses);
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/address/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const address = await addressClass.get(id);
+    if (!address) {
+      return res.status(404).json({ error: "Address not found" });
+    }
+    res.json(address);
+  } catch (error) {
+    console.error("Error fetching address:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.put("/address/:id", async (req, res) => {
   const { id } = req.params;
   const { name_Street, number_Street, suite, city, state, zipCode } = req.body;
@@ -469,6 +487,133 @@ app.delete("/address/:id", async (req, res) => {
     res.json({ message: "Address deleted successfully" });
   } catch (error) {
     console.error("Error deleting address:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+//
+//SOMETHING DELETED THE ENTIRETY OF REVIEW ENDPOINTS IM PISSED OFF -zk
+//
+
+app.get("/review", async (req, res) => {
+  try {
+    const reviews = await reviewClass.getAll();
+    res.json(reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const review = await reviewClass.get(id);
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+    res.json(review);
+  } catch (error) {
+    console.error("Error fetching review:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+app.get("/review/restaurant/:restaurantId", async (req, res) => {
+  const { restaurantId } = req.params;
+  try {
+    const reviews = await reviewClass.getByRestaurantId(restaurantId);
+    if (!reviews || reviews.length === 0) {
+      return res.status(404).json({ error: "No reviews found for this restaurant" });
+    }
+    res.json(reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/review/user/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const reviews = await reviewClass.getByUserId(userId);
+    if (!reviews || reviews.length === 0) {
+      return res.status(404).json({ error: "No reviews found for this user" });
+    }
+    res.json(reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+app.get("/review/user/:userId/restaurant/:restaurantId", async (req, res) => {
+  const { userId, restaurantId } = req.params;
+  try {
+    const reviews = await reviewClass.getByUserIdAndRestaurantId(userId, restaurantId);
+    if (!reviews || reviews.length === 0) {
+      return res.status(404).json({ error: "No reviews found for this user and restaurant" });
+    }
+    res.json(reviews);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+app.post("/review", async (req, res) => {
+  const { user_Id, restaurant_Id, rating, review, is_Flagged } = req.body;
+
+  if (!user_Id || !restaurant_Id || !rating || !review) {
+    return res.status(400).json({ error: "User ID, restaurant ID, rating and review are required" });
+  }
+
+  try {
+    const newReview = await reviewClass.create({ user_Id, restaurant_Id, rating, review, is_Flagged });
+    res.status(201).json(newReview);
+  } catch (error) {
+    console.error("Error creating review:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+app.put("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  const { rating, review, is_Flagged } = req.body;
+
+  if (!rating || !review) {
+    return res.status(400).json({ error: "Rating and review are required" });
+  }
+
+  try {
+    const updatedReview = await reviewClass.update({ review_Id: id, rating, review, is_Flagged });
+    if (!updatedReview) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+    res.json({ message: "Review updated successfully", review: updatedReview });
+  } catch (error) {
+    console.error("Error updating review:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+);
+
+app.delete("/review/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const review = await reviewClass.get(id);
+    if (!review) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+    await reviewClass.delete(id);
+    res.json({ message: "Review deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting review:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }
