@@ -85,7 +85,8 @@ const Profile = () => {
   const { id } = useParams(); 
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-
+//ZK NOTE: the ID becomes null because when profile is clicked, no params for id is set in place which is what the 
+//fetch is looking for along with what this page is also wanting. That's why the backend returns an nvarchar value 'undefined'
   useEffect(() => {
     const fetchUserData = async () => {
       try {
