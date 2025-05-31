@@ -29,7 +29,7 @@ function App() {
           <Route path="/restaurantList" element={< RestaurantList />} />
           <Route path="/review" element={<Review />} />
           <Route path="/register" element={<Register />} />
-          {/* <Route path="/restaurantDetails" element={<Details />} /> */}
+          { <Route path="/restaurantDetails/:id" element={<Details />} /> }
         </Routes>
       </div>
     </Router>
