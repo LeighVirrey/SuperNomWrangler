@@ -1,4 +1,5 @@
 const DAL = require('../DAL/mssqlDal')
+const { profanity } = require('@2toad/profanity')
 
 class Review {
   constructor({ review_Id, user_Id, restaurant_Id, rating, review, date_Posted, is_Flagged }) {
@@ -32,10 +33,6 @@ class Review {
 
   getIsFlagged() { return this.is_Flagged; }
   setIsFlagged(is_Flagged) { this.is_Flagged = is_Flagged; }
-
-  checkProfan() {
-    //implement this later, please intall the profanity package as I cannot do so right now -ZK
-  }
 
   // CRUD Methods (UML naming)
   static async getAll() {
@@ -72,6 +69,7 @@ class Review {
 
   static async create({ user_Id, restaurant_Id, rating, review, is_Flagged }) {
     const date_Posted = new Date();
+    review = profanity.censor(review);
     const query = 'INSERT INTO Reviews (user_Id, restaurant_Id, rating, review, date_Posted, is_Flagged) VALUES (@user_Id, @restaurant_Id, @rating, @review, @date_Posted, @is_Flagged)';
     const params = { user_Id, restaurant_Id, rating, review, date_Posted, is_Flagged };
     await DAL.executeQuery(query, params);
@@ -79,6 +77,7 @@ class Review {
   }
 
   static async update({ review_Id, rating, review, is_Flagged }) {
+    review = profanity.censor(review);
     const query = 'UPDATE Reviews SET rating = @rating, review = @review, is_Flagged = @is_Flagged WHERE review_Id = @review_Id';
     const params = { review_Id, rating, review, is_Flagged };
     await DAL.executeQuery(query, params);
