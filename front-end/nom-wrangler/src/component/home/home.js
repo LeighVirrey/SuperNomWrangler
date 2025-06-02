@@ -1,36 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import './home.css';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import "./home.css";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
+  const [zipcode, setZipcode] = useState("");
+  const [searchZip, setSearchZip] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRestaurants = async () => {
+      if (!searchZip) {
+        setRestaurants([]);
+        return;
+      }
       try {
-        const response = await fetch('http://localhost:4000/api/top-restaurants');
+        const url = `http://localhost:4000/api/top-restaurants?zip=${encodeURIComponent(searchZip)}`;
+        const response = await fetch(url);
         const data = await response.json();
-        setRestaurants(data.slice(0, 4));
+  
+        if (Array.isArray(data)) {
+          setRestaurants(data.slice(0, 4));
+        } else {
+          setRestaurants([]);
+          console.error("API did not return an array:", data);
+        }
       } catch (error) {
-        console.error('Error fetching restaurants:', error);
+        setRestaurants([]);
+        console.error("Error fetching restaurants:", error);
       }
     };
-
+  
     fetchRestaurants();
-  }, []);
+  }, [searchZip]);
+
+  const handleZipcodeSearch = (e) => {
+    e.preventDefault();
+    setSearchZip(zipcode.trim());
+  };
 
   const featuredRestaurants = () => {
-    navigate('/restaurantList');
+    navigate("/restaurantList");
   };
 
   return (
     <div className="home">
       <h1 className="mainheader"> FEATURED </h1>
 
+      {/* Zipcode Search */}
+      <form onSubmit={handleZipcodeSearch} style={{ marginBottom: "1rem" }}>
+        <input
+          type="text"
+          placeholder="Enter zipcode"
+          value={zipcode}
+          onChange={(e) => setZipcode(e.target.value)}
+        />
+        <button type="submit">Search</button>
+      </form>
+
       {restaurants.map((rest, index) => {
         const isEven = index % 2 === 0;
-        const containerClass = isEven ? 'restO box-shadow' : 'restB box-shadow';
+        const containerClass = isEven ? "restO box-shadow" : "restB box-shadow";
 
         return (
           <div key={rest.restaurant_Id || index} className={containerClass}>
@@ -39,13 +69,13 @@ const Home = () => {
                 <img
                   className="restImg"
                   src={rest.imageUrl}
-                  alt={rest.name || 'Restaurant image'}
+                  alt={rest.name || "Restaurant image"}
                 />
               )}
               <div className="restDetails">
                 <h1>{rest.name}</h1>
                 <h2 className="restAddress">Address ID: {rest.address}</h2>
-                <h4>{rest.avgRating}</h4>
+                <h4>Average Rating: {rest.avgRating}</h4>
                 <h4>{rest.primaryType}</h4>
                 <p>{rest.description}</p>
               </div>
@@ -53,7 +83,7 @@ const Home = () => {
                 <img
                   className="restImg"
                   src={rest.imageUrl}
-                  alt={rest.name || 'Restaurant image'}
+                  alt={rest.name || "Restaurant image"}
                 />
               )}
             </div>
