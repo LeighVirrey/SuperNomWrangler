@@ -14,7 +14,7 @@ const restaurantClass = require("./models/Restaurant");
 const reviewClass = require("./models/Review");
 require("dotenv").config(); 
 // const User = require("./models/user"); // Not used if using direct SQL queries
-const { DAL } = require('./DAL/mssqlDal')
+const  DAL  = require('./DAL/mssqlDal')
 
 app.use(cors({
   origin: "http://localhost:3000",
@@ -31,7 +31,7 @@ app.get("/", async (req, res) => {
 });
 // Registration endpoint
 app.post("/register", async (req, res) => {
-  const { username, email, password, imgUrl } = req.body;
+  let { username, email, password, imgUrl } = req.body;
   // Basic validation
   if (!username || !email || !password) {
     return res.status(400).json({ error: "Username, email and password are required" });
@@ -268,7 +268,7 @@ app.delete("/user/:id", async (req, res) => {
 });
 
 app.get("/restaurantlist", async (req, res) => {
-  let dummyRestaurants = await DAL.getRestaurants()
+  let dummyRestaurants = await DAL.getRestaurants();
 
   console.log(dummyRestaurants)
 

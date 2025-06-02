@@ -72,7 +72,7 @@ const RestaurantList = () => {
         <h1 className="mainheader">RESTAURANTS</h1>
         <div className="rest-list-item">
           {filteredRestaurants.map((restaurant, index) => (
-            <div key={restaurant.id} className="restaurant-card">
+            <div key={restaurant.id} className="restaurant-card" onClick={() => window.location.href=`/restaurantDetails/${restaurant.id}`}>
 
               <div
                 className="singleRest individual"
