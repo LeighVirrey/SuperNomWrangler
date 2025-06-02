@@ -16,11 +16,25 @@ function RestaurantDetails() {
                 if (restaurantData.address_Id) {
                     const resAddress = await fetch(`http://localhost:4000/address/${restaurantData.address_Id}`);
                     addressData = await resAddress.json();
+                }else{
+                    addressData = {
+                        number_Street: "N/A",
+                        name_Street: "N/A",
+                        city: "N/A",
+                        state: "N/A",
+                        zip_Code: "N/A",
+                        country: "N/A"
+                    };
                 }
 
                 const resReviews = await fetch(`http://localhost:4000/review/restaurant/${id}`);
                 const reviewsData = await resReviews.json();
-                //TODO: GET USER INFO
+                console.log("Reviews Data:", reviewsData);
+
+                const resUsers = await fetch(`http://localhost:4000/user/${reviewsData.user_Id}`);
+                const usersData = await resUsers.json();
+                reviewsData.users = usersData
+
                 setRestaurant({
                     ...restaurantData,
                     address: addressData,
