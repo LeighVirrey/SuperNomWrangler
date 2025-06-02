@@ -32,7 +32,6 @@ app.get("/", async (req, res) => {
 // Registration endpoint
 app.post("/register", async (req, res) => {
   const { username, email, password, imgUrl } = req.body;
-
   // Basic validation
   if (!username || !email || !password) {
     return res.status(400).json({ error: "Username, email and password are required" });
@@ -424,12 +423,10 @@ app.delete("/address/:id", async (req, res) => {
 );
 
 // Logout endpoint - clear the auth cookie
-//we probably don't need this anymore -zk
 app.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Logged out successfully" });
 });
-
 //#region - Restaurant Reviews
 // Mock information for testing
 
