@@ -47,15 +47,17 @@ const Home = () => {
     <div className="home">
       <h1 className="mainheader"> FEATURED </h1>
 
+      <h3>Search by Zipcode to find the best restaurants in your area</h3>
       {/* Zipcode Search */}
-      <form onSubmit={handleZipcodeSearch} style={{ marginBottom: "1rem" }}>
-        <input
+      <form  onSubmit={handleZipcodeSearch} style={{ marginBottom: "1rem" }}>
+        <input 
+        className="zipcode-form"
           type="text"
           placeholder="Enter zipcode"
           value={zipcode}
           onChange={(e) => setZipcode(e.target.value)}
         />
-        <button type="submit">Search</button>
+        <button className="zipcode-button" type="submit">Search</button>
       </form>
 
       {restaurants.map((rest, index) => {
@@ -68,7 +70,7 @@ const Home = () => {
               {isEven && (
                 <img
                   className="restImg"
-                  src={rest.imageUrl}
+                  src={rest.imageUrl || "../images/baseimagenomwrangler.png"}
                   alt={rest.name || "Restaurant image"}
                 />
               )}
@@ -82,7 +84,7 @@ const Home = () => {
               {!isEven && (
                 <img
                   className="restImg"
-                  src={rest.imageUrl}
+                  src={rest.imageUrl || "../images/baseimagenomwrangler.png"}
                   alt={rest.name || "Restaurant image"}
                 />
               )}
