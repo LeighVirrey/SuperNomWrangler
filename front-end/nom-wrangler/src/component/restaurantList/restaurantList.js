@@ -101,7 +101,7 @@ const RestaurantList = () => {
                     margin:
                       index % 2 === 0 ? "0px 15px 0px 0px" : "0px 0px 0px 15px",
                   }}
-                  src={restaurant.image || restaurant.imageUrl}
+                  src={restaurant.image || restaurant.imageUrl || "../images/baseimagenomwrangler.png"}
                   alt={restaurant.name}
                 />
                 <br />
