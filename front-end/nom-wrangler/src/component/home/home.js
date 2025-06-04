@@ -1,82 +1,135 @@
-import React from 'react'
-import './home.css'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import "./home.css";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const [restaurants, setRestaurants] = useState([]);
+  const [zipcode, setZipcode] = useState("");
+  const [searchZip, setSearchZip] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      if (!searchZip) {
+        setRestaurants([]);
+        return;
+      }
+      try {
+        const url = `http://localhost:4000/api/top-restaurants?zip=${encodeURIComponent(searchZip)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+  
+        if (Array.isArray(data)) {
+          setRestaurants(data.slice(0, 4));
+        } else {
+          setRestaurants([]);
+          console.error("API did not return an array:", data);
+        }
+      } catch (error) {
+        setRestaurants([]);
+        console.error("Error fetching restaurants:", error);
+      }
+    };
+  
+    fetchRestaurants();
+  }, [searchZip]);
+
+  const handleZipcodeSearch = (e) => {
+    e.preventDefault();
+    setSearchZip(zipcode.trim());
+  };
+
+  const featuredRestaurants = () => {
+    navigate("/restaurantList");
+  };
 
   return (
-    <div className='home'>
-      <h1 className='mainheader'> FEATURED </h1>
-      <div className='restO box-shadow'>
-        <div className='singleRest'>
-          <img className='restImg' src='../images/11steakhouse.jpg' />
-          <div className='restDetails'>
-            <h1>Lucky J Steakhouse & Arena</h1>
-            <h2 className='restAddress'>11664 Fir Rd, Carthage, MO 64836</h2>
-            <p>Lucky J Steakhouse & Arena opened its doors in November 2001...</p>
-          </div>
-        </div>
-      </div>
+    <div className="home">
+      <h1 className="mainheader"> FEATURED </h1>
 
-      <br></br>
-      <div className='restB box-shadow'>
-        <div className='singleRest'>
-          <div className='restDetails'>
-            <h1 >Lucky J Steakhouse & Arena</h1>
-            <h2 className='restAddress'>11664 Fir Rd, Carthage, MO 64836</h2>
-            <p> Lucky J Steakhouse & Arena opened its doors in November 2001 in Carthage, Missouri, and has since become one of the most popular local restaurants as well as the premier equine arena in the four-state area. As our slogan says, whether you’re looking for great food or good times, Lucky J is the place to be! </p>
-          </div>
-          <img className='restImg' src='../images/11steakhouse.jpg'></img>
-        </div>
-      </div>
-      <div>
-        <br></br>
-        <div className='restO box-shadow'>
-          <div className='singleRest'>
-            <img className='restImg' src='../images/11steakhouse.jpg' />
-            <div className='restDetails'>
-              <h1>Lucky J Steakhouse & Arena</h1>
-              <h2 className='restAddress'>11664 Fir Rd, Carthage, MO 64836</h2>
-              <p>Lucky J Steakhouse & Arena opened its doors in November 2001...</p>
+      <h3>Search by Zipcode to find the best restaurants in your area</h3>
+      {/* Zipcode Search */}
+      <form  onSubmit={handleZipcodeSearch} style={{ marginBottom: "1rem" }}>
+        <input 
+        className="zipcode-form"
+          type="text"
+          placeholder="Enter zipcode"
+          value={zipcode}
+          onChange={(e) => setZipcode(e.target.value)}
+        />
+        <button className="zipcode-button" type="submit">Search</button>
+      </form>
+
+      {restaurants.map((rest, index) => {
+        const isEven = index % 2 === 0;
+        const containerClass = isEven ? "restO box-shadow" : "restB box-shadow";
+
+        return (
+          <div key={rest.restaurant_Id || index} className={containerClass}>
+            <div className="singleRest">
+              {isEven && (
+                <img
+                  className="restImg"
+                  src={rest.imageUrl || "../images/baseimagenomwrangler.png"}
+                  alt={rest.name || "Restaurant image"}
+                />
+              )}
+              <div className="restDetails">
+                <h1>{rest.name}</h1>
+                <h2 className="restAddress">Address ID: {rest.address}</h2>
+                <h4>Average Rating: {rest.avgRating}</h4>
+                <h4>{rest.primaryType}</h4>
+                <p>{rest.description}</p>
+              </div>
+              {!isEven && (
+                <img
+                  className="restImg"
+                  src={rest.imageUrl || "../images/baseimagenomwrangler.png"}
+                  alt={rest.name || "Restaurant image"}
+                />
+              )}
             </div>
           </div>
-        </div>
-        <br></br>
-        <div className='restB box-shadow'>
-          <div className='singleRest'>
-            <div className='restDetails'>
-              <h1 >Lucky J Steakhouse & Arena</h1>
-              <h2 className='restAddress'>11664 Fir Rd, Carthage, MO 64836</h2>
-              <p> Lucky J Steakhouse & Arena opened its doors in November 2001 in Carthage, Missouri, and has since become one of the most popular local restaurants as well as the premier equine arena in the four-state area. As our slogan says, whether you’re looking for great food or good times, Lucky J is the place to be! </p>
-            </div>
-            <img className='restImg' src='../images/11steakhouse.jpg'></img>
-          </div>
-        </div>
+        );
+      })}
 
+      <button className="BlueButton" onClick={featuredRestaurants}>
+        FIND MORE RESTAURANTS
+      </button>
 
-        <button className='BlueButton'>FIND MORE RESTAURANTS</button>
-      </div>
-      <h1 className='mainheader'> TOP REVIEWERS </h1>
+      <h1 className="mainheader"> TOP REVIEWERS </h1>
 
-      <div className='reviewers'>
-        <div className='topReviewer box-shadow'>
-          <img className='reviewerImg' src='../images/bin.jpg' />
-          <div className='reviewerDetails'>
+      <div className="reviewers">
+        <div className="topReviewer box-shadow">
+          <img
+            className="reviewerImg"
+            src="../images/bin.jpg"
+            alt="Top reviewer"
+          />
+          <div className="reviewerDetails">
             <h2>#1</h2>
             <h1>John Doe</h1>
           </div>
         </div>
-        <div className='bottomReviewers '>
-          <div className='secReviewer box-shadow'>
-            <img className='reviewerImg' src='../images/bin.jpg' />
-            <div className='reviewerDetails'>
+        <div className="bottomReviewers">
+          <div className="secReviewer box-shadow">
+            <img
+              className="reviewerImg"
+              src="../images/bin.jpg"
+              alt="Second top reviewer"
+            />
+            <div className="reviewerDetails">
               <h2>#2</h2>
               <h1>John Doe</h1>
             </div>
           </div>
-          <div className='thirdReviewer box-shadow'>
-            <img className='reviewerImg' src='../images/bin.jpg' />
-            <div className='reviewerDetails'>
+          <div className="thirdReviewer box-shadow">
+            <img
+              className="reviewerImg"
+              src="../images/bin.jpg"
+              alt="Third top reviewer"
+            />
+            <div className="reviewerDetails">
               <h2>#3</h2>
               <h1>John Doe</h1>
             </div>
@@ -84,33 +137,44 @@ const Home = () => {
         </div>
       </div>
 
-      <div className='about'>
-        <div >
-          <img className='steak box-shadow' src='../images/steak.jpg' />
+      <div className="about">
+        <div>
+          <img className="steak box-shadow" src="../images/steak.jpg" alt="" />
         </div>
-        <div className='aboutText box-shadow'>
-          <h1 className='aboutHeader'>ABOUT US</h1>
-          <h2> Super Nom Wrangler is a community-driven food finder app that helps users discover and share hidden gem eateries—like hole-in-the-wall diners, family-run joints, and off-the-grid food trucks—that often get overlooked on mainstream platforms like Google Maps. It's built for adventurous eaters looking to wrangle the best local flavors wherever they roam.</h2>
+        <div className="aboutText box-shadow">
+          <h1 className="aboutHeader">ABOUT US</h1>
+          <h2>
+            Super Nom Wrangler is a community-driven food finder app that helps
+            users discover and share hidden gem eateries—like hole-in-the-wall
+            diners, family-run joints, and off-the-grid food trucks—that often
+            get overlooked on mainstream platforms like Google Maps. It's built
+            for adventurous eaters looking to wrangle the best local flavors
+            wherever they roam.
+          </h2>
           <Link to="/about">
-            <button className='aboutButton'>SEE MORE</button>
+            <button className="aboutButton">SEE MORE</button>
           </Link>
         </div>
       </div>
-      <br></br>
-      <div className='about'>
-        <div >
-          <img className='map box-shadow' src='../images/map.jpg' />
+
+      <br />
+
+      {/* <div className="about">
+        <div>
+          <img className="map box-shadow" src="../images/map.jpg" alt="" />
         </div>
-        <div className='mapText box-shadow'>
-          <h1 className='aboutHeader'>MAP</h1>
-          <h2> if you somehow made it this far down click here to see the map</h2>
+        <div className="mapText box-shadow">
+          <h1 className="aboutHeader">MAP</h1>
+          <h2>
+            If you somehow made it this far down click here to see the map
+          </h2>
           <Link to="/map">
-            <button className='aboutButton'>SEE MAP</button>
+            <button className="aboutButton">SEE MAP</button>
           </Link>
         </div>
-      </div>
+      </div> */}
     </div>
-  )
-}
+  );
+};
 
 export default Home;

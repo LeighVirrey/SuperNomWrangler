@@ -1,25 +1,44 @@
 import React, { useState, useEffect } from "react";
-import "./restaurantList.css"; // <-- Import the separate CSS file
+import "./restaurantList.css";
 
 const RestaurantList = () => {
   const [search, setSearch] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [zip, setZip] = useState("");
+  const [radius] = useState("25"); // Hardcoded radius
   const [restaurants, setRestaurants] = useState([]);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
     const fetchRestaurants = async () => {
+      // Only fetch if zip is empty or 5 digits
+      if (zip && zip.length !== 5) {
+        setRestaurants([]);
+        return;
+      }
       try {
-        const response = await fetch("http://localhost:4000/restaurantlist", {
+        let url = "http://localhost:4000/api/restaurants";
+        const params = [];
+        if (zip) params.push(`zip=${encodeURIComponent(zip)}`);
+        if (radius) params.push(`radius=${encodeURIComponent(radius)}`);
+        if (params.length) url += "?" + params.join("&");
+
+        const response = await fetch(url, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         });
 
+        if (!response.ok) {
+          setRestaurants([]);
+          console.error("Invalid zip code or server error");
+          return;
+        }
+
         const data = await response.json();
         setRestaurants(data);
       } catch (error) {
+        setRestaurants([]);
         console.error("Error fetching restaurants:", error);
       }
     };
@@ -31,12 +50,10 @@ const RestaurantList = () => {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [zip, radius]);
 
-  const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    setSuggestions([]);
+  const handleZipChange = (e) => {
+    setZip(e.target.value);
   };
 
   const filteredRestaurants = restaurants.filter((restaurant) =>
@@ -52,50 +69,55 @@ const RestaurantList = () => {
       <div className="search-section">
         <input
           type="text"
-          placeholder="Search restaurants..."
-          value={search}
-          onChange={handleSearchChange}
+          placeholder="Enter zip code"
+          value={zip}
+          onChange={handleZipChange}
           className="search-bar"
+          style={{ marginLeft: "10px" }}
         />
-        {suggestions.length > 0 && (
-          <div className="search-options">
-            {suggestions.map((s, i) => (
-              <div key={i} className="search-option">
-                {s}
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Radius input removed */}
       </div>
 
       <div className="restaurants">
         <h1 className="mainheader">RESTAURANTS</h1>
         <div className="rest-list-item">
           {filteredRestaurants.map((restaurant, index) => (
-            <div key={restaurant.id} className="restaurant-card" onClick={() => window.location.href=`/restaurantDetails/${restaurant.id}`}>
-
+            <div
+              key={restaurant.id || index}
+              className="restaurant-card"
+              onClick={() =>
+                (window.location.href = `/restaurantDetails/${restaurant.id}`)
+              }
+            >
               <div
                 className="singleRest individual"
                 style={{
                   flexDirection: index % 2 === 0 ? "row" : "row-reverse",
                 }}
               >
-
                 <img
                   className="restImg pic"
-                  style={{margin: index % 2 === 0 ? "0px 15px 0px 0px" : "0px 0px 0px 15px",}}
-                  src={restaurant.image}
+                  style={{
+                    margin:
+                      index % 2 === 0 ? "0px 15px 0px 0px" : "0px 0px 0px 15px",
+                  }}
+                  src={restaurant.image || restaurant.imageUrl || "../images/baseimagenomwrangler.png"}
                   alt={restaurant.name}
                 />
                 <br />
-                <div className="restDetails info" style={{
-                  backgroundColor: index % 2 === 0 ? "#f46036" : "#1695a3",
-                  alignItems: index % 2 === 0 ? "flex-start" : "flex-end",
-                }}>
+                <div
+                  className="restDetails info"
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#f46036" : "#1695a3",
+                    alignItems: index % 2 === 0 ? "flex-start" : "flex-end",
+                  }}
+                >
                   <h1>{restaurant.name}</h1>
                   <h2>{restaurant.address}</h2>
                   <p>{restaurant.description}</p>
-                  <p>{restaurant.distance.toFixed(1)} miles away</p>
+                  {restaurant.distance && (
+                    <p>{restaurant.distance.toFixed(1)} miles away</p>
+                  )}
                 </div>
               </div>
             </div>
